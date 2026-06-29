@@ -1,13 +1,17 @@
+import { useState } from 'react';
 import { View, Text } from '@tarojs/components';
 import { Button } from '@nutui/nutui-react-taro';
 import { useCounterStore } from '@/store/useCounterStore';
+import SpecDrawer from '@components/SpecDrawer';
 
 export default function Index() {
   const { count, increment, decrement, reset } = useCounterStore();
+  const [drawerVisible, setDrawerVisible] = useState(false);
+
   return (
     <View className='flex flex-col items-center justify-center h-screen bg-gray-100 p-4'>
       <Text className='text-2xl font-bold text-blue-600 mb-4'>Count: {count}</Text>
-      <View className='flex gap-4'>
+      <View className='flex gap-4 mb-4'>
         <Button type='primary' onClick={increment}>
           +
         </Button>
@@ -18,6 +22,10 @@ export default function Index() {
           Reset
         </Button>
       </View>
+      <Button type='success' onClick={() => setDrawerVisible(true)}>
+        打开抽屉
+      </Button>
+      <SpecDrawer visible={drawerVisible} onClose={() => setDrawerVisible(false)} />
     </View>
   );
 }
