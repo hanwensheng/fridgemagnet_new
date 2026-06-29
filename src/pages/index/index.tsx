@@ -10,7 +10,7 @@ export default function Index() {
 
   return (
     <View className='flex items-center justify-center h-screen bg-gray-100'>
-      <Text>Hello world!</Text>
+      <Text>Hello Taro!</Text>
       <Button type='primary'>测试</Button>
     </View>
   );
