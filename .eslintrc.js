@@ -1,5 +1,6 @@
 module.exports = {
   extends: ['taro/react'],
+  ignorePatterns: ['*.json', 'dist/', 'node_modules/'],
   rules: {
     'react/jsx-uses-react': 'off',
     'react/react-in-jsx-scope': 'off',

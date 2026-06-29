@@ -1,8 +1,8 @@
 {
-  "name": "my-app",
+  "name": "fridge-magnet-applet",
   "version": "1.0.0",
   "private": true,
-  "description": "my-app",
+  "description": "冰箱磁贴小程序",
   "templateInfo": {
     "name": "default",
     "typescript": true,
