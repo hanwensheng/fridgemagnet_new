@@ -1,0 +1,31 @@
+# Checklist
+
+- [x] 项目通过 `npx @tarojs/cli init .` 成功创建，选择 React + TypeScript + Sass + Webpack5 + 默认模板
+- [x] `package.json` 中包含 `@nutui/nutui-react-taro`、`zustand`、`tailwindcss@^3`、`postcss`、`autoprefixer`、`weapp-tailwindcss`、`thread-loader`、`babel-plugin-import`、`husky@^9`、`lint-staged` 等依赖
+- [x] `config/index.ts` 配置了 `projectName`、`designWidth`、`deviceRatio`、`framework: 'react'`、`compiler.type: 'webpack5'`、`prebundle.enable: true`、文件系统缓存、路径别名
+- [x] `config/index.ts` 的 `mini.webpackChain` 注册了 `weapp-tailwindcss/webpack` 插件（`rem2rpx: true`）并添加了 `thread-loader`
+- [x] `config/index.ts` 的 `h5` 配置未注册 `weapp-tailwindcss` 插件，H5 端 Tailwind 通过 `postcss.config.js` 生效
+- [x] `config/index.ts` 的 `mini.postcss.pxtransform.config.selectorBlackList` 包含 `nut-`
+- [x] `tsconfig.json` 中 `paths` 与 `config/index.ts` 的别名一致
+- [x] `tailwind.config.js` 存在，且 `content` 覆盖 `./src/**/*.{js,jsx,ts,tsx}`
+- [x] `postcss.config.js` 存在，且导出 `plugins: { tailwindcss: {}, autoprefixer: {} }`
+- [x] `src/app.css` 使用 Tailwind CSS 3.x 标准入口（`@tailwind base; @tailwind components; @tailwind utilities;`）
+- [x] `src/app.tsx` 顶部引入 `import './app.css'`（实际项目使用 `src/app.ts`，本质等效）
+- [x] `babel.config.js`（或 `.babelrc`）配置了 `babel-plugin-import`，实现 `@nutui/nutui-react-taro` 按需加载
+- [x] `.eslintrc.js` 存在，且 `extends: ['taro/react']`
+- [x] `.prettierrc` 存在，且包含 `singleQuote`、`trailingComma`、`printWidth`、`tabWidth`、`semi` 配置
+- [x] `package.json` 的 `scripts` 中包含 `"lint": "eslint src --ext .js,.jsx,.ts,.tsx"`
+- [x] `package.json` 中配置了 `lint-staged`，对 `*.{js,jsx,ts,tsx}` 执行 `eslint --fix` 和 `prettier --write`
+- [x] `.husky/pre-commit` 文件存在，内容为 `npx lint-staged`
+- [x] `git commit` 时能自动触发 `lint-staged` 并修复代码格式
+- [x] `src/app.config.ts` 存在，且配置了首页路由 `pages/index/index`
+- [x] `src/store/useCounterStore.ts` 存在，且导出 `count`、`increment`、`decrement`、`reset`
+- [x] `src/pages/index/index.tsx` 使用 Zustand store、Tailwind 类名和 NutUI `<Button>` 组件
+- [x] `npm run dev:h5` 启动成功，浏览器中页面正常显示
+- [x] `npm run dev:weapp` 启动成功，微信开发者工具可正常打开 `dist/weapp`
+- [x] `npm run build:h5` 成功生成产物到 `dist`
+- [x] `npm run build:weapp` 成功生成产物到 `dist/weapp`
+- [x] H5 产物中 Tailwind 相关样式单位为 px/rem
+- [x] 小程序产物 `.wxss` 中 Tailwind 相关样式单位为 `rpx`
+- [x] 点击 + / - / Reset 按钮，页面计数器数字同步变化
+- [x] 项目目录结构符合规范：`config/`、`src/pages/index/`、`src/components/`、`src/store/`、`src/utils/`、`src/styles/`

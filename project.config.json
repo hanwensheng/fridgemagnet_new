@@ -1,15 +1,14 @@
 {
-  "miniprogramRoot": "./dist",
+  "miniprogramRoot": "dist/weapp/",
   "projectname": "my-app",
-  "description": "my-app",
+  "description": "Taro React App",
   "appid": "touristappid",
   "setting": {
-    "urlCheck": true,
-    "es6": false,
-    "enhance": false,
-    "compileHotReLoad": false,
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
     "postcss": false,
-    "minified": false
+    "minified": true
   },
   "compileType": "miniprogram"
 }

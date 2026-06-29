@@ -1,0 +1,1 @@
+c:/Users/12130/Desktop/hnjx-hjs/fridgemagnet_new/CLAUDE.md

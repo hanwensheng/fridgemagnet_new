@@ -4,7 +4,7 @@ import * as path from 'path';
 import devConfig from './dev';
 import prodConfig from './prod';
 
-const { WeappTailwindcss } = require('weapp-tailwindcss/webpack');
+const { UnifiedWebpackPluginV5 } = require('weapp-tailwindcss/webpack');
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
 export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
@@ -19,7 +19,7 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
       375: 2 / 1,
     },
     sourceRoot: 'src',
-    outputRoot: 'dist',
+    outputRoot: process.env.TARO_ENV === 'weapp' ? 'dist/weapp' : 'dist',
     plugins: ['@tarojs/plugin-generator'],
     defineConstants: {},
     copy: {
@@ -35,7 +35,7 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
     },
     cache: {
       type: 'filesystem',
-      cacheDirectory: path.resolve(__dirname, '.taro_cache'),
+      cacheDirectory: path.resolve(__dirname, '..', '.taro_cache'),
     },
     alias: {
       '@': path.resolve(__dirname, '..', 'src'),
@@ -63,7 +63,7 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
       },
       webpackChain(chain) {
         chain.resolve.plugin('tsconfig-paths').use(TsconfigPathsPlugin);
-        chain.plugin('weapp-tailwindcss').use(WeappTailwindcss, [{ rem2rpx: true }]);
+        chain.plugin('weapp-tailwindcss').use(UnifiedWebpackPluginV5, [{ rem2rpx: true }]);
         chain.module
           .rule('script')
           .use('thread-loader')
