@@ -94,7 +94,7 @@ interface BasePageProps {
 
 export default function BasePage({
   children,
-  backgroundColor = '#f5f5f5',
+  backgroundColor = '#F6F6F6',
   padding = '0',
   paddingBottomSafe = true,
   bottomBarHeight: propBottomBarHeight,
@@ -106,10 +106,10 @@ export default function BasePage({
   navBackIcon,
   navLeftComponent,
   navRightComponent,
-  navBackgroundColor = '#ffffff',
+  navBackgroundColor = '#F6F6F6',
   navTextColor = '#000000',
   navFixed = true,
-  navShowBorder = true,
+  navShowBorder = false,
   onNavLeftClick,
   onNavRightClick,
 }: BasePageProps) {

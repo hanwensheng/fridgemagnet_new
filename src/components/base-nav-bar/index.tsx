@@ -73,15 +73,15 @@ export default function BaseNavBar({
   leftComponent,
   rightComponent,
   navHeight,
-  backgroundColor = '#ffffff',
+  backgroundColor = '#F6F6F6',
   textColor = '#000000',
   className = '',
   onLeftClick,
   onRightClick,
   fixed = true,
   zIndex = 1000,
-  titleBold = true,
-  titleSize = 34,
+  titleBold = false,
+  titleSize = 36,
   showBorder = true,
 }: BaseNavBarProps) {
   const systemInfo = Taro.getSystemInfoSync();
@@ -117,20 +117,13 @@ export default function BaseNavBar({
   /**
    * 计算导航栏总高度
    * 公式：状态栏高度 + 胶囊高度 + 胶囊上下间距 * 2
+   * 胶囊高度和间距来自微信原生（不可修改），动态跟随以保证胶囊视觉居中
    */
   const calculatedNavHeight = useMemo(() => {
     if (navHeight) return navHeight;
     const gap = menuButtonInfo.top - statusBarHeight;
     return statusBarHeight + menuButtonInfo.height + gap * 2;
   }, [navHeight, statusBarHeight, menuButtonInfo]);
-
-  /**
-   * 计算标题垂直居中位置
-   * 标题应该在导航栏内容区域的垂直中点
-   */
-  const titleTop = useMemo(() => {
-    return statusBarHeight + (calculatedNavHeight - statusBarHeight) / 2 - 10;
-  }, [statusBarHeight, calculatedNavHeight]);
 
   /**
    * 处理左侧区域点击
@@ -189,8 +182,7 @@ export default function BaseNavBar({
           className='base-nav-bar__title'
           style={{
             color: textColor,
-            top: `${titleTop - statusBarHeight}px`,
-            fontWeight: titleBold ? 600 : 400,
+            fontWeight: titleBold ? 600 : 100,
             fontSize: `${titleSize}rpx`,
           }}
         >
