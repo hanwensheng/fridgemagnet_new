@@ -3,7 +3,7 @@ export default {
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
-    navigationBarTitleText: 'My App',
+    navigationBarTitleText: '冰箱贴',
     navigationBarTextStyle: 'black',
   },
 };

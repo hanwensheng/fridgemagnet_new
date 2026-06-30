@@ -7,7 +7,7 @@ import prodConfig from './prod';
 const { UnifiedWebpackPluginV5 } = require('weapp-tailwindcss/webpack');
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
-export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
+export default defineConfig<'webpack5'>(async (merge) => {
   const baseConfig: UserConfigExport<'webpack5'> = {
     projectName: 'my-app',
     date: '2026-6-29',
@@ -34,8 +34,7 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
       },
     },
     cache: {
-      type: 'filesystem',
-      cacheDirectory: path.resolve(__dirname, '..', '.taro_cache'),
+      enable: true,
     },
     alias: {
       '@': path.resolve(__dirname, '..', 'src'),
