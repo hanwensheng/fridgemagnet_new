@@ -133,13 +133,13 @@ export default function BaseNavBar({
   }, [statusBarHeight, calculatedNavHeight]);
 
   /**
-   * 处理返回按钮点击
-   * 默认调用 Taro.navigateBack()
+   * 处理左侧区域点击
+   * 优先调用 onLeftClick，无自定义组件且 showBack 为 true 时返回上一页
    */
-  const handleBackClick = () => {
+  const handleLeftClick = () => {
     if (onLeftClick) {
       onLeftClick();
-    } else {
+    } else if (showBack && !leftComponent) {
       Taro.navigateBack().catch(() => {});
     }
   };
@@ -147,7 +147,7 @@ export default function BaseNavBar({
   /**
    * 判断左侧区域是否可点击
    */
-  const isLeftClickable = showBack || onLeftClick;
+  const isLeftClickable = showBack || leftComponent || onLeftClick;
 
   return (
     <View
@@ -174,7 +174,7 @@ export default function BaseNavBar({
         {/* 左侧区域 */}
         <View
           className={`base-nav-bar__left ${isLeftClickable ? 'base-nav-bar__left--clickable' : ''}`}
-          onClick={showBack ? handleBackClick : onLeftClick}
+          onClick={isLeftClickable ? handleLeftClick : undefined}
         >
           {leftComponent ||
             (showBack && (
