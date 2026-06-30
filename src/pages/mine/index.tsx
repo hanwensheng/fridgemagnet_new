@@ -20,7 +20,7 @@ export default function MinePage() {
     useMineLogic();
 
   return (
-    <BasePage>
+    <BasePage navShowBack={false}>
       {isLoggedIn ? (
         <View className='flex flex-col items-center pt-[70px]'>
           <Image

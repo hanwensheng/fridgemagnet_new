@@ -230,6 +230,75 @@ if (process.env.TARO_ENV === 'h5') { /* H5 专有逻辑 */ }
 - 业务组件优先使用 NutUI。
 - 避免直接引入 DOM 专属库或小程序专属 API 到通用组件中。
 
+### 6.4 页面布局规范（自定义导航 + TabBar）
+
+本项目采用**全自定义导航栏**与**自定义 TabBar**，不使用小程序原生导航与原生 TabBar。
+
+#### 6.4.1 BasePage 页面容器（强制）
+
+**所有页面必须**使用 `src/components/base-page/index.tsx` 作为根容器包裹，它已内置处理以下逻辑：
+
+- **状态栏 + 导航栏占位**：自动读取系统信息计算状态栏高度与导航栏高度，避免内容被遮挡。
+- **底部安全区适配**：自动计算 iPhone X 及以上机型的底部安全区，并预留对应 padding。
+- **底部固定栏支持**：支持传入底部固定栏组件，自动叠加安全区高度。
+- **内置自定义导航栏**：传入 `navTitle` 等属性即可自动渲染 `BaseNavBar`，无需在每个页面单独引入导航组件。
+
+**基础用法示例**：
+
+```tsx
+import BasePage from '@/components/base-page';
+
+export default function MyPage() {
+  return (
+    <BasePage navTitle='页面标题'>
+      <View>页面内容</View>
+    </BasePage>
+  );
+}
+```
+
+**带底部固定栏示例**：
+
+```tsx
+<BasePage
+  navTitle='订单确认'
+  bottomBarHeight={50}
+  bottomBarComponent={<View className='submit-bar'>提交订单</View>}
+  safeAreaBackgroundColor='#fff'
+>
+  <View>页面内容</View>
+</BasePage>
+```
+
+**常用属性说明**：
+
+| 属性 | 说明 | 默认值 |
+|------|------|--------|
+| `navTitle` | 导航栏标题，传入后自动显示导航栏 | `''`（不显示导航栏） |
+| `navShowBack` | 是否显示返回按钮 | `true` |
+| `navBackgroundColor` | 导航栏背景色 | `#ffffff` |
+| `navTextColor` | 导航栏文字/图标颜色 | `#000000` |
+| `navFixed` | 导航栏是否 fixed 定位 | `true` |
+| `backgroundColor` | 页面背景色 | `#f5f5f5` |
+| `padding` | 页面内容区内边距 | `'0'` |
+| `paddingBottomSafe` | 是否启用底部安全区适配 | `true` |
+| `bottomBarHeight` | 底部固定栏高度（不含安全区） | 自动测量 |
+| `bottomBarComponent` | 底部固定栏组件 | — |
+| `safeAreaBackgroundColor` | 底部安全区占位背景色 | 继承 `backgroundColor` |
+
+#### 6.4.2 自定义导航栏
+
+- 导航栏由 `BaseNavBar` 组件实现，**已内置于 BasePage**，页面开发者无需直接引用。
+- 小程序端通过 `Taro.getMenuButtonBoundingClientRect()` 获取胶囊按钮位置，自动对齐右侧胶囊；H5 端按标准高度渲染。
+- 如需在页面中控制导航栏（如动态修改标题、显示/隐藏返回按钮），通过 BasePage 的 props 传入即可。
+
+#### 6.4.3 自定义 TabBar
+
+- 项目使用**自定义 TabBar** 替代小程序原生 TabBar，确保 H5 与小程序视觉与交互一致。
+- TabBar 组件独立实现，通常在 `app.config.ts` 中配置 `tabBar.custom = true`（小程序端），并在 `src/components/custom-tab-bar/` 或同级目录维护。
+- 页面级组件**不直接引用 TabBar**，TabBar 的全局显示/隐藏由框架级逻辑统一控制。
+- TabBar 高度与安全区处理遵循与 BasePage 一致的逻辑，避免重复计算。
+
 ## 7. 代码规范
 
 ### 7.1 ESLint

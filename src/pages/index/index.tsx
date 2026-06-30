@@ -12,7 +12,7 @@ export default function Index() {
   const [drawerVisible, setDrawerVisible] = useState(false);
 
   return (
-    <BasePage>
+    <BasePage navShowBack={false}>
       <View className='flex flex-col items-center justify-center h-screen bg-gray-100 p-4'>
         <Text className='text-2xl font-bold text-blue-600 mb-4'>Count: {count}</Text>
         <View className='flex gap-4 mb-4'>
