@@ -242,10 +242,6 @@ export default function BasePage({
     const totalBottom = bottomBarHeight + (paddingBottomSafe ? safeAreaBottom : 0);
 
     if (totalBottom > 0) {
-      const paddingValue = parseFloat(padding);
-      if (!Number.isNaN(paddingValue)) {
-        return `${paddingValue + totalBottom}px`;
-      }
       return `calc(${padding} + ${totalBottom}px)`;
     }
 
@@ -309,7 +305,7 @@ export default function BasePage({
       style={
         {
           backgroundColor,
-          paddingTop: hasNavBar ? `${navBarHeight}px` : `${statusBarHeight}px`,
+          paddingTop: hasNavBar && navFixed ? `${navBarHeight}px` : `${statusBarHeight}px`,
           paddingBottom: hasBottomBar ? `${bottomBarHeight + safeAreaBottom}px` : paddingBottom,
         } as any
       }

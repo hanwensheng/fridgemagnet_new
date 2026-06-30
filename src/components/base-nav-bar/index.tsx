@@ -147,7 +147,7 @@ export default function BaseNavBar({
   /**
    * 判断左侧区域是否可点击
    */
-  const isLeftClickable = showBack || leftComponent || onLeftClick;
+  const isLeftClickable = showBack || onLeftClick;
 
   return (
     <View
@@ -200,7 +200,7 @@ export default function BaseNavBar({
         {/* 右侧区域 */}
         <View
           className={`base-nav-bar__right ${rightComponent && onRightClick ? 'base-nav-bar__right--clickable' : ''}`}
-          onClick={onRightClick}
+          {...(onRightClick ? { onClick: onRightClick } : {})}
         >
           {rightComponent}
         </View>
