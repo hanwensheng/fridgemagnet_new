@@ -36,7 +36,8 @@ export default function CustomTabBar(props: CustomTabBarProps) {
   const currentIndex =
     process.env.TARO_ENV === 'weapp'
       ? (props.selected ??
-        TABS.findIndex((t) => t.pagePath === `/${Taro.getCurrentPages().slice(-1)[0]?.route}`))
+        (TABS.findIndex((t) => t.pagePath === `/${Taro.getCurrentPages().slice(-1)[0]?.route}`) ||
+          0))
       : selected;
 
   const switchTab = useCallback(
