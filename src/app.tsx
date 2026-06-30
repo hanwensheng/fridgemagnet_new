@@ -1,5 +1,6 @@
 import { PropsWithChildren } from 'react';
 import { useLaunch } from '@tarojs/taro';
+import CustomTabBar from '@/components/custom-tab-bar';
 
 import './app.scss';
 import './app.css';
@@ -9,8 +10,12 @@ function App({ children }: PropsWithChildren<any>) {
     console.log('App launched.');
   });
 
-  // children 是将要会渲染的页面
-  return children;
+  return (
+    <>
+      {children}
+      {process.env.TARO_ENV === 'h5' && <CustomTabBar />}
+    </>
+  );
 }
 
 export default App;
