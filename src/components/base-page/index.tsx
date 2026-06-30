@@ -214,7 +214,7 @@ export default function BasePage({
    * 判断是否需要渲染导航栏
    * 当传入 navTitle 或自定义左右组件时显示导航栏
    */
-  const hasNavBar = !!(navTitle || navShowBack || navLeftComponent || navRightComponent);
+  const hasNavBar = !!(navTitle || navLeftComponent || navRightComponent);
 
   /**
    * 实际使用的底部栏高度
