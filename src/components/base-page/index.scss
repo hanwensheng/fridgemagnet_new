@@ -1,0 +1,41 @@
+.base-page {
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.base-page-content {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/**
+ * 底部固定栏容器
+ * 使用 fixed 定位固定在屏幕底部
+ * 定位样式由内联样式控制，此处保留基础布局
+ */
+.base-page__bottom-bar-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
+
+/**
+ * 底部栏区域
+ * 高度由 bottomBarHeight 属性控制
+ */
+.base-page__bottom-bar-area {
+  width: 100%;
+}
+
+/**
+ * 安全区域占位
+ * 高度和背景色由内联样式控制
+ * 用于适配 iOS 设备底部安全区域
+ */
+.base-page__safe-area {
+  width: 100%;
+}

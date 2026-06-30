@@ -1,0 +1,105 @@
+.base-nav-bar {
+  width: 100%;
+  box-sizing: border-box;
+
+  /** 底部边框样式 */
+  &--border {
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: rgba(0, 0, 0, 0.05);
+      transform: scaleY(0.5);
+    }
+  }
+
+  /** 状态栏占位区域 */
+  &__status-bar {
+    width: 100%;
+    pointer-events: none;
+  }
+
+  /** 导航栏内容区域（不含状态栏） */
+  &__content {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 0 16px;
+  }
+
+  /** 左侧区域 */
+  &__left {
+    position: relative;
+    z-index: 10;
+    min-width: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    /** 可点击状态 */
+    &--clickable {
+      cursor: pointer;
+    }
+  }
+
+  /** 返回按钮 */
+  &__back-btn {
+    width: 64rpx;
+    height: 64rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+
+    &:active {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  /** 返回按钮图标 */
+  &__back-icon {
+    width: 40rpx;
+    height: 40rpx;
+  }
+
+  /** 标题区域 */
+  &__title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 60%;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    > Text {
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  /** 右侧区域 */
+  &__right {
+    position: relative;
+    z-index: 10;
+    min-width: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    /** 可点击状态 */
+    &--clickable {
+      cursor: pointer;
+    }
+  }
+}
