@@ -315,7 +315,7 @@ export async function request<T = any>(config: RequestConfig): Promise<T> {
         }, 1500);
         return Promise.reject(apiRes);
       }
-      if (apiRes.code === String(ErrorCode.UNAUTHORIZED)) {
+      if (apiRes.code === ErrorCode.UNAUTHORIZED) {
         handleUnauthorized();
       } else if (needShowError) {
         showError(apiRes.msg || '请求失败');
@@ -325,8 +325,7 @@ export async function request<T = any>(config: RequestConfig): Promise<T> {
 
     return apiRes.data;
   } catch (err: any) {
-    // 网络异常 / 超时 — 先关闭 loading，再用 Modal 强提示（拦截下一步）
-    if (needLoading) hideLoading();
+    // 网络异常 / 超时 — 用 Modal 强提示（finally 会关闭 loading）
     const isTimeout = err?.errMsg?.includes('timeout');
     const msg = isTimeout ? '网络请求超时，请检查网络后重试' : '网络连接异常，请检查网络后重试';
     if (needShowError) await showNetworkModal('网络异常', msg);

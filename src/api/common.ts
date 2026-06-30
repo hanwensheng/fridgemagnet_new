@@ -34,14 +34,14 @@ export interface RequestConfig {
 
 /** 错误码定义 */
 export const ErrorCode = {
-  SUCCESS: 0,
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  SERVER_ERROR: 500,
-  NETWORK_ERROR: -1,
-  TIMEOUT: -2,
-  UNKNOWN: -999,
+  SUCCESS: '0',
+  UNAUTHORIZED: '401',
+  FORBIDDEN: '403',
+  NOT_FOUND: '404',
+  SERVER_ERROR: '500',
+  NETWORK_ERROR: '-1',
+  TIMEOUT: '-2',
+  UNKNOWN: '-999',
 } as const;
 
 /** HTTP 状态码映射 */
