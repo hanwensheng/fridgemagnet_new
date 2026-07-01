@@ -5,6 +5,7 @@ export default {
     'pages/customer-service/index',
     'pages/address/index',
     'pages/add-address/index',
+    'pages/edit-profile/index',
   ],
   requiredPrivateInfos: ['chooseAddress'],
   window: {

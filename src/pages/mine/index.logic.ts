@@ -89,6 +89,10 @@ export function useMineLogic() {
     });
   }, [logout]);
 
+  const handleEditProfile = useCallback(() => {
+    Taro.navigateTo({ url: '/pages/edit-profile/index' });
+  }, []);
+
   return {
     isLoggedIn,
     displayName,
@@ -96,5 +100,6 @@ export function useMineLogic() {
     handleMenuClick,
     handleLogin,
     handleLogout,
+    handleEditProfile,
   };
 }

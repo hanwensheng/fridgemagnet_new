@@ -16,8 +16,15 @@ const ACTIONS = [
 
 export default function MinePage() {
   useTabBar(1);
-  const { isLoggedIn, displayName, userInfo, handleMenuClick, handleLogin, handleLogout } =
-    useMineLogic();
+  const {
+    isLoggedIn,
+    displayName,
+    userInfo,
+    handleMenuClick,
+    handleLogin,
+    handleLogout,
+    handleEditProfile,
+  } = useMineLogic();
 
   return (
     <BasePage navShowBack={false}>
@@ -29,7 +36,10 @@ export default function MinePage() {
             mode='aspectFill'
           />
           <Text className='mt-[20px] text-lg leading-[24px] text-black'>{displayName}</Text>
-          <View className='mt-[10px] flex h-[34px] w-[98px] items-center justify-center rounded-[29px] border border-black/10'>
+          <View
+            className='mt-[10px] flex h-[34px] w-[98px] items-center justify-center rounded-[29px] border border-black/10'
+            onClick={handleEditProfile}
+          >
             <Image className='h-4 w-4' src={EditIcon} mode='aspectFit' />
             <Text className='ml-[10px] text-xs text-black'>编辑主页</Text>
           </View>
