@@ -4,7 +4,9 @@ export default {
     'pages/mine/index',
     'pages/customer-service/index',
     'pages/address/index',
+    'pages/add-address/index',
   ],
+  requiredPrivateInfos: ['chooseAddress'],
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',

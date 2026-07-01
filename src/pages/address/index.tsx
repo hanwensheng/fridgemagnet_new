@@ -28,7 +28,7 @@ function AddressCard({
   onSetDefault: (pkId: string) => void;
   onDelete: (pkId: string) => void;
   onCopy: (address: AddressItem) => void;
-  onEdit: () => void;
+  onEdit: (pkId: string) => void;
 }) {
   const isDefault = address.isDefault === '1';
 
@@ -108,7 +108,7 @@ function AddressCard({
             className='text-xs text-black/50'
             onClick={(e) => {
               e.stopPropagation();
-              onEdit();
+              onEdit(address.pkId);
             }}
           >
             修改

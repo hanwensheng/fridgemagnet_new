@@ -3,7 +3,7 @@ import { request } from '../request';
 export interface AddressItem {
   addressType: string;
   city: string;
-  country: string;
+  country: number;
   detailAddress: string;
   district: string;
   gmtCreate: string;

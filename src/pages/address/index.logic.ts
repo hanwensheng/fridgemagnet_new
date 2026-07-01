@@ -47,11 +47,11 @@ export function useAddressLogic() {
   );
 
   const handleAdd = useCallback(() => {
-    Taro.showToast({ title: '功能开发中', icon: 'none' });
+    Taro.navigateTo({ url: '/pages/add-address/index' });
   }, []);
 
-  const handleEdit = useCallback(() => {
-    Taro.showToast({ title: '功能开发中', icon: 'none' });
+  const handleEdit = useCallback((pkId: string) => {
+    Taro.navigateTo({ url: `/pages/add-address/index?id=${pkId}` });
   }, []);
 
   const handleDelete = useCallback(async (pkId: string) => {
