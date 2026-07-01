@@ -1,7 +1,6 @@
 import { View, Text, Input, Image } from '@tarojs/components';
 import { Cascader } from '@nutui/nutui-react-taro';
 import BasePage from '@/components/base-page';
-import BackIcon from '@/assets/svgs/icon_back.svg';
 import WxIcon from '@/assets/svgs/icon_wx.svg';
 import LocationIcon from '@/assets/svgs/icon_location.svg';
 import CloseIcon from '@/assets/svgs/icon_close.svg';
