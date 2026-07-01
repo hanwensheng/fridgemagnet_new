@@ -1,5 +1,10 @@
 export default {
-  pages: ['pages/index/index', 'pages/mine/index'],
+  pages: [
+    'pages/index/index',
+    'pages/mine/index',
+    'pages/customer-service/index',
+    'pages/address/index',
+  ],
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',

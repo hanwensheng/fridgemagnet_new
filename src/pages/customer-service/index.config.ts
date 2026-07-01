@@ -1,0 +1,4 @@
+export default {
+  navigationBarTitleText: '联系客服',
+  navigationStyle: 'custom',
+};
