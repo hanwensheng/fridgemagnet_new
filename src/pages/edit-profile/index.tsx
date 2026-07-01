@@ -57,8 +57,14 @@ export default function EditProfilePage() {
     handleLogout,
   } = useEditProfileLogic();
 
+  const bottomBar = (
+    <View className='flex items-center justify-center' onClick={handleLogout}>
+      <Text className='text-base text-[#f2330d] leading-[50px]'>退出登录</Text>
+    </View>
+  );
+
   return (
-    <BasePage navTitle='编辑资料' onNavLeftClick={handleBack}>
+    <BasePage navTitle='编辑资料' onNavLeftClick={handleBack} bottomBarComponent={bottomBar}>
       <View className='flex flex-col items-center pt-[30px]'>
         <View className='relative flex h-[84px] w-[84px] items-center justify-center'>
           <Button
@@ -131,9 +137,9 @@ export default function EditProfilePage() {
         />
       </View>
 
-      <View className='mt-8 flex items-center justify-center' onClick={handleLogout}>
+      {/* <View className='mt-8 flex items-center justify-center' onClick={handleLogout}>
         <Text className='text-base text-[#f2330d]'>退出登录</Text>
-      </View>
+      </View> */}
 
       <Cascader
         visible={cascaderVisible}

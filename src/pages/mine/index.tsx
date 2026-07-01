@@ -16,15 +16,8 @@ const ACTIONS = [
 
 export default function MinePage() {
   useTabBar(1);
-  const {
-    isLoggedIn,
-    displayName,
-    userInfo,
-    handleMenuClick,
-    handleLogin,
-    handleLogout,
-    handleEditProfile,
-  } = useMineLogic();
+  const { isLoggedIn, displayName, userInfo, handleMenuClick, handleLogin, handleEditProfile } =
+    useMineLogic();
 
   return (
     <BasePage navShowBack={false}>
@@ -76,15 +69,6 @@ export default function MinePage() {
           </View>
         ))}
       </View>
-
-      {isLoggedIn && (
-        <View
-          className='mx-10 mt-10 flex h-11 items-center justify-center rounded-3xl bg-white'
-          onClick={handleLogout}
-        >
-          <Text className='text-sm text-[#ff4d4f]'>退出登录</Text>
-        </View>
-      )}
     </BasePage>
   );
 }
