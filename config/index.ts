@@ -60,6 +60,9 @@ export default defineConfig<'webpack5'>(async (merge) => {
           },
         },
       },
+      miniCssExtractPluginOption: {
+        ignoreOrder: true,
+      },
       webpackChain(chain) {
         chain.resolve.plugin('tsconfig-paths').use(TsconfigPathsPlugin);
         chain.plugin('weapp-tailwindcss').use(UnifiedWebpackPluginV5, [{ rem2rpx: true }]);
@@ -71,6 +74,12 @@ export default defineConfig<'webpack5'>(async (merge) => {
           .options({
             workers: require('os').cpus().length - 1,
           });
+        chain.merge({
+          ignoreWarnings: [
+            // NutUI 内部 Popup/popup 目录大小写不一致（NutUI 已知问题，Windows 下安全可忽略）
+            /nutui-react-taro[/\\]dist[/\\]es[/\\]packages[/\\][Pp]opup/i,
+          ],
+        });
       },
     },
     h5: {
