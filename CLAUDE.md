@@ -214,6 +214,27 @@ chore: 升级 weapp-tailwindcss 到 4.x
 - **小程序**：`weapp-tailwindcss` 自动将 rem 转换为 rpx（如 1rem -> 32rpx）。
 - **手动写 px**：小程序构建会通过 `pxtransform` 自动转 rpx；NutUI 的 `nut-` 类名被黑名单保护，保持 px。
 
+#### Tailwind Spacing 使用规范（重要）
+
+Tailwind spacing 数值 = N × 0.25rem，**不是** N px。例如 `mx-10` = 2.5rem = 40px（H5）/ 80rpx（小程序）。
+
+为降低心智负担，**本项目统一使用任意值语法** `[Npx]` 直接指定像素值：
+
+```tsx
+// ❌ 不用（需要心算 rem/rpx 换算）
+<View className='mx-10 mt-16 px-4' />
+
+// ✅ 用任意值直接写 px
+<View className='mx-[10px] mt-[16px] px-[4px]' />
+```
+
+换算参考：
+| Tailwind class | 实际值 | H5 (16px根) | 小程序 (rpx) |
+|---|---|---|---|
+| `mx-1` | 0.25rem | 4px | 8rpx |
+| `mx-4` | 1rem | 16px | 32rpx |
+| `mx-10` | 2.5rem | 40px | 80rpx |
+
 ### 6.2 环境判断
 
 ```ts
