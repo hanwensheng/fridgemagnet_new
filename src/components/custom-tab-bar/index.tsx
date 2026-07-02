@@ -22,12 +22,24 @@ interface CustomTabBarProps {
 export default function CustomTabBar(props: CustomTabBarProps) {
   // H5 端：由各页面 useTabBar 的 tabbar:change 事件驱动选中态
   const [selected, setSelected] = useState(0);
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     const handler = (index: number) => setSelected(index);
     Taro.eventCenter.on('tabbar:change', handler);
     return () => {
       Taro.eventCenter.off('tabbar:change', handler);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleShow = () => setHidden(false);
+    const handleHide = () => setHidden(true);
+    Taro.eventCenter.on('tabbar:show', handleShow);
+    Taro.eventCenter.on('tabbar:hide', handleHide);
+    return () => {
+      Taro.eventCenter.off('tabbar:show', handleShow);
+      Taro.eventCenter.off('tabbar:hide', handleHide);
     };
   }, []);
 
@@ -47,6 +59,8 @@ export default function CustomTabBar(props: CustomTabBarProps) {
     },
     [currentIndex],
   );
+
+  if (hidden) return null;
 
   return (
     <View className='custom-tab-bar' style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
