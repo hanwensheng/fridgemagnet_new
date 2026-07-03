@@ -182,7 +182,7 @@ export default function BaseNavBar({
           className='base-nav-bar__title'
           style={{
             color: textColor,
-            fontWeight: titleBold ? 600 : 100,
+            fontWeight: titleBold ? 600 : 400,
             fontSize: `${titleSize}rpx`,
           }}
         >
