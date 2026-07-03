@@ -1,6 +1,7 @@
 .base-nav-bar {
   width: 100%;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 
   /** 底部边框样式 */
   &--border {
@@ -80,6 +81,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     display: flex;
+    align-items: center;
 
     > Text {
       display: inline-block;
@@ -88,6 +90,14 @@
       white-space: nowrap;
       color: #000;
     }
+  }
+
+  /** 标题图标 */
+  &__title-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    flex-shrink: 0;
   }
 
   /** 右侧区域 */

@@ -6,6 +6,7 @@ import { useCounterStore } from '@/store/useCounterStore';
 import BasePage from '@/components/base-page';
 import SpecSelectPopup, { SelectedSpec } from '@/components/spec-select-popup';
 import { useTabBar } from '@/hooks/useTabBar';
+import logoIcon from '@/assets/svgs/icon_logo_black.svg';
 
 export default function Index() {
   useTabBar(0);
@@ -51,7 +52,7 @@ export default function Index() {
   };
 
   return (
-    <BasePage navShowBack={false}>
+    <BasePage navShowBack={false} navTitle='冰箱贴上爱' navTitleIcon={logoIcon}>
       <View className='flex flex-col items-center justify-center h-screen bg-gray-100 p-4'>
         <Text className='text-2xl font-bold text-blue-600 mb-4'>Count: {count}</Text>
         <View className='flex gap-4 mb-4'>

@@ -62,6 +62,8 @@ interface BaseNavBarProps {
   titleBold?: boolean;
   /** 标题字体大小，默认 34 */
   titleSize?: number;
+  /** 标题前图标地址 */
+  titleIcon?: string;
   /** 是否显示底部边框，默认 true */
   showBorder?: boolean;
 }
@@ -82,6 +84,7 @@ export default function BaseNavBar({
   zIndex = 1000,
   titleBold = false,
   titleSize = 36,
+  titleIcon,
   showBorder = true,
 }: BaseNavBarProps) {
   const systemInfo = Taro.getSystemInfoSync();
@@ -186,6 +189,7 @@ export default function BaseNavBar({
             fontSize: `${titleSize}rpx`,
           }}
         >
+          {titleIcon && <Image className='base-nav-bar__title-icon' src={titleIcon} />}
           <Text>{title}</Text>
         </View>
 

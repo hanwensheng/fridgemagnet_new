@@ -86,6 +86,8 @@ interface BasePageProps {
   navFixed?: boolean;
   /** 导航栏是否显示底部边框，默认 true */
   navShowBorder?: boolean;
+  /** 导航栏标题前图标 */
+  navTitleIcon?: string;
   /** 导航栏左侧点击回调 */
   onNavLeftClick?: () => void;
   /** 导航栏右侧点击回调 */
@@ -110,6 +112,7 @@ export default function BasePage({
   navTextColor = '#000000',
   navFixed = true,
   navShowBorder = false,
+  navTitleIcon,
   onNavLeftClick,
   onNavRightClick,
 }: BasePageProps) {
@@ -313,6 +316,7 @@ export default function BasePage({
       {hasNavBar && (
         <BaseNavBar
           title={navTitle}
+          titleIcon={navTitleIcon}
           showBack={navShowBack}
           backIcon={navBackIcon}
           leftComponent={navLeftComponent}
