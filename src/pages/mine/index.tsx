@@ -5,7 +5,7 @@ import AddressIcon from '@/assets/svgs/icon_addres.svg';
 import OrderIcon from '@/assets/svgs/icon_order.svg';
 import ServiceIcon from '@/assets/svgs/icon_customer_service.svg';
 import AvatarIcon from '@/assets/svgs/icon_avatar.svg';
-import EditIcon from '@/assets/svgs/icon_edit.svg';
+// import EditIcon from '@/assets/svgs/icon_edit.svg';
 import { useMineLogic } from './index.logic';
 
 const ACTIONS = [
@@ -16,26 +16,25 @@ const ACTIONS = [
 
 export default function MinePage() {
   useTabBar(1);
-  const { isLoggedIn, displayName, userInfo, handleMenuClick, handleLogin, handleEditProfile } =
-    useMineLogic();
+  const { isLoggedIn, displayName, userInfo, handleMenuClick, handleLogin } = useMineLogic();
 
   return (
     <BasePage navShowBack={false}>
       {isLoggedIn ? (
-        <View className='flex flex-col items-center pt-[70px]'>
+        <View className='flex flex-col items-center pt-[90px]'>
           <Image
             className='h-[74px] w-[74px] rounded-full'
             src={userInfo?.userImg || AvatarIcon}
             mode='aspectFill'
           />
           <Text className='mt-[20px] text-lg leading-[24px] text-black'>{displayName}</Text>
-          <View
+          {/* <View
             className='mt-[10px] flex h-[34px] w-[98px] items-center justify-center rounded-[29px] border border-black/10'
             onClick={handleEditProfile}
           >
             <Image className='h-4 w-4' src={EditIcon} mode='aspectFit' />
             <Text className='ml-[10px] text-xs text-black'>编辑主页</Text>
-          </View>
+          </View> */}
         </View>
       ) : (
         <View className='flex flex-col items-center pt-[90px]'>
@@ -53,7 +52,7 @@ export default function MinePage() {
         </View>
       )}
 
-      <View className={`mx-[10px] h-px bg-black/10 ${isLoggedIn ? 'mt-10' : 'mt-16'}`} />
+      <View className='mx-[10px] h-px bg-black/10 mt-16' />
 
       <View className='mt-10 flex flex-row justify-between px-10'>
         {ACTIONS.map((action) => (
