@@ -1,0 +1,153 @@
+.splash-page {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #1e1e20;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+
+  &--fading {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.splash-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  width: 37px;
+  height: 37px;
+  transform: translate(-50%, -50%);
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.splash-logo-text {
+  position: absolute;
+  top: 0;
+  left: 48px;
+  z-index: 10;
+  font-size: 16px;
+  line-height: 18px;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.splash-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 5;
+  background-color: #000;
+  opacity: 1;
+  transition: opacity 0.8s ease;
+
+  &--hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.splash-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.splash-stage {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 420px;
+
+  .splash-bg {
+    width: 100%;
+    margin-top: 88px;
+  }
+
+  .splash-photo {
+    position: absolute;
+    top: -120px;
+    opacity: 0;
+
+    // 阶段 1：从顶部冲到过冲位置（快，ease-out）
+    &--s1 {
+      opacity: 1;
+      transition:
+        top 0.4s ease-out,
+        opacity 0.3s ease;
+    }
+    // 阶段 2：从过冲位置回弹到最终位置（稍慢，产生弹簧感）
+    &--s2 {
+      opacity: 1;
+      transition: top 0.55s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    &--1 {
+      left: 50%;
+      width: 187px;
+      transform: translateX(-50%);
+
+      &.splash-photo--s1 {
+        top: calc(18% + 25px);
+      }
+      &.splash-photo--s2 {
+        top: 18%;
+      }
+    }
+
+    &--2 {
+      left: 30%;
+      width: 97px;
+
+      &.splash-photo--s1 {
+        top: calc(35% + 25px);
+      }
+      &.splash-photo--s2 {
+        top: 35%;
+      }
+    }
+
+    &--3 {
+      left: 50%;
+      width: 179px;
+      transform: translateX(-50%);
+
+      &.splash-photo--s1 {
+        top: calc(60% + 25px);
+      }
+      &.splash-photo--s2 {
+        top: 60%;
+      }
+    }
+  }
+}
+
+.splash-slogan {
+  padding: 40px 20px 60px;
+  text-align: center;
+
+  .splash-slogan-line {
+    display: block;
+    font-size: 26px;
+    font-weight: 200;
+    line-height: 1.6;
+    color: #fff;
+  }
+}

@@ -1,5 +1,6 @@
 export default {
   pages: [
+    'pages/splash/index',
     'pages/index/index',
     'pages/mine/index',
     'pages/customer-service/index',
