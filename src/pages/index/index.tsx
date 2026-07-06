@@ -1,17 +1,41 @@
-import { View, Text } from '@tarojs/components';
-import Taro, { useDidHide } from '@tarojs/taro';
-import { Button } from '@nutui/nutui-react-taro';
-import { useState, useEffect } from 'react';
-import { useCounterStore } from '@/store/useCounterStore';
+import { View, Image } from '@tarojs/components';
+import Taro, { ENV_TYPE, useDidHide } from '@tarojs/taro';
+import { useState, useEffect, useMemo } from 'react';
 import BasePage from '@/components/base-page';
 import SpecSelectPopup, { SelectedSpec } from '@/components/spec-select-popup';
 import { useTabBar } from '@/hooks/useTabBar';
 import logoIcon from '@/assets/svgs/icon_logo_black.svg';
+import HomeBg from '@/assets/images/home_bg.png';
+import HomeImg0 from '@/assets/images/home_img0.png';
+import './index.scss';
 
 export default function Index() {
   useTabBar(0);
-  const { count, increment, decrement, reset } = useCounterStore();
   const [popupVisible, setPopupVisible] = useState(false);
+
+  const systemInfo = Taro.getSystemInfoSync();
+  const statusBarHeight = systemInfo.statusBarHeight || 0;
+
+  // 与 BaseNavBar 完全相同的导航栏高度计算
+  const menuButtonInfo = useMemo(() => {
+    if (Taro.getEnv() !== ENV_TYPE.WEAPP) {
+      return { top: statusBarHeight + 4, height: 32 };
+    }
+    try {
+      return Taro.getMenuButtonBoundingClientRect();
+    } catch {
+      return { top: statusBarHeight + 4, height: 32 };
+    }
+  }, [statusBarHeight]);
+
+  const navBarHeight = useMemo(() => {
+    const gap = menuButtonInfo.top - statusBarHeight;
+    return statusBarHeight + menuButtonInfo.height + gap * 2;
+  }, [statusBarHeight, menuButtonInfo]);
+
+  // 调试：在开发者工具控制台看实际高度值
+  console.log('statusBarHeight:', statusBarHeight);
+  console.log('navBarHeight:', navBarHeight);
 
   const showTabBar = () => {
     Taro.eventCenter.trigger('tabbar:show');
@@ -53,22 +77,16 @@ export default function Index() {
 
   return (
     <BasePage navShowBack={false} navTitle='冰箱贴上爱' navTitleIcon={logoIcon}>
-      <View className='flex flex-col items-center justify-center h-screen bg-gray-100 p-4'>
-        <Text className='text-2xl font-bold text-blue-600 mb-4'>Count: {count}</Text>
-        <View className='flex gap-4 mb-4'>
-          <Button type='primary' onClick={increment}>
-            +
-          </Button>
-          <Button type='info' onClick={decrement}>
-            -
-          </Button>
-          <Button type='default' onClick={reset}>
-            Reset
-          </Button>
+      <View className='flex-col overflow-hidden home-box'>
+        <Image src={HomeBg} className='home-bg' mode='widthFix' />
+        <View className='home-title-box' style={{ top: `${navBarHeight + 60}px` }}>
+          <View className='home-title'>传自己的照片</View>
+          <View className='home-subtitle'>定制冰箱贴</View>
         </View>
-        <Button type='success' onClick={handleMakeClick}>
-          开始制作
-        </Button>
+      </View>
+      <Image src={HomeImg0} className='home-img0' mode='widthFix' />
+      <View className='home-btn' onClick={handleMakeClick}>
+        开始制作
       </View>
       <SpecSelectPopup
         visible={popupVisible}
