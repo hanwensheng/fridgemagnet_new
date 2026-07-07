@@ -32,6 +32,24 @@ export default function CustomTabBar(props: CustomTabBarProps) {
     };
   }, []);
 
+  // H5 端：根据当前路由自动控制 tabbar 显隐，仅 tab 页面显示
+  useEffect(() => {
+    if (process.env.TARO_ENV !== 'h5') return;
+
+    const checkRoute = () => {
+      const pages = Taro.getCurrentPages();
+      const route = pages.length > 0 ? pages[pages.length - 1].route : '';
+      const isTabPage = TABS.some((t) => t.pagePath === `/${route}`);
+      setHidden(!isTabPage);
+    };
+
+    checkRoute();
+    window.addEventListener('hashchange', checkRoute);
+    return () => {
+      window.removeEventListener('hashchange', checkRoute);
+    };
+  }, []);
+
   useEffect(() => {
     const handleShow = () => setHidden(false);
     const handleHide = () => setHidden(true);
@@ -63,7 +81,10 @@ export default function CustomTabBar(props: CustomTabBarProps) {
   if (hidden) return null;
 
   return (
-    <View className='custom-tab-bar' style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <View
+      className='custom-tab-bar'
+      style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
+    >
       <View
         className='custom-tab-bar__capsule'
         style={process.env.TARO_ENV === 'h5' ? { marginBottom: '38px' } : undefined}

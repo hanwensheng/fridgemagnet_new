@@ -269,11 +269,11 @@ export default function BasePage({
    */
   const safeAreaBottom = useMemo(() => {
     if (!isWeapp || !systemInfo.safeArea) {
-      return 0;
+      return hasBottomBar ? 34 : 0;
     }
     const safeArea = systemInfo.screenHeight - systemInfo.safeArea.bottom;
-    return safeArea > 0 ? safeArea : 0;
-  }, [isWeapp, systemInfo.safeArea, systemInfo.screenHeight]);
+    return safeArea > 0 ? safeArea : hasBottomBar ? 34 : 0;
+  }, [isWeapp, systemInfo.safeArea, systemInfo.screenHeight, hasBottomBar]);
 
   /**
    * 底部栏样式
@@ -333,7 +333,7 @@ export default function BasePage({
       {hasBottomBar && bottomBarComponent && (
         <View style={bottomBarStyle}>
           <View className='base-page__bottom-bar-area'>{bottomBarComponent}</View>
-          {safeAreaBottom > 0 && <View className='base-page__safe-area' style={safeAreaStyle} />}
+          <View className='base-page__safe-area' style={safeAreaStyle} />
         </View>
       )}
     </View>

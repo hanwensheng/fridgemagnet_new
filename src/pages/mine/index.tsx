@@ -72,7 +72,7 @@ export default function MinePage() {
 
       {isLoggedIn && (
         <View
-          className='fixed bottom-[130px] left-0 flex items-center justify-center w-full h-[52px]'
+          className='fixed bottom-[125px] left-0 flex items-center justify-center w-full h-[52px]'
           onClick={handleLogout}
         >
           <Text className='text-sm text-[#f2330d]'>退出登录</Text>

@@ -1,8 +1,7 @@
 import { View, Text, Image } from '@tarojs/components';
-import Taro from '@tarojs/taro';
 import { Popup } from '@nutui/nutui-react-taro';
 import { useMemo, useState } from 'react';
-
+// import Taro from '@tarojs/taro';
 import CloseIcon from '@/assets/svgs/icon_popup_close.svg';
 import RadioActiveIcon from '@/assets/svgs/icon_radio_active.svg';
 import RadioIcon from '@/assets/svgs/icon_radio.svg';
@@ -83,17 +82,17 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
     [items],
   );
 
-  const safeAreaBottom = useMemo(() => {
-    if (process.env.TARO_ENV !== 'weapp') {
-      return 0;
-    }
-    const systemInfo = Taro.getSystemInfoSync();
-    if (!systemInfo.safeArea) {
-      return 0;
-    }
-    const bottom = systemInfo.screenHeight - systemInfo.safeArea.bottom;
-    return bottom > 0 ? bottom : 0;
-  }, []);
+  // const safeAreaBottom = useMemo(() => {
+  //   if (process.env.TARO_ENV !== 'weapp') {
+  //     return 0;
+  //   }
+  //   const systemInfo = Taro.getSystemInfoSync();
+  //   if (!systemInfo.safeArea) {
+  //     return 0;
+  //   }
+  //   const bottom = systemInfo.screenHeight - systemInfo.safeArea.bottom;
+  //   return bottom > 0 ? bottom : 0;
+  // }, []);
 
   const toggleSelected = (index: number) => {
     setItems((prev) => {
@@ -129,7 +128,7 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
       style={{ backgroundColor: '#f6f6f6' }}
       zIndex={1000}
     >
-      <View className='px-[12px] pb-[16px] pt-[56px]'>
+      <View className='px-[12px] pt-[56px]'>
         <View className='flex flex-col gap-[12px]'>
           {items.map((item, index) => (
             <View
@@ -188,12 +187,13 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
 
         <View
           className='flex h-[56px] items-center justify-center rounded-full bg-[#1c1c1e]'
+          style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
           onClick={handleConfirm}
         >
           <Text className='text-base font-bold text-white'>共 {totalCount} 件 去制作</Text>
         </View>
 
-        {safeAreaBottom > 0 && <View style={{ height: `${safeAreaBottom}px` }} />}
+        {/* {safeAreaBottom > 0 && <View style={{ height: `${safeAreaBottom}px` }} />} */}
       </View>
     </Popup>
   );
