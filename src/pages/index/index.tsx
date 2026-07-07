@@ -68,10 +68,17 @@ export default function Index() {
   });
 
   const handleConfirm = (selectedItems: SelectedSpec[]) => {
-    console.log('selected specs:', selectedItems);
-    Taro.showToast({
-      title: `已选 ${selectedItems.reduce((sum, item) => sum + item.quantity, 0)} 件`,
-      icon: 'none',
+    if (selectedItems.length === 0) {
+      Taro.showToast({ title: '请至少选择一个规格', icon: 'none' });
+      return;
+    }
+
+    const firstSpec = selectedItems[0];
+    showTabBar();
+    setPopupVisible(false);
+
+    Taro.navigateTo({
+      url: `/pages/editor/index?size=${firstSpec.id}`,
     });
   };
 

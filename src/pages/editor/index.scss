@@ -1,0 +1,238 @@
+.editor-page {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
+  flex: 1;
+}
+
+.nav-back-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #e9e9e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-back-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* 尺寸选择 */
+.size-selector {
+  height: 88px;
+  margin-bottom: 20px;
+}
+
+.size-selector-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+}
+
+.size-item-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+.size-divider {
+  width: 1px;
+  height: 42px;
+  background: rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.size-item {
+  width: 107px;
+  padding: 10px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  height: 100%;
+
+  &--active {
+    .size-label {
+      color: #000;
+      font-weight: 700;
+      opacity: 1;
+    }
+  }
+}
+
+.size-image-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.size-image {
+  width: 100%;
+  height: 100%;
+}
+
+.size-check {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #adadad;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.size-check-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.size-label {
+  font-size: 12px;
+  line-height: 22px;
+  color: #000;
+  opacity: 0.5;
+}
+
+/* 主编辑卡片 */
+.editor-card {
+  background: #fff;
+  border-radius: 24px;
+  // padding: 20px;
+  box-sizing: border-box;
+  margin-bottom: 30px;
+  width: 335px;
+  height: 335px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid rgba(0, 0, 0, 0.1);
+}
+
+.upload-area {
+  width: 300px;
+  height: 170px;
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  background: #f6f6f6;
+}
+
+.upload-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.upload-preview {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 12px;
+}
+
+/* 底部操作栏 */
+.editor-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.hint-bubble {
+  display: flex;
+  justify-content: center;
+  width: fit-content;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+  flex-shrink: 0;
+  margin: 0 auto;
+}
+
+.hint-text {
+  font-size: 12px;
+  color: #000;
+  line-height: 22px;
+  white-space: nowrap;
+}
+
+.menu-area {
+  position: absolute;
+  left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.menu-icon {
+  width: 44px;
+  height: 44px;
+}
+
+.menu-popup {
+  position: absolute;
+  bottom: 52px;
+  left: 0;
+  width: 92px;
+  background: #1c1c1e;
+  border-radius: 8px;
+  padding: 4px 0;
+  z-index: 10;
+}
+
+.menu-popup-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 10px;
+}
+
+.menu-popup-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.menu-popup-text {
+  font-size: 12px;
+  color: #fff;
+  line-height: 22px;
+}
+
+.confirm-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #cdcdcd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.confirm-btn-icon {
+  width: 34px;
+  height: 34px;
+}
