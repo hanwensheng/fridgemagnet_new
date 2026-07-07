@@ -45,7 +45,7 @@ export default function PaySuccessPopup({ visible, onClose }: PaySuccessPopupPro
 
   const handleViewOrder = () => {
     onClose();
-    Taro.showToast({ title: '查看订单', icon: 'none' });
+    Taro.navigateTo({ url: '/pages/my-orders/index' });
   };
 
   return (
