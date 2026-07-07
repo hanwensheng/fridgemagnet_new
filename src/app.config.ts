@@ -4,6 +4,7 @@ export default {
     'pages/splash/index',
     'pages/editor/index',
     'pages/editor-crop/index',
+    'pages/order-confirm/index',
     'pages/mine/index',
     'pages/customer-service/index',
     'pages/address/index',

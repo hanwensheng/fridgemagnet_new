@@ -108,6 +108,10 @@ export default function Editor() {
     Taro.showToast({ title: '保存成功', icon: 'success' });
   };
 
+  const handleSubmit = () => {
+    Taro.navigateTo({ url: '/pages/order-confirm/index' });
+  };
+
   return (
     <BasePage
       navTitle='创作之旅'
@@ -134,6 +138,9 @@ export default function Editor() {
           </View>
           <View className='confirm-btn' onClick={handleConfirm}>
             <Image className='confirm-btn-icon' src={IconCheck} />
+          </View>
+          <View className='submit-btn' onClick={handleSubmit}>
+            <Text className='submit-btn-text'>提交制作</Text>
           </View>
         </View>
       }

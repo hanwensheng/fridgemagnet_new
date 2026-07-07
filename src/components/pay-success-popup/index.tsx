@@ -1,0 +1,92 @@
+import { View, Text, Image } from '@tarojs/components';
+import Taro from '@tarojs/taro';
+import { Popup } from '@nutui/nutui-react-taro';
+import { useEffect, useState } from 'react';
+import ProductImg from '@/assets/images/8.5_4cm.png';
+import IconLocation from '@/assets/svgs/icon_location.svg';
+
+import './index.scss';
+
+interface PaySuccessPopupProps {
+  visible: boolean;
+  onClose: () => void;
+}
+
+const COUNTDOWN_SECONDS = 5;
+
+export default function PaySuccessPopup({ visible, onClose }: PaySuccessPopupProps) {
+  const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
+
+  useEffect(() => {
+    if (!visible) {
+      setCountdown(COUNTDOWN_SECONDS);
+      return;
+    }
+
+    setCountdown(COUNTDOWN_SECONDS);
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          onClose();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [visible, onClose]);
+
+  const handleBackHome = () => {
+    onClose();
+    Taro.switchTab({ url: '/pages/index/index' });
+  };
+
+  const handleViewOrder = () => {
+    onClose();
+    Taro.showToast({ title: '查看订单', icon: 'none' });
+  };
+
+  return (
+    <Popup
+      visible={visible}
+      position='bottom'
+      onClose={onClose}
+      round
+      closeable={false}
+      className='pay-success-popup'
+      style={{ backgroundColor: '#f6f6f6' }}
+      zIndex={1000}
+    >
+      <View className='pay-success-content'>
+        <View className='pay-success-header'>
+          <Text className='pay-success-title'>支付成功</Text>
+          <Text className='pay-success-subtitle'>已成功排期制作</Text>
+        </View>
+
+        <View className='pay-success-card'>
+          <Image className='pay-success-image' src={ProductImg} mode='aspectFill' />
+          <View className='pay-success-info'>
+            <Text className='pay-success-delivery'>预计明早发货</Text>
+            <View className='pay-success-address'>
+              <Image className='pay-success-address-icon' src={IconLocation} />
+              <Text className='pay-success-address-text'>辽宁省大连市甘井子区革贞普...</Text>
+            </View>
+          </View>
+          <View className='pay-success-view-btn' onClick={handleViewOrder}>
+            <Text className='pay-success-view-text'>查看订单</Text>
+          </View>
+        </View>
+
+        <Text className='pay-success-countdown'>
+          当前页面将在 <Text className='pay-success-countdown-num'>{countdown}</Text> 秒后关闭
+        </Text>
+
+        <View className='pay-success-home-btn' onClick={handleBackHome}>
+          <Text className='pay-success-home-text'>返回首页</Text>
+        </View>
+      </View>
+    </Popup>
+  );
+}

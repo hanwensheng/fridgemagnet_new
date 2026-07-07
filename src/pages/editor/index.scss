@@ -236,3 +236,22 @@
   width: 34px;
   height: 34px;
 }
+
+.submit-btn {
+  position: absolute;
+  right: 20px;
+  height: 44px;
+  padding: 0 24px;
+  border-radius: 100px;
+  background: #1c1c1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit-btn-text {
+  font-size: 14px;
+  color: #fff;
+  line-height: 20px;
+  font-weight: 500;
+}
