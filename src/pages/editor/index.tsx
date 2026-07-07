@@ -77,7 +77,11 @@ export default function Editor() {
       sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
       success: (res) => {
-        setUploadedImage(res.tempFilePaths[0]);
+        const imageUrl = res.tempFilePaths[0];
+        setUploadedImage(imageUrl);
+        Taro.navigateTo({
+          url: `/pages/editor-crop/index?imageUrl=${encodeURIComponent(imageUrl)}`,
+        });
       },
     });
   };
