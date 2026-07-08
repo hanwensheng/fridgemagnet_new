@@ -42,16 +42,18 @@ export interface AvailableSize {
 
 /** 商品（BizGoodsBeanVO） */
 export interface BizGoods {
-  pkId: number;
-  width: number;
-  height: number;
+  pkId: string;
+  width: string;
+  height: string;
   price: number;
   intro: string;
-  isShow: number;
+  isShow: string;
   sellNum: string;
-  leftC: number;
-  topC: number;
+  sellNum2: string;
+  leftC: string;
+  topC: string;
   gmtCreate: string;
+  gmtModified: string;
   goodsImg: string;
 }
 

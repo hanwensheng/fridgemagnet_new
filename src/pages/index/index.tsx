@@ -73,12 +73,20 @@ export default function Index() {
       return;
     }
 
-    const firstSpec = selectedItems[0];
+    // 按数量展开：选 2 件则复制为两条 quantity=1 的记录
+    const expandedSpecs: SelectedSpec[] = [];
+    selectedItems.forEach((item) => {
+      for (let i = 0; i < item.quantity; i++) {
+        expandedSpecs.push({ ...item, quantity: 1 });
+      }
+    });
+
+    const specsJson = encodeURIComponent(JSON.stringify(expandedSpecs));
     showTabBar();
     setPopupVisible(false);
 
     Taro.navigateTo({
-      url: `/pages/editor/index?size=${firstSpec.id}`,
+      url: `/pages/editor/index?specs=${specsJson}`,
     });
   };
 

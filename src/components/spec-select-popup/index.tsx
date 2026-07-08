@@ -1,7 +1,6 @@
 import { View, Text, Image } from '@tarojs/components';
 import { Popup } from '@nutui/nutui-react-taro';
-import { useMemo, useState } from 'react';
-// import Taro from '@tarojs/taro';
+import { useEffect, useMemo, useState } from 'react';
 import CloseIcon from '@/assets/svgs/icon_popup_close.svg';
 import RadioActiveIcon from '@/assets/svgs/icon_radio_active.svg';
 import RadioIcon from '@/assets/svgs/icon_radio.svg';
@@ -11,6 +10,8 @@ import IconSubDisable from '@/assets/svgs/icon_sub_disable.svg';
 import Img85 from '@/assets/images/8.5_4cm.png';
 import Img75 from '@/assets/images/7_5.5cm.png';
 import Img45 from '@/assets/images/4.5_3cm.png';
+import { productApi } from '@/api/modules/product';
+import { formatSizeLabel } from '@/utils/format';
 
 import './index.scss';
 
@@ -19,6 +20,7 @@ export interface SelectedSpec {
   name: string;
   price: number;
   quantity: number;
+  intro: string;
 }
 
 interface SpecItem {
@@ -40,34 +42,35 @@ interface SpecSelectPopupProps {
   onConfirm?: (selectedItems: SelectedSpec[]) => void;
 }
 
-const SPEC_LIST: SpecItem[] = [
-  {
-    id: '8.5x4',
-    name: '8.5*4cm',
-    desc: '适合做冰箱贴，可做桌面摆件',
-    price: 39,
-    image: Img85,
-  },
-  {
-    id: '7x5.5',
-    name: '7*5.5cm',
-    desc: '适合做冰箱贴，可做桌面摆件',
-    price: 35,
-    image: Img75,
-  },
-  {
-    id: '4.5x3',
-    name: '4.5*3cm',
-    desc: '适合做冰箱贴，可做桌面摆件',
-    price: 29,
-    image: Img45,
-  },
-];
+/** 尺寸 -> 本地预览图映射（宽x高，mm） */
+const LOCAL_IMAGE_MAP: Record<string, string> = {
+  '85x40': Img85,
+  '70x55': Img75,
+  '30x45': Img45,
+};
+
+function getLocalImage(width: string, height: string): string {
+  const key = `${parseFloat(width)}x${parseFloat(height)}`;
+  return LOCAL_IMAGE_MAP[key] || Img85;
+}
 
 export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSelectPopupProps) {
-  const [items, setItems] = useState<SpecItemState[]>(() =>
-    SPEC_LIST.map((item) => ({ ...item, selected: item.id !== '4.5x3', quantity: 1 })),
-  );
+  const [items, setItems] = useState<SpecItemState[]>([]);
+
+  useEffect(() => {
+    productApi.getGoodsList().then((goodsList) => {
+      const specItems: SpecItemState[] = goodsList.map((goods) => ({
+        id: goods.pkId,
+        name: formatSizeLabel(goods.width, goods.height),
+        desc: goods.intro,
+        price: goods.price,
+        image: getLocalImage(goods.width, goods.height),
+        selected: false,
+        quantity: 1,
+      }));
+      setItems(specItems);
+    });
+  }, []);
 
   const totalCount = useMemo(
     () => items.reduce((sum, item) => (item.selected ? sum + item.quantity : sum), 0),
@@ -78,7 +81,13 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
     () =>
       items
         .filter((item) => item.selected)
-        .map(({ id, name, price, quantity }) => ({ id, name, price, quantity })),
+        .map(({ id, name, price, quantity, desc: intro }) => ({
+          id,
+          name,
+          price,
+          quantity,
+          intro,
+        })),
     [items],
   );
 
@@ -113,7 +122,6 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
 
   const handleConfirm = () => {
     onConfirm?.(selectedItems);
-    onClose();
   };
 
   return (
@@ -182,7 +190,7 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
         </View>
 
         <View className='mb-[48px] mt-[20px] text-center text-xs text-[#945317]'>
-          第2个8折，第3个6折，可自由组合（2个包邮）
+          第2件20元，第3件起均10元（2件包邮）
         </View>
 
         <View
