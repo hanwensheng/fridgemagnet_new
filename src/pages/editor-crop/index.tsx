@@ -1,4 +1,4 @@
-import { View, Text, Image } from '@tarojs/components';
+import { View, Text, Image, Canvas } from '@tarojs/components';
 import BasePage from '@/components/base-page';
 import IconClose from '@/assets/svgs/icon_close2.svg';
 import IconStretch from '@/assets/svgs/icon_stretch.svg';
@@ -29,6 +29,7 @@ export default function EditorCrop() {
     handleRulerTouchEnd,
     rulerOffset,
     rulerValue,
+    saving,
   } = useEditorCropLogic();
 
   return (
@@ -55,7 +56,11 @@ export default function EditorCrop() {
               </View>
             ))}
           </View>
-          <View className='crop-footer-btn crop-footer-btn--confirm' onClick={handleConfirm}>
+          <View
+            className='crop-footer-btn crop-footer-btn--confirm'
+            onClick={saving ? undefined : handleConfirm}
+            style={saving ? { opacity: 0.5 } : undefined}
+          >
             <Image className='crop-footer-icon' src={IconCheck} />
           </View>
         </View>
@@ -162,6 +167,19 @@ export default function EditorCrop() {
           </View>
         )}
       </View>
+
+      {/* 隐藏 Canvas 用于裁剪截图 */}
+      <Canvas
+        type='2d'
+        id='crop-canvas'
+        style={{
+          position: 'fixed',
+          left: '-9999px',
+          top: '-9999px',
+          width: `${cropW}px`,
+          height: `${cropH}px`,
+        }}
+      />
     </BasePage>
   );
 }

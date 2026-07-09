@@ -13,6 +13,7 @@ import PreviewBg85 from '@/assets/svgs/icon_preview_bg_8.5_4.svg';
 import PreviewBg75 from '@/assets/svgs/icon_preview_bg_7_5.5.svg';
 import PreviewBg34 from '@/assets/svgs/icon_preview_bg_3_4.5.svg';
 import type { SelectedSpec } from '@/components/spec-select-popup';
+import { getCropResult, setCropResult, getCropState, removeCropState } from './crop-state';
 
 export interface SizeOption {
   id: string;
@@ -89,9 +90,6 @@ export function getUploadAreaSize(name: string) {
   return UPLOAD_AREA_SIZE[cls] || { w: 299, h: 202 };
 }
 
-/** 裁剪结果临时存储 key */
-const CROP_RESULT_KEY = 'editor_crop_result';
-
 export interface SpecItem {
   index: number;
   id: string;
@@ -155,8 +153,10 @@ export function useEditorLogic() {
     const specName = specItem?.name || '8.5*4cm';
     const existingImage = uploadMap[itemIndex];
     if (existingImage) {
-      // 已有图片 → 直接进入编辑页
-      navigateToCrop(itemIndex, existingImage, specName);
+      // 已有图片 → 进入编辑页，优先使用保存的原图 URL 以便用户继续编辑
+      const saved = getCropState(itemIndex);
+      const editUrl = saved?.originalImageUrl || existingImage;
+      navigateToCrop(itemIndex, editUrl, specName);
       return;
     }
     // 无图片 → 先选择再进入编辑页
@@ -174,9 +174,9 @@ export function useEditorLogic() {
 
   // 从裁剪页返回时接收结果
   useDidShow(() => {
-    const result = Taro.getStorageSync(CROP_RESULT_KEY);
+    const result = getCropResult();
     if (!result) return;
-    Taro.removeStorageSync(CROP_RESULT_KEY);
+    setCropResult(null);
     const { itemIndex, imageUrl, clear } = result;
     if (clear) {
       setUploadMap((prev) => {
@@ -224,6 +224,8 @@ export function useEditorLogic() {
           delete next[activeItem.index];
           return next;
         });
+        // 清理裁剪状态存储
+        removeCropState(activeItem.index);
         const newList = [...specList];
         newList.splice(activeIndex, 1);
         setSpecList(newList);

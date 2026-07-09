@@ -5,6 +5,7 @@ import IconRightRotate from '@/assets/svgs/icon_right_rotate.svg';
 import IconLevelRotate from '@/assets/svgs/icon_level_rotate.svg';
 import IconVerticalRotate from '@/assets/svgs/icon_vertical_rotate.svg';
 import { useGestureHandler } from './useGestureHandler';
+import { getCropState, setCropResult, setCropState, removeCropState } from '../editor/crop-state';
 
 export type TabType = 'zoom' | 'rotate';
 
@@ -28,8 +29,6 @@ export const ROTATE_ACTIONS = [
   { id: 'flipH', label: '水平', icon: IconLevelRotate },
   { id: 'flipV', label: '垂直', icon: IconVerticalRotate },
 ];
-
-export const CROP_RESULT_KEY = 'editor_crop_result';
 
 const MARK_COUNT = 201;
 const MARK_GAP = 4;
@@ -55,6 +54,9 @@ export function useEditorCropLogic() {
     flipV: false,
   });
 
+  const [saving, setSaving] = useState(false);
+  const [originalImageUrl, setOriginalImageUrl] = useState<string>('');
+
   const handleGestureUpdate = useCallback((partial: Partial<TransformState>) => {
     setTransform((prev) => ({ ...prev, ...partial }));
   }, []);
@@ -77,8 +79,36 @@ export function useEditorCropLogic() {
     const idx = instance.router?.params?.itemIndex;
     const w = instance.router?.params?.width;
     const h = instance.router?.params?.height;
+
+    if (w) setCropW(Number(w));
+    if (h) setCropH(Number(h));
+
+    if (idx) {
+      setItemIndex(Number(idx));
+      // 检查是否有已保存的裁剪状态（内存），有则恢复
+      const saved = getCropState(Number(idx));
+      if (saved?.originalImageUrl) {
+        setImageUrl(saved.originalImageUrl);
+        setOriginalImageUrl(saved.originalImageUrl);
+        setImgW(saved.imgW || 0);
+        setImgH(saved.imgH || 0);
+        setTransform({
+          scale: saved.transform?.scale ?? 1,
+          translateX: saved.transform?.translateX ?? 0,
+          translateY: saved.transform?.translateY ?? 0,
+          rotate: saved.transform?.rotate ?? 0,
+          flipH: saved.transform?.flipH ?? false,
+          flipV: saved.transform?.flipV ?? false,
+        });
+        return;
+      }
+    }
+
+    // 无保存状态：使用 URL 参数，重置变换
     if (url) {
-      setImageUrl(decodeURIComponent(url));
+      const decoded = decodeURIComponent(url);
+      setImageUrl(decoded);
+      setOriginalImageUrl(decoded);
       setImgW(0);
       setImgH(0);
       setTransform({
@@ -90,9 +120,6 @@ export function useEditorCropLogic() {
         flipV: false,
       });
     }
-    if (idx) setItemIndex(Number(idx));
-    if (w) setCropW(Number(w));
-    if (h) setCropH(Number(h));
   }, []);
 
   /** 图片加载完成：获取自然尺寸，按最大 crop 维度 cap 到合理 CSS px 值 */
@@ -165,14 +192,115 @@ export function useEditorCropLogic() {
   // ========== 按钮操作 ==========
 
   const handleClose = () => {
-    Taro.setStorageSync(CROP_RESULT_KEY, { itemIndex, clear: true });
+    setCropResult({ itemIndex, clear: true });
+    removeCropState(itemIndex);
     Taro.navigateBack().catch(() => {});
   };
 
-  const handleConfirm = () => {
-    Taro.setStorageSync(CROP_RESULT_KEY, { itemIndex, imageUrl, clear: false });
-    Taro.showToast({ title: '已保存', icon: 'success' });
-    setTimeout(() => Taro.navigateBack().catch(() => {}), 800);
+  /**
+   * Canvas 裁剪渲染
+   * 第一性原理：Canvas 尺寸 = 工作区尺寸，drawImage 天然裁剪超出边界的像素
+   * 白底先填充 → 图片超出被裁 / 图片不足留白 / 图片移出纯白
+   */
+  const handleConfirm = async () => {
+    if (saving) return;
+    setSaving(true);
+
+    // 捕获当前变换快照，避免闭包过期
+    const snap = transform;
+    const curDisplayW = imgW || cropW;
+    const curDisplayH = imgH || cropH;
+    const curImageUrl = imageUrl;
+    const curOriginalUrl = originalImageUrl || imageUrl;
+    const curItemIndex = itemIndex;
+
+    try {
+      let croppedUrl: string | null = null;
+
+      if (process.env.TARO_ENV === 'weapp') {
+        croppedUrl = await new Promise<string | null>((resolve) => {
+          const query = Taro.createSelectorQuery();
+          query
+            .select('#crop-canvas')
+            .fields({ node: true, size: true })
+            .exec((res: any) => {
+              if (!res || !res[0] || !res[0].node) {
+                console.error('[generateCroppedImage] Canvas node not found');
+                resolve(null);
+                return;
+              }
+
+              const canvas = res[0].node;
+              const ctx = canvas.getContext('2d');
+              const dpr = Taro.getSystemInfoSync().pixelRatio;
+
+              canvas.width = cropW * dpr;
+              canvas.height = cropH * dpr;
+              ctx.scale(dpr, dpr);
+
+              // 白底填充
+              ctx.fillStyle = '#ffffff';
+              ctx.fillRect(0, 0, cropW, cropH);
+
+              // 加载图片
+              const imgObj = canvas.createImage();
+              imgObj.onload = () => {
+                // 以工作区中心为原点，应用变换绘制
+                ctx.save();
+                ctx.translate(cropW / 2 + snap.translateX, cropH / 2 + snap.translateY);
+                ctx.rotate((snap.rotate * Math.PI) / 180);
+                ctx.scale(snap.scale * (snap.flipH ? -1 : 1), snap.scale * (snap.flipV ? -1 : 1));
+                ctx.drawImage(imgObj, -curDisplayW / 2, -curDisplayH / 2, curDisplayW, curDisplayH);
+                ctx.restore();
+
+                Taro.canvasToTempFilePath({
+                  canvas,
+                  success: (result) => resolve(result.tempFilePath),
+                  fail: (err) => {
+                    console.error('[generateCroppedImage] canvasToTempFilePath failed:', err);
+                    resolve(null);
+                  },
+                });
+              };
+              imgObj.onerror = (err: any) => {
+                console.error('[generateCroppedImage] Image load failed:', err);
+                resolve(null);
+              };
+              imgObj.src = curImageUrl;
+            });
+        });
+      }
+
+      // 保存裁剪结果给 editor 页（内存）
+      setCropResult({
+        itemIndex: curItemIndex,
+        imageUrl: croppedUrl || curImageUrl,
+        clear: false,
+      });
+
+      // 保存编辑状态供下次回显（内存）
+      setCropState(curItemIndex, {
+        originalImageUrl: curOriginalUrl,
+        transform: snap,
+        imgW,
+        imgH,
+      });
+
+      Taro.showToast({ title: '已保存', icon: 'success' });
+      setTimeout(() => Taro.navigateBack().catch(() => {}), 800);
+    } catch (e) {
+      console.error('[handleConfirm] Error:', e);
+      // 降级：传原图
+      setCropResult({
+        itemIndex: curItemIndex,
+        imageUrl: curImageUrl,
+        clear: false,
+      });
+      Taro.showToast({ title: '已保存', icon: 'success' });
+      setTimeout(() => Taro.navigateBack().catch(() => {}), 800);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleRotateAction = (action: (typeof ROTATE_ACTIONS)[number]) => {
@@ -244,6 +372,7 @@ export function useEditorCropLogic() {
     handleImageLoad,
     handleClose,
     handleConfirm,
+    saving,
     handleRotateAction,
     handleRulerTouchStart,
     handleRulerTouchMove,
