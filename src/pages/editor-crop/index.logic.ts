@@ -40,6 +40,9 @@ export function useEditorCropLogic() {
   const [itemIndex, setItemIndex] = useState<number>(0);
   const [cropW, setCropW] = useState<number>(299);
   const [cropH, setCropH] = useState<number>(202);
+  /** Canvas 裁剪输出尺寸，与预览花边内框一致 */
+  const [previewW, setPreviewW] = useState<number>(250);
+  const [previewH, setPreviewH] = useState<number>(155);
 
   // 图片自然尺寸（经 onLoad 获取并 cap 到合理范围）
   const [imgW, setImgW] = useState<number>(0);
@@ -55,6 +58,7 @@ export function useEditorCropLogic() {
   });
 
   const [saving, setSaving] = useState(false);
+  const [canvasVisible, setCanvasVisible] = useState(false);
   const [originalImageUrl, setOriginalImageUrl] = useState<string>('');
 
   const handleGestureUpdate = useCallback((partial: Partial<TransformState>) => {
@@ -79,9 +83,13 @@ export function useEditorCropLogic() {
     const idx = instance.router?.params?.itemIndex;
     const w = instance.router?.params?.width;
     const h = instance.router?.params?.height;
+    const pw = instance.router?.params?.previewW;
+    const ph = instance.router?.params?.previewH;
 
     if (w) setCropW(Number(w));
     if (h) setCropH(Number(h));
+    if (pw) setPreviewW(Number(pw));
+    if (ph) setPreviewH(Number(ph));
 
     if (idx) {
       setItemIndex(Number(idx));
@@ -199,12 +207,14 @@ export function useEditorCropLogic() {
 
   /**
    * Canvas 裁剪渲染
-   * 第一性原理：Canvas 尺寸 = 工作区尺寸，drawImage 天然裁剪超出边界的像素
+   * 第一性原理：Canvas 输出尺寸 = 预览区内框尺寸，确保回编辑器后 aspectFit 刚好填满花边框
    * 白底先填充 → 图片超出被裁 / 图片不足留白 / 图片移出纯白
+   * Canvas 按需渲染，避免页面挂载时小程序 canvas 渲染层报 this._getData 错误
    */
   const handleConfirm = async () => {
     if (saving) return;
     setSaving(true);
+    setCanvasVisible(true);
 
     // 捕获当前变换快照，避免闭包过期
     const snap = transform;
@@ -213,11 +223,15 @@ export function useEditorCropLogic() {
     const curImageUrl = imageUrl;
     const curOriginalUrl = originalImageUrl || imageUrl;
     const curItemIndex = itemIndex;
+    const curPreviewW = previewW;
+    const curPreviewH = previewH;
 
     try {
       let croppedUrl: string | null = null;
 
       if (process.env.TARO_ENV === 'weapp') {
+        // 等待 canvas 节点挂载完成
+        await new Promise((r) => setTimeout(r, 150));
         croppedUrl = await new Promise<string | null>((resolve) => {
           const query = Taro.createSelectorQuery();
           query
@@ -234,20 +248,20 @@ export function useEditorCropLogic() {
               const ctx = canvas.getContext('2d');
               const dpr = Taro.getSystemInfoSync().pixelRatio;
 
-              canvas.width = cropW * dpr;
-              canvas.height = cropH * dpr;
+              canvas.width = curPreviewW * dpr;
+              canvas.height = curPreviewH * dpr;
               ctx.scale(dpr, dpr);
 
               // 白底填充
               ctx.fillStyle = '#ffffff';
-              ctx.fillRect(0, 0, cropW, cropH);
+              ctx.fillRect(0, 0, curPreviewW, curPreviewH);
 
               // 加载图片
               const imgObj = canvas.createImage();
               imgObj.onload = () => {
-                // 以工作区中心为原点，应用变换绘制
+                // 以预览区中心为原点，应用变换绘制
                 ctx.save();
-                ctx.translate(cropW / 2 + snap.translateX, cropH / 2 + snap.translateY);
+                ctx.translate(curPreviewW / 2 + snap.translateX, curPreviewH / 2 + snap.translateY);
                 ctx.rotate((snap.rotate * Math.PI) / 180);
                 ctx.scale(snap.scale * (snap.flipH ? -1 : 1), snap.scale * (snap.flipV ? -1 : 1));
                 ctx.drawImage(imgObj, -curDisplayW / 2, -curDisplayH / 2, curDisplayW, curDisplayH);
@@ -373,6 +387,7 @@ export function useEditorCropLogic() {
     handleClose,
     handleConfirm,
     saving,
+    canvasVisible,
     handleRotateAction,
     handleRulerTouchStart,
     handleRulerTouchMove,

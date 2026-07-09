@@ -85,9 +85,21 @@ const UPLOAD_AREA_SIZE: Record<string, { w: number; h: number }> = {
   '34x45': { w: 200, h: 299 },
 };
 
+/** 预览图尺寸，Canvas 裁剪时按此尺寸输出，确保与花边内框严丝合缝 */
+const PREVIEW_IMG_SIZE: Record<string, { w: number; h: number }> = {
+  '85x4': { w: 250, h: 155 },
+  '75x55': { w: 182, h: 250 },
+  '34x45': { w: 154, h: 250 },
+};
+
 export function getUploadAreaSize(name: string) {
   const cls = getPreviewClass(name);
   return UPLOAD_AREA_SIZE[cls] || { w: 299, h: 202 };
+}
+
+export function getPreviewImgSize(name: string) {
+  const cls = getPreviewClass(name);
+  return PREVIEW_IMG_SIZE[cls] || { w: 250, h: 155 };
 }
 
 export interface SpecItem {
@@ -143,8 +155,9 @@ export function useEditorLogic() {
   /** 跳转裁剪页 */
   const navigateToCrop = (itemIndex: number, imageUrl: string, specName: string) => {
     const size = getUploadAreaSize(specName);
+    const preview = getPreviewImgSize(specName);
     Taro.navigateTo({
-      url: `/pages/editor-crop/index?imageUrl=${encodeURIComponent(imageUrl)}&itemIndex=${itemIndex}&width=${size.w}&height=${size.h}`,
+      url: `/pages/editor-crop/index?imageUrl=${encodeURIComponent(imageUrl)}&itemIndex=${itemIndex}&width=${size.w}&height=${size.h}&previewW=${preview.w}&previewH=${preview.h}`,
     });
   };
 

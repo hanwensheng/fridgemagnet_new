@@ -30,6 +30,7 @@ export default function EditorCrop() {
     rulerOffset,
     rulerValue,
     saving,
+    canvasVisible,
   } = useEditorCropLogic();
 
   return (
@@ -168,18 +169,20 @@ export default function EditorCrop() {
         )}
       </View>
 
-      {/* 隐藏 Canvas 用于裁剪截图 */}
-      <Canvas
-        type='2d'
-        id='crop-canvas'
-        style={{
-          position: 'fixed',
-          left: '-9999px',
-          top: '-9999px',
-          width: `${cropW}px`,
-          height: `${cropH}px`,
-        }}
-      />
+      {/* 隐藏 Canvas 用于裁剪截图，按需渲染避免挂载时 this._getData 报错 */}
+      {canvasVisible && (
+        <Canvas
+          type='2d'
+          id='crop-canvas'
+          style={{
+            position: 'fixed',
+            left: '-9999px',
+            top: '-9999px',
+            width: `${cropW}px`,
+            height: `${cropH}px`,
+          }}
+        />
+      )}
     </BasePage>
   );
 }
