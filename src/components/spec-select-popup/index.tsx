@@ -11,6 +11,7 @@ import Img85 from '@/assets/images/8.5_4cm.png';
 import Img75 from '@/assets/images/7_5.5cm.png';
 import Img45 from '@/assets/images/4.5_3cm.png';
 import { productApi } from '@/api/modules/product';
+import { orderApi, type PriceInfo } from '@/api/modules/order';
 import { formatSizeLabel } from '@/utils/format';
 
 import './index.scss';
@@ -54,8 +55,17 @@ function getLocalImage(width: string, height: string): string {
   return LOCAL_IMAGE_MAP[key] || Img85;
 }
 
+function buildPriceText(priceInfo: PriceInfo | null): string {
+  if (!priceInfo) return '';
+  const second = priceInfo.secondPrice || '--';
+  const other = priceInfo.otherPrice || '--';
+  const freeShipping = priceInfo.deliveryPrice || '2';
+  return `第2件${second}元，第3件起均${other}元（${freeShipping}件包邮）`;
+}
+
 export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSelectPopupProps) {
   const [items, setItems] = useState<SpecItemState[]>([]);
+  const [priceInfo, setPriceInfo] = useState<PriceInfo | null>(null);
 
   useEffect(() => {
     productApi.getGoodsList().then((goodsList) => {
@@ -70,6 +80,13 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
       }));
       setItems(specItems);
     });
+  }, []);
+
+  useEffect(() => {
+    orderApi
+      .getPrice()
+      .then(setPriceInfo)
+      .catch(() => {});
   }, []);
 
   const totalCount = useMemo(
@@ -190,7 +207,7 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
         </View>
 
         <View className='mb-[48px] mt-[20px] text-center text-xs text-[#945317]'>
-          第2件20元，第3件起均10元（2件包邮）
+          {buildPriceText(priceInfo)}
         </View>
 
         <View

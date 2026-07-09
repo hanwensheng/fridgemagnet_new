@@ -6,6 +6,7 @@ const BASE_URL =
   process.env.NODE_ENV === 'production'
     ? 'http://8.141.81.252:7098'
     : 'https://api.zhongjiatong.vip/api';
+// : 'http://192.168.110.85:8080/fridgemagnet_app_bg';
 
 /** 请求超时时间 (ms) */
 const TIMEOUT = 10000;

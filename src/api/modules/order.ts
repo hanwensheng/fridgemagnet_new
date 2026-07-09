@@ -145,7 +145,26 @@ export interface MerchantOrder {
   userPhone: string;
 }
 
+export interface PriceInfo {
+  /** 第一件价格 */
+  firstPrice: string;
+  /** 第二件价格 */
+  secondPrice: string;
+  /** 第三件起价格 */
+  otherPrice: string;
+  /** 包邮件数阈值 */
+  deliveryPrice: string;
+}
+
 export const orderApi = {
+  /** 获取阶梯价格信息 */
+  getPrice() {
+    return request<PriceInfo>({
+      url: '/v1/bizOrder/getPrice',
+      showLoading: false,
+    });
+  },
+
   /** 创建订单 */
   create(data: CreateOrderParams) {
     return request<Order>({
