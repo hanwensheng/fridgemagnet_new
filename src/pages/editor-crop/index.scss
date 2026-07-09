@@ -18,13 +18,13 @@
   position: relative;
 }
 
-/* === 裁剪区：frame/按钮在此层，overflow 不裁剪它们 === */
+/* === 裁剪区：frame/按钮在此层 === */
 .crop-area {
   position: relative;
   margin: 0 auto;
 }
 
-/* 图片裁剪层：仅图片被 overflow: hidden 限制 */
+/* 图片裁剪层：仅裁剪图片，触摸穿透到父级 crop-area */
 .crop-image-clip {
   position: absolute;
   top: 0;
@@ -32,6 +32,7 @@
   right: 0;
   bottom: 0;
   overflow: hidden;
+  pointer-events: none;
 }
 
 /* 工作区固定边框 */
