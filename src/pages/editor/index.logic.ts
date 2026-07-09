@@ -77,6 +77,18 @@ export function getPreviewClass(name: string): string {
   return PREVIEW_CLASS_MAP[name] || PREVIEW_CLASS_MAP[findSizeOption(name)?.label || ''] || '85x4';
 }
 
+/** 上传区尺寸（设计稿 px），用于传递给裁剪页 */
+const UPLOAD_AREA_SIZE: Record<string, { w: number; h: number }> = {
+  '85x4': { w: 299, h: 202 },
+  '75x55': { w: 235, h: 299 },
+  '34x45': { w: 200, h: 299 },
+};
+
+export function getUploadAreaSize(name: string) {
+  const cls = getPreviewClass(name);
+  return UPLOAD_AREA_SIZE[cls] || { w: 299, h: 202 };
+}
+
 /** 裁剪结果临时存储 key */
 const CROP_RESULT_KEY = 'editor_crop_result';
 
@@ -131,17 +143,20 @@ export function useEditorLogic() {
   const currentHasImage = activeItem ? !!uploadMap[activeItem.index] : false;
 
   /** 跳转裁剪页 */
-  const navigateToCrop = (itemIndex: number, imageUrl: string) => {
+  const navigateToCrop = (itemIndex: number, imageUrl: string, specName: string) => {
+    const size = getUploadAreaSize(specName);
     Taro.navigateTo({
-      url: `/pages/editor-crop/index?imageUrl=${encodeURIComponent(imageUrl)}&itemIndex=${itemIndex}`,
+      url: `/pages/editor-crop/index?imageUrl=${encodeURIComponent(imageUrl)}&itemIndex=${itemIndex}&width=${size.w}&height=${size.h}`,
     });
   };
 
   const handleChooseImage = (itemIndex: number) => {
+    const specItem = specList.find((s) => s.index === itemIndex);
+    const specName = specItem?.name || '8.5*4cm';
     const existingImage = uploadMap[itemIndex];
     if (existingImage) {
       // 已有图片 → 直接进入编辑页
-      navigateToCrop(itemIndex, existingImage);
+      navigateToCrop(itemIndex, existingImage, specName);
       return;
     }
     // 无图片 → 先选择再进入编辑页
@@ -152,7 +167,7 @@ export function useEditorLogic() {
       success: (res) => {
         const imageUrl = res.tempFilePaths[0];
         setUploadMap((prev) => ({ ...prev, [itemIndex]: imageUrl }));
-        navigateToCrop(itemIndex, imageUrl);
+        navigateToCrop(itemIndex, imageUrl, specName);
       },
     });
   };

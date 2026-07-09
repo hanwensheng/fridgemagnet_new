@@ -175,38 +175,37 @@ export default function Editor() {
         </View>
 
         {/* 当前 tab 的编辑卡片 */}
-        {activeItem && (
-          <View className='editor-card'>
-            <View
-              className={`upload-area ${uploadMap[activeItem.index] ? 'upload-area--preview' : ''}`}
-              onClick={() => handleChooseImage(activeItem.index)}
-            >
-              {uploadMap[activeItem.index] ? (
-                (() => {
-                  const cls = getPreviewClass(activeItem.name);
-                  return (
-                    <View className={`upload-preview-wrap preview-wrap--${cls}`}>
+        {activeItem &&
+          (() => {
+            const sizeCls = getPreviewClass(activeItem.name);
+            return (
+              <View className='editor-card'>
+                <View
+                  className={`upload-area upload-area--${sizeCls} ${uploadMap[activeItem.index] ? 'upload-area--preview' : ''}`}
+                  onClick={() => handleChooseImage(activeItem.index)}
+                >
+                  {uploadMap[activeItem.index] ? (
+                    <View className={`upload-preview-wrap preview-wrap--${sizeCls}`}>
                       <Image
-                        className={`upload-preview-bg preview-bg--${cls}`}
+                        className={`upload-preview-bg preview-bg--${sizeCls}`}
                         src={getPreviewBg(activeItem.name)}
                         mode='aspectFit'
                       />
                       <Image
-                        className={`upload-preview preview-img--${cls}`}
+                        className={`upload-preview preview-img--${sizeCls}`}
                         src={uploadMap[activeItem.index]}
                         mode='aspectFit'
                       />
                     </View>
-                  );
-                })()
-              ) : (
-                <View className='upload-placeholder'>
-                  <Image className='upload-icon' src={IconUpload} />
+                  ) : (
+                    <View className='upload-placeholder'>
+                      <Image className='upload-icon' src={IconUpload} />
+                    </View>
+                  )}
                 </View>
-              )}
-            </View>
-          </View>
-        )}
+              </View>
+            );
+          })()}
 
         {/* 提示文字 — 跟随当前 tab */}
         {activeItem && (

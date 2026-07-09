@@ -1,50 +1,86 @@
 .editor-crop-page {
   display: flex;
   flex-direction: column;
-  padding: 16px 20px 24px;
+  // padding: 16px 20px 24px;
   box-sizing: border-box;
-  min-height: calc(100vh - 100px);
-}
-
-/* 裁剪画布 */
-.crop-canvas {
-  position: relative;
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 320px;
-}
-
-.crop-frame {
-  width: 100%;
-  aspect-ratio: 319 / 385;
-  border: 1px dashed rgba(0, 0, 0, 0.2);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: 0;
   overflow: hidden;
-  box-sizing: border-box;
 }
 
-.crop-image {
-  width: 100%;
-  height: 100%;
-  border-radius: 20px;
-}
-
-.crop-empty {
+.crop-box {
+  background: #ffffff;
+  height: 450px;
+  padding: 32px 28px;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
-.crop-empty-text {
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.4);
+/* === 裁剪区：frame/按钮在此层，overflow 不裁剪它们 === */
+.crop-area {
+  position: relative;
+  margin: 0 auto;
 }
 
+/* 图片裁剪层：仅图片被 overflow: hidden 限制 */
+.crop-image-clip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+/* 工作区固定边框 */
+.crop-canvas-border {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+/* 裁剪虚线框 — 与图片在同一坐标系，严格包裹 */
+.crop-frame {
+  position: absolute;
+  border: 2px dashed rgba(28, 28, 30, 0.5);
+  border-radius: 8px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+/* 全屏引导线（不受任何 overflow 限制） */
+.snap-guide-v {
+  position: fixed;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(0, 122, 255, 0.5);
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 100;
+}
+
+.snap-guide-h {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(0, 122, 255, 0.5);
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* 操作按钮 — 参考 design corner-btn，绝对定位于 frame 组内，counter-scale 保持 32px 恒定 */
 .crop-btn {
   position: absolute;
   width: 32px;
@@ -55,15 +91,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: auto;
 
   &--stretch {
-    top: 0;
     right: 0;
+    top: 0;
+    transform: translate(50%, -50%);
   }
 
   &--rotate {
-    bottom: 0;
     right: 0;
+    bottom: 0;
+    transform: translate(50%, 50%);
   }
 }
 
@@ -76,9 +115,10 @@
 .rotate-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0 20px;
-  margin-bottom: 24px;
+  margin-bottom: 10px;
+  gap: 20px;
 }
 
 .rotate-action-item {
@@ -86,33 +126,39 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  width: 45px;
+  height: 42px;
 }
 
 .rotate-action-icon {
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
 }
 
 .rotate-action-label {
   font-size: 12px;
-  color: #000;
-  line-height: 22px;
+  color: rgba(28, 28, 30, 0.7);
+  line-height: 18px;
 }
 
-/* 刻度尺 */
+/* 刻度尺 — 滑动控制缩放/旋转 */
 .ruler {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 24px;
+  margin: 20px 28px;
+  touch-action: none;
+  position: relative;
 }
 
 .ruler-scale {
   position: relative;
   width: 100%;
-  height: 40px;
+  height: 24px;
+  overflow: hidden;
 }
 
+/* 居中指示线，固定在中间不随刻度滑动 */
 .ruler-line {
   position: absolute;
   left: 50%;
@@ -121,39 +167,47 @@
   height: 24px;
   background: #1c1c1e;
   transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
 }
 
+/* 刻度线容器 */
 .ruler-marks {
   position: absolute;
   left: 50%;
   top: 0;
-  transform: translateX(-50%);
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 4px;
+  pointer-events: none;
 }
 
+/* 刻度线 */
 .ruler-mark {
   width: 1px;
-  height: 12px;
-  background: rgba(28, 28, 30, 0.3);
+  height: 10px;
+  background: rgba(28, 28, 30, 0.25);
+  flex-shrink: 0;
+
+  &--major {
+    height: 16px;
+    background: rgba(28, 28, 30, 0.5);
+  }
 
   &--center {
     height: 24px;
     background: #1c1c1e;
-  }
-
-  &:nth-child(5n + 1) {
-    height: 18px;
-    background: rgba(28, 28, 30, 0.6);
+    width: 2px;
   }
 }
 
+/* 数值文本固定在中间下方不随刻度滑动 */
 .ruler-value {
-  margin-top: 4px;
-  font-size: 12px;
+  margin-top: 5px;
+  font-size: 10px;
   color: #000;
-  line-height: 22px;
+  line-height: 14px;
+  font-weight: 500;
 }
 
 /* 底部操作栏 */
@@ -162,6 +216,7 @@
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
+  padding: 0 30px;
 }
 
 .crop-footer-btn {
@@ -182,14 +237,14 @@
 }
 
 .crop-footer-icon {
-  width: 24px;
-  height: 24px;
+  width: 34px;
+  height: 34px;
 }
 
 .crop-tabs {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 40px;
 }
 
 .crop-tab {
@@ -202,7 +257,7 @@
 
 .crop-tab-text {
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgba(0, 0, 0, 0.7);
   line-height: 22px;
 }
 

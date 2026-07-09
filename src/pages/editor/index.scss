@@ -135,8 +135,6 @@
 }
 
 .upload-area {
-  width: 300px;
-  height: 170px;
   border: 2px dashed rgba(0, 0, 0, 0.1);
   border-radius: 20px;
   display: flex;
@@ -144,6 +142,20 @@
   justify-content: center;
   box-sizing: border-box;
   background: #f6f6f6;
+}
+
+/* 各规格上传区尺寸 */
+.upload-area--85x4 {
+  width: 299px;
+  height: 202px;
+}
+.upload-area--75x55 {
+  width: 235px;
+  height: 299px;
+}
+.upload-area--34x45 {
+  width: 200px;
+  height: 299px;
 }
 
 .upload-placeholder {
