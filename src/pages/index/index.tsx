@@ -34,8 +34,8 @@ export default function Index() {
   }, [statusBarHeight, menuButtonInfo]);
 
   // 调试：在开发者工具控制台看实际高度值
-  console.log('statusBarHeight:', statusBarHeight);
-  console.log('navBarHeight:', navBarHeight);
+  // console.log('statusBarHeight:', statusBarHeight);
+  // console.log('navBarHeight:', navBarHeight);
 
   const showTabBar = () => {
     Taro.eventCenter.trigger('tabbar:show');

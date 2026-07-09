@@ -40,7 +40,7 @@ export function useEditorCropLogic() {
   const [itemIndex, setItemIndex] = useState<number>(0);
   const [cropW, setCropW] = useState<number>(299);
   const [cropH, setCropH] = useState<number>(202);
-  /** Canvas 裁剪输出尺寸，与预览花边内框一致 */
+  /** 预览显示尺寸，Canvas 输出预览图时用此尺寸确保花边框贴合 */
   const [previewW, setPreviewW] = useState<number>(250);
   const [previewH, setPreviewH] = useState<number>(155);
 
@@ -207,7 +207,7 @@ export function useEditorCropLogic() {
 
   /**
    * Canvas 裁剪渲染
-   * 第一性原理：Canvas 输出尺寸 = 预览区内框尺寸，确保回编辑器后 aspectFit 刚好填满花边框
+   * Canvas 尺寸 = 工作区尺寸（实物等比例），输出完整的白底+图片合成图
    * 白底先填充 → 图片超出被裁 / 图片不足留白 / 图片移出纯白
    * Canvas 按需渲染，避免页面挂载时小程序 canvas 渲染层报 this._getData 错误
    */
@@ -218,77 +218,104 @@ export function useEditorCropLogic() {
 
     // 捕获当前变换快照，避免闭包过期
     const snap = transform;
-    const curDisplayW = imgW || cropW;
-    const curDisplayH = imgH || cropH;
+    const curCropW = cropW;
+    const curCropH = cropH;
+    const curPreviewW = previewW;
+    const curPreviewH = previewH;
+    const curDisplayW = imgW || curCropW;
+    const curDisplayH = imgH || curCropH;
     const curImageUrl = imageUrl;
     const curOriginalUrl = originalImageUrl || imageUrl;
     const curItemIndex = itemIndex;
-    const curPreviewW = previewW;
-    const curPreviewH = previewH;
 
     try {
       let croppedUrl: string | null = null;
+      let previewUrl: string | null = null;
 
       if (process.env.TARO_ENV === 'weapp') {
         // 等待 canvas 节点挂载完成
         await new Promise((r) => setTimeout(r, 150));
-        croppedUrl = await new Promise<string | null>((resolve) => {
-          const query = Taro.createSelectorQuery();
-          query
-            .select('#crop-canvas')
-            .fields({ node: true, size: true })
-            .exec((res: any) => {
-              if (!res || !res[0] || !res[0].node) {
-                console.error('[generateCroppedImage] Canvas node not found');
-                resolve(null);
-                return;
-              }
 
-              const canvas = res[0].node;
-              const ctx = canvas.getContext('2d');
-              const dpr = Taro.getSystemInfoSync().pixelRatio;
+        // 复用 Canvas 节点，渲染到指定尺寸
+        const renderToCanvas = (
+          canvasW: number,
+          canvasH: number,
+          isPreview: boolean,
+        ): Promise<string | null> =>
+          new Promise((resolve) => {
+            const query = Taro.createSelectorQuery();
+            query
+              .select('#crop-canvas')
+              .fields({ node: true, size: true })
+              .exec((res: any) => {
+                if (!res || !res[0] || !res[0].node) {
+                  resolve(null);
+                  return;
+                }
+                const canvas = res[0].node;
+                const ctx = canvas.getContext('2d');
+                const dpr = Taro.getSystemInfoSync().pixelRatio;
 
-              canvas.width = curPreviewW * dpr;
-              canvas.height = curPreviewH * dpr;
-              ctx.scale(dpr, dpr);
+                canvas.width = canvasW * dpr;
+                canvas.height = canvasH * dpr;
+                ctx.scale(dpr, dpr);
 
-              // 白底填充
-              ctx.fillStyle = '#ffffff';
-              ctx.fillRect(0, 0, curPreviewW, curPreviewH);
+                // 白底填充
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvasW, canvasH);
 
-              // 加载图片
-              const imgObj = canvas.createImage();
-              imgObj.onload = () => {
-                // 以预览区中心为原点，应用变换绘制
-                ctx.save();
-                ctx.translate(curPreviewW / 2 + snap.translateX, curPreviewH / 2 + snap.translateY);
-                ctx.rotate((snap.rotate * Math.PI) / 180);
-                ctx.scale(snap.scale * (snap.flipH ? -1 : 1), snap.scale * (snap.flipV ? -1 : 1));
-                ctx.drawImage(imgObj, -curDisplayW / 2, -curDisplayH / 2, curDisplayW, curDisplayH);
-                ctx.restore();
+                // 计算变换：预览模式需要等比缩放+居中，上传模式 1:1
+                const s = isPreview ? Math.min(canvasW / curCropW, canvasH / curCropH) : 1;
+                const ox = isPreview ? (canvasW - curCropW * s) / 2 : 0;
+                const oy = isPreview ? (canvasH - curCropH * s) / 2 : 0;
 
-                Taro.canvasToTempFilePath({
-                  canvas,
-                  success: (result) => resolve(result.tempFilePath),
-                  fail: (err) => {
-                    console.error('[generateCroppedImage] canvasToTempFilePath failed:', err);
-                    resolve(null);
-                  },
-                });
-              };
-              imgObj.onerror = (err: any) => {
-                console.error('[generateCroppedImage] Image load failed:', err);
-                resolve(null);
-              };
-              imgObj.src = curImageUrl;
-            });
-        });
+                const imgObj = canvas.createImage();
+                imgObj.onload = () => {
+                  ctx.save();
+                  if (isPreview) {
+                    ctx.translate(ox, oy);
+                    ctx.scale(s, s);
+                  }
+                  ctx.translate(curCropW / 2 + snap.translateX, curCropH / 2 + snap.translateY);
+                  ctx.rotate((snap.rotate * Math.PI) / 180);
+                  ctx.scale(snap.scale * (snap.flipH ? -1 : 1), snap.scale * (snap.flipV ? -1 : 1));
+                  ctx.drawImage(
+                    imgObj,
+                    -curDisplayW / 2,
+                    -curDisplayH / 2,
+                    curDisplayW,
+                    curDisplayH,
+                  );
+                  ctx.restore();
+
+                  Taro.canvasToTempFilePath({
+                    canvas,
+                    success: (result) => resolve(result.tempFilePath),
+                    fail: (err) => {
+                      console.error('[renderToCanvas] canvasToTempFilePath failed:', err);
+                      resolve(null);
+                    },
+                  });
+                };
+                imgObj.onerror = (err: any) => {
+                  console.error('[renderToCanvas] Image load failed:', err);
+                  resolve(null);
+                };
+                imgObj.src = curImageUrl;
+              });
+          });
+
+        // 第一遍：预览图（花边框显示用）
+        previewUrl = await renderToCanvas(curPreviewW, curPreviewH, true);
+        // 第二遍：上传图（实物等比例）
+        croppedUrl = await renderToCanvas(curCropW, curCropH, false);
       }
 
-      // 保存裁剪结果给 editor 页（内存）
+      // 保存裁剪结果给 editor 页（内存）：预览用 previewUrl，上传用 croppedUrl
       setCropResult({
         itemIndex: curItemIndex,
-        imageUrl: croppedUrl || curImageUrl,
+        imageUrl: previewUrl || croppedUrl || curImageUrl,
+        uploadUrl: croppedUrl || curImageUrl,
         clear: false,
       });
 

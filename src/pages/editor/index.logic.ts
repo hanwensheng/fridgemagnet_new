@@ -85,7 +85,7 @@ const UPLOAD_AREA_SIZE: Record<string, { w: number; h: number }> = {
   '34x45': { w: 200, h: 299 },
 };
 
-/** 预览图尺寸，Canvas 裁剪时按此尺寸输出，确保与花边内框严丝合缝 */
+/** 预览图显示尺寸，用于生成花边框贴合用的预览图 */
 const PREVIEW_IMG_SIZE: Record<string, { w: number; h: number }> = {
   '85x4': { w: 250, h: 155 },
   '75x55': { w: 182, h: 250 },
@@ -97,7 +97,7 @@ export function getUploadAreaSize(name: string) {
   return UPLOAD_AREA_SIZE[cls] || { w: 299, h: 202 };
 }
 
-export function getPreviewImgSize(name: string) {
+function getPreviewImgSize(name: string) {
   const cls = getPreviewClass(name);
   return PREVIEW_IMG_SIZE[cls] || { w: 250, h: 155 };
 }
@@ -139,6 +139,8 @@ function parseSpecsFromRouter(): SpecItem[] {
 export function useEditorLogic() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [uploadMap, setUploadMap] = useState<Record<number, string>>({});
+  /** 上传用图（工作区实物比例），区别于 uploadMap 的预览图 */
+  const [uploadFileMap, setUploadFileMap] = useState<Record<number, string>>({});
   const [completedMap, setCompletedMap] = useState<Record<number, boolean>>({});
   const [menuVisible, setMenuVisible] = useState(false);
   const initialList = useMemo(() => parseSpecsFromRouter(), []);
@@ -190,9 +192,14 @@ export function useEditorLogic() {
     const result = getCropResult();
     if (!result) return;
     setCropResult(null);
-    const { itemIndex, imageUrl, clear } = result;
+    const { itemIndex, imageUrl, uploadUrl, clear } = result;
     if (clear) {
       setUploadMap((prev) => {
+        const next = { ...prev };
+        delete next[itemIndex];
+        return next;
+      });
+      setUploadFileMap((prev) => {
         const next = { ...prev };
         delete next[itemIndex];
         return next;
@@ -204,6 +211,7 @@ export function useEditorLogic() {
       });
     } else if (imageUrl) {
       setUploadMap((prev) => ({ ...prev, [itemIndex]: imageUrl }));
+      if (uploadUrl) setUploadFileMap((prev) => ({ ...prev, [itemIndex]: uploadUrl }));
     }
   });
 
@@ -228,6 +236,11 @@ export function useEditorLogic() {
     } else if (id === 'delete') {
       if (activeItem && specList.length > 1) {
         setUploadMap((prev) => {
+          const next = { ...prev };
+          delete next[activeItem.index];
+          return next;
+        });
+        setUploadFileMap((prev) => {
           const next = { ...prev };
           delete next[activeItem.index];
           return next;
@@ -289,7 +302,28 @@ export function useEditorLogic() {
       return;
     }
     setCompletedMap((prev) => ({ ...prev, [activeItem.index]: true }));
-    Taro.showToast({ title: '保存成功', icon: 'success' });
+
+    // 自动切换至下一个未编辑（无图片）的 tab
+    let nextIdx = -1;
+    // 优先相邻下一个
+    for (let i = activeIndex + 1; i < specList.length; i++) {
+      if (!uploadMap[specList[i].index]) {
+        nextIdx = i;
+        break;
+      }
+    }
+    // 若无，全局遍历从头找
+    if (nextIdx < 0) {
+      for (let i = 0; i < activeIndex; i++) {
+        if (!uploadMap[specList[i].index]) {
+          nextIdx = i;
+          break;
+        }
+      }
+    }
+    if (nextIdx >= 0) {
+      setActiveIndex(nextIdx);
+    }
   };
 
   const handleSubmit = () => {
@@ -309,6 +343,7 @@ export function useEditorLogic() {
     activeIndex,
     setActiveIndex,
     uploadMap,
+    uploadFileMap,
     completedMap,
     menuVisible,
     closeMenu,

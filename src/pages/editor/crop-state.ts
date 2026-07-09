@@ -14,7 +14,8 @@ interface CropState {
 
 export interface CropResult {
   itemIndex: number;
-  imageUrl?: string;
+  imageUrl?: string; // 预览图（花边框贴合）
+  uploadUrl?: string; // 上传图（工作区实物比例）
   clear?: boolean;
 }
 

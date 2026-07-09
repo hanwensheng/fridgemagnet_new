@@ -18,7 +18,6 @@ export default function Editor() {
     activeIndex,
     setActiveIndex,
     uploadMap,
-    completedMap,
     menuVisible,
     specList,
     activeItem,
@@ -64,16 +63,17 @@ export default function Editor() {
               </View>
             )}
           </View>
-          <View
-            className='confirm-btn'
-            style={currentHasImage ? { background: '#1C1C1E' } : undefined}
-            onClick={currentHasImage ? handleConfirm : undefined}
-          >
-            <Image className='confirm-btn-icon' src={IconCheck} />
-          </View>
-          {allUploaded && (
+          {allUploaded ? (
             <View className='submit-btn' onClick={handleSubmit}>
               <Text className='submit-btn-text'>提交制作</Text>
+            </View>
+          ) : (
+            <View
+              className='confirm-btn'
+              style={currentHasImage ? { background: '#1C1C1E' } : undefined}
+              onClick={currentHasImage ? handleConfirm : undefined}
+            >
+              <Image className='confirm-btn-icon' src={IconCheck} />
             </View>
           )}
         </View>
@@ -88,8 +88,7 @@ export default function Editor() {
                 const option = findSizeOption(specItem.name);
                 const active = activeIndex === specIdx;
                 const hasImage = !!uploadMap[specItem.index];
-                const completed = !!completedMap[specItem.index];
-                const showCheck = (active && hasImage) || completed;
+                const showCheck = hasImage;
                 return (
                   <View key={specIdx} className='size-item-row'>
                     <View
@@ -112,7 +111,7 @@ export default function Editor() {
                           {showCheck && (
                             <View
                               className='size-check'
-                              style={completed ? { background: '#adadad' } : undefined}
+                              style={!active ? { background: '#adadad' } : undefined}
                             >
                               <Image className='size-check-icon' src={IconCheck} />
                             </View>
@@ -132,8 +131,7 @@ export default function Editor() {
                   const option = findSizeOption(specItem.name);
                   const active = activeIndex === specIdx;
                   const hasImage = !!uploadMap[specItem.index];
-                  const completed = !!completedMap[specItem.index];
-                  const showCheck = (active && hasImage) || completed;
+                  const showCheck = hasImage;
                   return (
                     <View key={specIdx} className='size-item-row'>
                       {specIdx > 0 && <View className='size-divider' />}
@@ -157,7 +155,7 @@ export default function Editor() {
                             {showCheck && (
                               <View
                                 className='size-check'
-                                style={completed ? { background: '#adadad' } : undefined}
+                                style={!active ? { background: '#adadad' } : undefined}
                               >
                                 <Image className='size-check-icon' src={IconCheck} />
                               </View>

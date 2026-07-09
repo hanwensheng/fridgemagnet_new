@@ -4,6 +4,7 @@ import IconClose from '@/assets/svgs/icon_close2.svg';
 import IconStretch from '@/assets/svgs/icon_stretch.svg';
 import IconRotate from '@/assets/svgs/icon_rotate.svg';
 import IconCheck from '@/assets/svgs/icon_check.svg';
+import IconLeft from '@/assets/svgs/icon_left.svg';
 import { useEditorCropLogic, TABS, ROTATE_ACTIONS } from './index.logic';
 import './index.scss';
 
@@ -36,10 +37,7 @@ export default function EditorCrop() {
   return (
     <BasePage
       navTitle={activeTab === 'zoom' ? '裁剪' : '旋转'}
-      backgroundColor='#f6f6f6'
-      navShowBack={false}
-      bottomBarHeight={56}
-      safeAreaBackgroundColor='#F6F6F6'
+      navBackIcon={IconLeft}
       bottomBarComponent={
         <View className='crop-footer'>
           <View className='crop-footer-btn crop-footer-btn--close' onClick={handleClose}>
