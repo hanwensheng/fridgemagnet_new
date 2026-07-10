@@ -41,7 +41,10 @@ export function useAddressLogic() {
       if (!isSelectable) return;
       Taro.setStorageSync('selectedAddress', address);
       setSelectedAddress(address);
-      Taro.navigateBack();
+      // 延迟返回，留一帧让 React 渲染红对号后再跳走
+      setTimeout(() => {
+        Taro.navigateBack();
+      }, 150);
     },
     [isSelectable],
   );

@@ -1,6 +1,6 @@
 import { View, Text, Image, ScrollView } from '@tarojs/components';
-import Taro from '@tarojs/taro';
-import { useMemo, useState } from 'react';
+import Taro, { useDidShow, useUnload } from '@tarojs/taro';
+import { useMemo, useRef, useState } from 'react';
 import BasePage from '@/components/base-page';
 import PaySuccessPopup from '@/components/pay-success-popup';
 import CouponDetailPopup from '@/components/coupon-detail-popup';
@@ -10,6 +10,8 @@ import IconAddAddress from '@/assets/svgs/icon_add_addres.svg';
 import IconSingle from '@/assets/svgs/icon_single.svg';
 import IconGroup from '@/assets/svgs/icon_group.svg';
 import ProductImg from '@/assets/images/8.5_4cm.png';
+import { addressApi } from '@/api/modules/address';
+import type { AddressItem } from '@/api/modules/address';
 import './index.scss';
 
 export interface OrderItem {
@@ -23,18 +25,6 @@ export interface OrderItem {
   discountTag?: string;
   image: string;
 }
-
-interface AddressInfo {
-  name: string;
-  phone: string;
-  address: string;
-}
-
-const MOCK_ADDRESS: AddressInfo = {
-  name: '三金',
-  phone: '158****3663',
-  address: '辽宁省大连市甘井子区革贞普街道万科c翡翠四季7栋901',
-};
 
 export const MOCK_ITEMS: OrderItem[] = [
   {
@@ -74,7 +64,7 @@ export const MOCK_ITEMS: OrderItem[] = [
 export default function OrderConfirm() {
   const [payPopupVisible, setPayPopupVisible] = useState(false);
   const [couponPopupVisible, setCouponPopupVisible] = useState(false);
-  const [hasAddress, setHasAddress] = useState(false);
+  const [address, setAddress] = useState<AddressItem | null>(null);
 
   const totalCount = useMemo(() => MOCK_ITEMS.reduce((sum, item) => sum + item.quantity, 0), []);
 
@@ -96,15 +86,42 @@ export default function OrderConfirm() {
   const shippingFee = 0;
 
   const isGroup = MOCK_ITEMS.length > 1;
+  const mounted = useRef(false);
+
+  useDidShow(() => {
+    if (!mounted.current) {
+      // 首次加载：清理可能的残留临时地址，只请求默认地址
+      mounted.current = true;
+      Taro.removeStorageSync('selectedAddress');
+      addressApi
+        .findDefault(false)
+        .then((data) => {
+          if (data) setAddress(data);
+        })
+        .catch(() => {});
+      return;
+    }
+
+    // 从地址页返回：读取用户临时选择的地址
+    try {
+      const stored = Taro.getStorageSync('selectedAddress');
+      if (stored) {
+        setAddress(stored as AddressItem);
+      }
+    } catch {}
+  });
+
+  // 离开订单页时清理临时地址
+  useUnload(() => {
+    Taro.removeStorageSync('selectedAddress');
+  });
 
   const handleAddressClick = () => {
-    // 临时演示：点击后切换为已有地址状态并跳转地址页
-    setHasAddress(true);
-    Taro.navigateTo({ url: '/pages/address/index' });
+    Taro.navigateTo({ url: '/pages/address/index?from=order-confirm' });
   };
 
   const handlePay = () => {
-    if (!hasAddress) {
+    if (!address) {
       Taro.showToast({ title: '请先添加地址', icon: 'none' });
       return;
     }
@@ -152,13 +169,18 @@ export default function OrderConfirm() {
       <ScrollView className='order-page' scrollY>
         {/* 地址卡片 */}
         <View className='order-address-card' onClick={handleAddressClick}>
-          {hasAddress ? (
+          {address ? (
             <>
               <View className='order-address-main'>
-                <Text className='order-address-text'>{MOCK_ADDRESS.address}</Text>
+                <Text className='order-address-text'>
+                  {address.province}
+                  {address.city}
+                  {address.district}
+                  {address.detailAddress}
+                </Text>
                 <View className='order-address-user'>
-                  <Text className='order-address-name'>{MOCK_ADDRESS.name}</Text>
-                  <Text className='order-address-phone'>{MOCK_ADDRESS.phone}</Text>
+                  <Text className='order-address-name'>{address.recipient}</Text>
+                  <Text className='order-address-phone'>{address.recipientPhone}</Text>
                 </View>
               </View>
               <Image className='order-address-arrow' src={IconRight} />

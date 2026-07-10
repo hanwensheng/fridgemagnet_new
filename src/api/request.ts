@@ -93,7 +93,7 @@ function handleUnauthorized() {
     content: '登录已过期，请重新登录',
     showCancel: false,
   }).then(() => {
-    Taro.switchTab({ url: '/pages/index/index' });
+    Taro.switchTab({ url: '/pages/mine/index' });
   });
 }
 
