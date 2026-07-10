@@ -6,6 +6,7 @@ import PaySuccessPopup from '@/components/pay-success-popup';
 import CouponDetailPopup from '@/components/coupon-detail-popup';
 import IconBack from '@/assets/svgs/icon_back.svg';
 import IconRight from '@/assets/svgs/icon_right2.svg';
+import IconAddAddress from '@/assets/svgs/icon_add_addres.svg';
 import IconSingle from '@/assets/svgs/icon_single.svg';
 import IconGroup from '@/assets/svgs/icon_group.svg';
 import ProductImg from '@/assets/images/8.5_4cm.png';
@@ -70,12 +71,10 @@ export const MOCK_ITEMS: OrderItem[] = [
   },
 ];
 
-const ORDER_NO = 'P511000488';
-const ORDER_TIME = '2026-06-27 11:04:53';
-
 export default function OrderConfirm() {
   const [payPopupVisible, setPayPopupVisible] = useState(false);
   const [couponPopupVisible, setCouponPopupVisible] = useState(false);
+  const [hasAddress, setHasAddress] = useState(false);
 
   const totalCount = useMemo(() => MOCK_ITEMS.reduce((sum, item) => sum + item.quantity, 0), []);
 
@@ -89,17 +88,26 @@ export default function OrderConfirm() {
     [],
   );
 
+  const originalTotal = useMemo(
+    () => MOCK_ITEMS.reduce((sum, item) => sum + item.originalPrice * item.quantity, 0),
+    [],
+  );
+
+  const shippingFee = 0;
+
   const isGroup = MOCK_ITEMS.length > 1;
 
   const handleAddressClick = () => {
+    // 临时演示：点击后切换为已有地址状态并跳转地址页
+    setHasAddress(true);
     Taro.navigateTo({ url: '/pages/address/index' });
   };
 
-  const handleCopyOrderNo = () => {
-    Taro.setClipboardData({ data: ORDER_NO });
-  };
-
   const handlePay = () => {
+    if (!hasAddress) {
+      Taro.showToast({ title: '请先添加地址', icon: 'none' });
+      return;
+    }
     setPayPopupVisible(true);
   };
 
@@ -153,22 +161,33 @@ export default function OrderConfirm() {
       <ScrollView className='order-page' scrollY>
         {/* 地址卡片 */}
         <View className='order-address-card' onClick={handleAddressClick}>
-          <View className='order-address-main'>
-            <Text className='order-address-text'>{MOCK_ADDRESS.address}</Text>
-            <View className='order-address-user'>
-              <Text className='order-address-name'>{MOCK_ADDRESS.name}</Text>
-              <Text className='order-address-phone'>{MOCK_ADDRESS.phone}</Text>
+          {hasAddress ? (
+            <>
+              <View className='order-address-main'>
+                <Text className='order-address-text'>{MOCK_ADDRESS.address}</Text>
+                <View className='order-address-user'>
+                  <Text className='order-address-name'>{MOCK_ADDRESS.name}</Text>
+                  <Text className='order-address-phone'>{MOCK_ADDRESS.phone}</Text>
+                </View>
+              </View>
+              <Image className='order-address-arrow' src={IconRight} />
+            </>
+          ) : (
+            <View className='order-add-address'>
+              <Image className='order-add-address-icon' src={IconAddAddress} />
+              <Text className='order-add-address-text'>添加地址</Text>
             </View>
-          </View>
-          <Image className='order-address-arrow' src={IconRight} />
+          )}
         </View>
 
         {/* 订单商品卡片 */}
         {MOCK_ITEMS.map((item) => (
           <View key={item.id} className='order-item-card'>
             <View className='order-item-header'>
-              <Image className='order-item-type-icon' src={isGroup ? IconGroup : IconSingle} />
-              <Text className='order-item-type-text'>{isGroup ? '组合' : '单品'}</Text>
+              <View className='order-item-type'>
+                <Image className='order-item-type-icon' src={isGroup ? IconGroup : IconSingle} />
+                <Text className='order-item-type-text'>{isGroup ? '组合' : '单品'}</Text>
+              </View>
             </View>
             <View className='order-item-body'>
               <Image className='order-item-image' src={item.image} mode='aspectFill' />
@@ -177,34 +196,26 @@ export default function OrderConfirm() {
                 <Text className='order-item-spec'>{item.spec}</Text>
                 <Text className='order-item-count'>共 {item.quantity} 件</Text>
               </View>
-            </View>
-            <View className='order-item-row'>
-              <Text className='order-item-row-label'>实付款</Text>
-              <Text className='order-item-row-value'>
-                ¥ {(item.price * item.quantity).toFixed(2)}
-              </Text>
-            </View>
-            <View className='order-item-row'>
-              <Text className='order-item-row-label'>运费</Text>
-              <Text className='order-item-row-value'>¥ 0</Text>
-            </View>
-            <View className='order-item-row'>
-              <Text className='order-item-row-label'>订单编号</Text>
-              <View className='order-item-row-right'>
-                <Text className='order-item-row-value order-item-row-value--gray'>
-                  {ORDER_NO} ｜
-                </Text>
-                <Text className='order-item-row-copy' onClick={handleCopyOrderNo}>
-                  复制
-                </Text>
-              </View>
-            </View>
-            <View className='order-item-row'>
-              <Text className='order-item-row-label'>下单时间</Text>
-              <Text className='order-item-row-value order-item-row-value--gray'>{ORDER_TIME}</Text>
+              <Text className='order-item-price'>¥{(item.price * item.quantity).toFixed(1)}</Text>
             </View>
           </View>
         ))}
+
+        {/* 费用汇总卡片 */}
+        <View className='order-summary-card'>
+          <View className='order-summary-row'>
+            <Text className='order-summary-label'>总计</Text>
+            <Text className='order-summary-value'>¥ {originalTotal.toFixed(1)}</Text>
+          </View>
+          <View className='order-summary-row'>
+            <Text className='order-summary-label'>运费</Text>
+            <Text className='order-summary-value'>¥ {shippingFee}</Text>
+          </View>
+          <View className='order-summary-row'>
+            <Text className='order-summary-label'>优惠</Text>
+            <Text className='order-summary-value'>¥ {totalDiscount}</Text>
+          </View>
+        </View>
 
         <View className='order-safe-bottom' />
       </ScrollView>
