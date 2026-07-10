@@ -372,3 +372,113 @@ patches/@tarojs+webpack5-prebundle+4.2.0.patch
 | Zustand | API 极简，无样板代码，满足本项目状态需求 |
 | Husky v9 + lint-staged | 提交前自动保证代码质量 |
 | patch-package | 修复 Taro 4.2 prebundle 的 roots 类型问题 |
+
+## 10. editor ↔ editor-crop 裁剪页面流程
+
+### 10.1 数据流全景
+
+```
+editor（制作页）
+  │ 点击上传区 → handleChooseImage
+  │   ├─ 已有图片 → 读 cropStateMap 取原图 URL → navigateToCrop
+  │   └─ 无图片   → Taro.chooseImage → 原图 → navigateToCrop
+  │
+  ▼ navigateTo（URL 参数: imageUrl, itemIndex, width, height, previewW, previewH）
+editor-crop（裁剪页）
+  │ mount useEffect
+  │   ├─ 检查 cropStateMap[itemIndex] 存在 → 恢复原图 + transform
+  │   └─ 不存在 → URL 参数初始化，reset transform
+  │
+  │ 用户编辑（缩放/旋转/拖拽/翻转）
+  │
+  │ 点保存 → handleConfirm
+  │   ├─ 按需渲染 <Canvas type='2d'>（避免挂载时 this._getData 错误）
+  │   ├─ 等 150ms canvas 挂载
+  │   ├─ 第一遍渲染 → 预览图（previewW×previewH，花边框贴合）
+  │   ├─ 第二遍渲染 → 上传图（cropW×cropH，工作区实物比例）
+  │   ├─ 存 cropResult { imageUrl, uploadUrl } 到内存
+  │   ├─ 存 cropStateMap[itemIndex] = { originalImageUrl, transform, imgW, imgH }
+  │   └─ navigateBack
+  │
+  ▼ useDidShow
+editor（制作页）
+  ├─ uploadMap[itemIndex] = imageUrl      → 预览区显示，花边框贴合
+  └─ uploadFileMap[itemIndex] = uploadUrl  → 提交订单时上传，实物比例正确
+```
+
+### 10.2 尺寸体系（关键！）
+
+三个尺寸各自独立、用途不同：
+
+| 尺寸 | 来源 | 示例（85×40mm） | 用途 |
+|------|------|----------------|------|
+| 工作区 `cropW×cropH` | `UPLOAD_AREA_SIZE` | 299×202 | 裁剪页编辑画布、Canvas 上传图输出 |
+| 预览区 `previewW×previewH` | `PREVIEW_IMG_SIZE` | 250×155 | Canvas 预览图输出，与花边 SVG 内框一致 |
+| 实物印刷 | 产品规格 | 85×40mm | 后台强制缩放，本前端不处理 |
+
+**原则**：
+- 工作区尺寸 = 实物等比例（前端保证输出比例正确，避免后台缩放变形）
+- 预览区尺寸 = CSS 写死，与花边 SVG 内框像素值一致
+- 上传用 `uploadFileMap`（工作区尺寸），预览用 `uploadMap`（预览区尺寸）
+
+### 10.3 双路 Canvas 输出
+
+`handleConfirm` 中 Canvas 渲染两次（复用同一个 `<Canvas type='2d'>` 节点）：
+
+```
+renderToCanvas(canvasW, canvasH, isPreview):
+  ├─ canvas.width/height = canvasW/H × dpr
+  ├─ 白底 fillRect
+  │
+  ├─ isPreview ? 等比缩放 + 居中 :
+  │     s = min(canvasW/cropW, canvasH/cropH)
+  │     offsetX = (canvasW - cropW*s) / 2
+  │     ctx.translate(offsetX, offsetY); ctx.scale(s, s)
+  │
+  └─ 然后统一在 work-area 坐标系绘制：
+       ctx.translate(cropW/2 + translateX, cropH/2 + translateY)
+       ctx.rotate / ctx.scale / ctx.drawImage
+```
+
+| 输出 | 尺寸 | 变量 | 等比缩放？ |
+|------|------|------|-----------|
+| 预览图 | previewW×previewH | `imageUrl` → `uploadMap` | ✅ s < 1，工作区等比缩小 |
+| 上传图 | cropW×cropH | `uploadUrl` → `uploadFileMap` | ❌ s = 1，直接 1:1 |
+
+### 10.4 状态记忆（内存，非持久化）
+
+裁剪编辑状态不持久化到 Storage，避免跨会话残留。使用模块级变量 `cropStateMap`（`src/pages/editor/crop-state.ts`）：
+
+```ts
+// 裁剪页保存
+setCropState(itemIndex, { originalImageUrl, transform, imgW, imgH });
+
+// 裁剪页关闭 → 清空
+handleClose → removeCropState(itemIndex);
+
+// 编辑器删除规格 → 清空
+handleMenuClick('delete') → removeCropState(activeItem.index);
+
+// 再次进入裁剪页 → 恢复原图 + transform
+getCropState(itemIndex) → setImageUrl(originalImageUrl) + setTransform(...)
+```
+
+- **裁剪结果**（`CropResult`）也是一次性信号，读完即清
+- 后续做草稿箱功能时再选择性持久化
+
+### 10.5 Canvas 渲染注意事项
+
+- `<Canvas type='2d'>` 按需渲染（`canvasVisible` 状态控制），**不要在页面 mount 时就渲染**，否则小程序引擎可能报 `this._getData is not a function`
+- H5 端不做 Canvas 裁剪，降级直接传原图（`process.env.TARO_ENV === 'h5'` 跳过 Canvas 逻辑）
+- `canvasToTempFilePath` 返回的图片物理像素 = 逻辑像素 × DPR
+
+### 10.6 关键文件
+
+| 文件 | 作用 |
+|------|------|
+| `src/pages/editor/index.logic.ts` | 编辑器主逻辑，`UPLOAD_AREA_SIZE`、`PREVIEW_IMG_SIZE`、`uploadMap`/`uploadFileMap` |
+| `src/pages/editor/crop-state.ts` | 裁剪状态/结果共享内存模块 |
+| `src/pages/editor-crop/index.logic.ts` | 裁剪页逻辑，Canvas 双路渲染、手势处理、变换计算 |
+| `src/pages/editor-crop/index.tsx` | 裁剪页视图，隐藏 Canvas 节点 |
+| `src/pages/editor-crop/useGestureHandler.ts` | 手势处理（拖拽、缩放、旋转） |
+| `src/pages/editor/index.scss` | 各规格花边预览 CSS 尺寸（`upload-area--`、`preview-wrap--`、`preview-bg--`、`preview-img--`） |

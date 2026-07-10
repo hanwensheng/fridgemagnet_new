@@ -82,6 +82,10 @@ export default function Index() {
     });
 
     const specsJson = encodeURIComponent(JSON.stringify(expandedSpecs));
+    console.log(
+      '[home] 传给编辑器的数据:',
+      JSON.stringify(expandedSpecs.map((s) => ({ price: s.price }))),
+    );
     showTabBar();
     setPopupVisible(false);
 

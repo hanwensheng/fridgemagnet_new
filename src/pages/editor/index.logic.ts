@@ -130,8 +130,14 @@ function parseSpecsFromRouter(): SpecItem[] {
     const parsed: { id: string; name: string; price: number; intro: string }[] = JSON.parse(
       decodeURIComponent(raw),
     );
-    return parsed.map((item, index) => ({ ...item, index }));
-  } catch {
+    const result = parsed.map((item, index) => ({ ...item, index }));
+    console.log(
+      '[editor] parseSpecsFromRouter 价格:',
+      result.map((s) => s.price),
+    );
+    return result;
+  } catch (e) {
+    console.error('[editor] parseSpecsFromRouter 失败:', e);
     return [];
   }
 }
@@ -327,6 +333,15 @@ export function useEditorLogic() {
   };
 
   const handleSubmit = () => {
+    console.log(
+      '[editor] handleSubmit specList 价格:',
+      specList.map((s) => s.price),
+    );
+    Taro.setStorageSync('orderData', {
+      specs: specList,
+      uploadMap,
+      uploadFileMap,
+    });
     Taro.navigateTo({ url: '/pages/order-confirm/index' });
   };
 

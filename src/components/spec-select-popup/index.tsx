@@ -59,8 +59,7 @@ function buildPriceText(priceInfo: PriceInfo | null): string {
   if (!priceInfo) return '';
   const second = priceInfo.secondPrice || '--';
   const other = priceInfo.otherPrice || '--';
-  const freeShipping = priceInfo.deliveryPrice || '2';
-  return `第2件${second}元，第3件起均${other}元（${freeShipping}件包邮）`;
+  return `第2件${second}元，第3件起均${other}元（2件包邮）`;
 }
 
 export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSelectPopupProps) {

@@ -312,7 +312,7 @@ export async function request<T = any>(config: RequestConfig): Promise<T> {
           duration: 1500,
         });
         setTimeout(() => {
-          Taro.switchTab({ url: '/pages/home/index' });
+          Taro.switchTab({ url: '/pages/mine/index' });
         }, 1500);
         return Promise.reject(apiRes);
       }

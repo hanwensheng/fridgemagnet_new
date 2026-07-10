@@ -152,7 +152,7 @@ export interface PriceInfo {
   secondPrice: string;
   /** 第三件起价格 */
   otherPrice: string;
-  /** 包邮件数阈值 */
+  /** 邮费 */
   deliveryPrice: string;
 }
 

@@ -1,0 +1,41 @@
+{
+  "libVersion": "3.1.5",
+  "projectname": "fridgemagnet_new",
+  "setting": {
+    "urlCheck": false,
+    "coverView": false,
+    "lazyloadPlaceholderEnable": false,
+    "skylineRenderEnable": false,
+    "preloadBackgroundData": false,
+    "autoAudits": false,
+    "useApiHook": true,
+    "showShadowRootInWxmlPanel": false,
+    "useStaticServer": false,
+    "useLanDebug": false,
+    "showES6CompileOption": false,
+    "compileHotReLoad": true,
+    "checkInvalidKey": true,
+    "ignoreDevUnusedFiles": true,
+    "bigPackageSizeSupport": false
+  },
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pages/order-confirm/index",
+          "pathName": "pages/order-confirm/index",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
+          "name": "pages/editor-crop/index",
+          "pathName": "pages/editor-crop/index",
+          "query": "imageUrl=http%253A%252F%252Ftmp%252F7ka9jOQkyitxc2c9f5a160ce22580c19836802223b4b.jpg&itemIndex=0",
+          "launchMode": "default",
+          "scene": null
+        }
+      ]
+    }
+  }
+}
