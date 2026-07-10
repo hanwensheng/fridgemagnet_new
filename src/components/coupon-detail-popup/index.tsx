@@ -1,7 +1,7 @@
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import { Popup } from '@nutui/nutui-react-taro';
 import IconClose from '@/assets/svgs/icon_popup_close.svg';
-import IconRight from '@/assets/svgs/icon_right2.svg';
+import IconRedUp from '@/assets/svgs/icon_red_up.svg';
 import type { OrderItem } from '@/pages/order-confirm';
 
 import './index.scss';
@@ -63,7 +63,10 @@ export default function CouponDetailPopup({
           ))}
         </ScrollView>
 
-        <View className='coupon-detail-footer'>
+        <View
+          className='coupon-detail-footer'
+          style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
+        >
           <View className='coupon-detail-total'>
             <View className='coupon-detail-total-row'>
               <Text className='coupon-detail-total-label'>总计</Text>
@@ -73,7 +76,7 @@ export default function CouponDetailPopup({
               <Text className='coupon-detail-total-count'>共 {totalCount} 件</Text>
               <View className='coupon-detail-entry' onClick={onClose}>
                 <Text className='coupon-detail-entry-text'>优惠 ¥{totalDiscount} 明细</Text>
-                <Image className='coupon-detail-entry-arrow' src={IconRight} />
+                <Image className='coupon-detail-entry-arrow' src={IconRedUp} />
               </View>
             </View>
           </View>

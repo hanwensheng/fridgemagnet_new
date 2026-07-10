@@ -4,8 +4,8 @@ import { useMemo, useState } from 'react';
 import BasePage from '@/components/base-page';
 import PaySuccessPopup from '@/components/pay-success-popup';
 import CouponDetailPopup from '@/components/coupon-detail-popup';
-import IconBack from '@/assets/svgs/icon_back.svg';
 import IconRight from '@/assets/svgs/icon_right2.svg';
+import IconRedUp from '@/assets/svgs/icon_red_up.svg';
 import IconAddAddress from '@/assets/svgs/icon_add_addres.svg';
 import IconSingle from '@/assets/svgs/icon_single.svg';
 import IconGroup from '@/assets/svgs/icon_group.svg';
@@ -122,16 +122,7 @@ export default function OrderConfirm() {
   return (
     <BasePage
       navTitle='确认订单'
-      backgroundColor='#f6f6f6'
-      navShowBack={false}
-      navLeftComponent={
-        <View className='order-nav-back'>
-          <Image className='order-nav-back-icon' src={IconBack} />
-        </View>
-      }
       onNavLeftClick={() => Taro.navigateBack().catch(() => {})}
-      bottomBarHeight={108}
-      safeAreaBackgroundColor='#f6f6f6'
       bottomBarComponent={
         <View className='order-bottom-bar'>
           <View className='order-total'>
@@ -146,7 +137,7 @@ export default function OrderConfirm() {
                   <Text className='order-coupon-text'>优惠 ¥{totalDiscount} 明细</Text>
                   <Image
                     className={`order-coupon-arrow ${couponPopupVisible ? 'order-coupon-arrow--up' : ''}`}
-                    src={IconRight}
+                    src={IconRedUp}
                   />
                 </View>
               )}
