@@ -264,8 +264,9 @@ export function useEditorCropLogic() {
                 ctx.fillStyle = '#ffffff';
                 ctx.fillRect(0, 0, canvasW, canvasH);
 
-                // 计算变换：预览模式需要等比缩放+居中，上传模式 1:1
-                const s = isPreview ? Math.min(canvasW / curCropW, canvasH / curCropH) : 1;
+                // 预览模式用 max：工作区覆盖预览区，不留白边。
+                // 上传模式 s=1：工作区 1:1 输出。
+                const s = isPreview ? Math.max(canvasW / curCropW, canvasH / curCropH) : 1;
                 const ox = isPreview ? (canvasW - curCropW * s) / 2 : 0;
                 const oy = isPreview ? (canvasH - curCropH * s) / 2 : 0;
 
