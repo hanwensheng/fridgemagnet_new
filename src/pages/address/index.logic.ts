@@ -1,5 +1,5 @@
 import Taro, { useDidShow, useRouter } from '@tarojs/taro';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { addressApi } from '@/api/modules/address';
 import type { AddressItem } from '@/api/modules/address';
 
@@ -18,6 +18,7 @@ export function useAddressLogic() {
   const [selectedAddress, setSelectedAddress] = useState<AddressItem | null>(() =>
     getStoredSelectedAddress(),
   );
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const isSelectable = useMemo(() => {
     return router.params.from === 'order-confirm' || router.params.selectable === '1';
@@ -42,11 +43,19 @@ export function useAddressLogic() {
       Taro.setStorageSync('selectedAddress', address);
       setSelectedAddress(address);
       // 延迟返回，留一帧让 React 渲染红对号后再跳走
-      setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         Taro.navigateBack();
       }, 150);
     },
     [isSelectable],
+  );
+
+  // 卸载时清除定时器，防止在已离开的页面触发 navigateBack
+  useEffect(
+    () => () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    },
+    [],
   );
 
   const handleAdd = useCallback(() => {
