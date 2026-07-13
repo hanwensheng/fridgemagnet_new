@@ -2,13 +2,12 @@ import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useEffect, useMemo, useState } from 'react';
 import BasePage from '@/components/base-page';
-import IconBack from '@/assets/svgs/icon_back.svg';
 import IconSingle from '@/assets/svgs/icon_single.svg';
 import IconGroup from '@/assets/svgs/icon_group.svg';
 import ProductImg from '@/assets/images/8.5_4cm.png';
 import ProductImg2 from '@/assets/images/7_5.5cm.png';
 import ProductImg3 from '@/assets/images/4.5_3cm.png';
-
+import IconCar from '@/assets/svgs/icon_car_black.svg';
 import './index.scss';
 
 type OrderStatus =
@@ -222,17 +221,7 @@ export default function MyOrders() {
   };
 
   return (
-    <BasePage
-      navTitle='我的订单'
-      backgroundColor='#f6f6f6'
-      navShowBack={false}
-      navLeftComponent={
-        <View className='my-orders-nav-back'>
-          <Image className='my-orders-nav-back-icon' src={IconBack} />
-        </View>
-      }
-      onNavLeftClick={() => Taro.navigateBack().catch(() => {})}
-    >
+    <BasePage navTitle='我的订单'>
       <View className='my-orders-page'>
         {/* 可滚动tab */}
         <ScrollView className='order-tabs' scrollX showScrollbar={false}>
@@ -251,7 +240,7 @@ export default function MyOrders() {
         </ScrollView>
 
         {/* 订单列表 */}
-        <ScrollView className='order-list' scrollY>
+        <View className='order-list'>
           {filteredOrders.map((order) => {
             const isGroup = isGroupOrder(order);
             return (
@@ -296,18 +285,32 @@ export default function MyOrders() {
                       <View className='order-single-info'>
                         <Text className='order-single-name'>{order.items[0].name}</Text>
                         <Text className='order-single-spec'>{order.items[0].spec}</Text>
-                        <Text className='order-single-count'>共 {order.items[0].quantity} 件</Text>
+                        <View className='order-single-count-row'>
+                          <Text className='order-single-count'>
+                            共 {order.items[0].quantity} 件
+                          </Text>
+                          <View className='order-payment'>
+                            <Text className='order-payment-label'>实付</Text>
+                            <Text className='order-payment-price'>
+                              ¥{order.actualPayment.toFixed(1)}
+                            </Text>
+                          </View>
+                        </View>
                       </View>
                     </View>
                   )}
-                  <View className='order-payment'>
+                </View>
+
+                {isGroup && (
+                  <View className='order-payment-group'>
                     <Text className='order-payment-label'>实付</Text>
                     <Text className='order-payment-price'>¥{order.actualPayment.toFixed(1)}</Text>
                   </View>
-                </View>
+                )}
 
                 {order.shippingInfo && (
                   <View className='order-shipping-info'>
+                    <Image className='order-shipping-icon' src={IconCar} />
                     <Text className='order-shipping-label'>
                       {order.status === 'pending_shipment' ? '发货信息' : '运输中'}
                     </Text>
@@ -322,7 +325,7 @@ export default function MyOrders() {
             );
           })}
           <View className='my-orders-safe-bottom' />
-        </ScrollView>
+        </View>
       </View>
     </BasePage>
   );

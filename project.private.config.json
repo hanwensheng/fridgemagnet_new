@@ -22,11 +22,18 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/order-confirm/index",
-          "pathName": "pages/order-confirm/index",
+          "name": "pages/my-orders/index",
+          "pathName": "pages/my-orders/index",
           "query": "",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "pages/order-confirm/index",
+          "pathName": "pages/order-confirm/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/editor-crop/index",
