@@ -35,6 +35,7 @@ export default function PaySuccessPopup({
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
+          onClose();
           Taro.switchTab({ url: '/pages/index/index' });
           return 0;
         }
@@ -64,6 +65,7 @@ export default function PaySuccessPopup({
       visible={visible}
       position='bottom'
       onClose={onClose}
+      closeOnOverlayClick={false}
       round
       closeable={false}
       className='pay-success-popup'
