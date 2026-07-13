@@ -2,16 +2,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px 12px;
+  padding: 76px 12px 0;
   box-sizing: border-box;
   background: #f6f6f6;
+  border-radius: 24px;
+  height: 520px;
 }
 
 .pay-success-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
   margin-bottom: 24px;
 }
 
@@ -26,8 +27,7 @@
   font-size: 12px;
   color: rgba(0, 0, 0, 0.5);
   line-height: 18px;
-  letter-spacing: 0.48px;
-  font-weight: 300;
+  margin-top: 10px;
 }
 
 .pay-success-card {
@@ -36,9 +36,9 @@
   align-items: center;
   background: #fff;
   border-radius: 16px;
-  padding: 12px;
+  padding: 10px;
   box-sizing: border-box;
-  margin-bottom: 24px;
+  margin-bottom: 165px;
 }
 
 .pay-success-image {
@@ -53,8 +53,8 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-left: 12px;
+  gap: 10px;
+  margin-left: 10px;
   overflow: hidden;
 }
 
@@ -68,7 +68,7 @@
 .pay-success-address {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .pay-success-address-icon {
@@ -88,14 +88,13 @@
 
 .pay-success-view-btn {
   height: 32px;
-  padding: 0 12px;
+  padding: 0 10px;
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 12px;
   flex-shrink: 0;
 }
 
@@ -109,11 +108,11 @@
   font-size: 14px;
   color: #000;
   line-height: 15px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .pay-success-countdown-num {
-  color: #2b7de9;
+  color: #08f;
 }
 
 .pay-success-home-btn {

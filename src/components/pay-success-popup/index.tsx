@@ -3,7 +3,7 @@ import Taro from '@tarojs/taro';
 import { Popup } from '@nutui/nutui-react-taro';
 import { useEffect, useState } from 'react';
 import ProductImg from '@/assets/images/8.5_4cm.png';
-import IconLocation from '@/assets/svgs/icon_location.svg';
+import IconLocation from '@/assets/svgs/icon_car.svg';
 
 import './index.scss';
 
@@ -83,7 +83,11 @@ export default function PaySuccessPopup({ visible, onClose }: PaySuccessPopupPro
           当前页面将在 <Text className='pay-success-countdown-num'>{countdown}</Text> 秒后关闭
         </Text>
 
-        <View className='pay-success-home-btn' onClick={handleBackHome}>
+        <View
+          className='pay-success-home-btn'
+          onClick={handleBackHome}
+          style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
+        >
           <Text className='pay-success-home-text'>返回首页</Text>
         </View>
       </View>
