@@ -129,7 +129,12 @@ export default function OrderConfirm() {
         <View className='order-safe-bottom' />
       </ScrollView>
 
-      <PaySuccessPopup visible={payPopupVisible} onClose={closePayPopup} />
+      <PaySuccessPopup
+        visible={payPopupVisible}
+        onClose={closePayPopup}
+        address={address}
+        productImage={orderItems[0]?.image || ''}
+      />
       <CouponDetailPopup
         visible={couponPopupVisible}
         items={couponItems}

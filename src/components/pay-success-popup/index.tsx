@@ -2,19 +2,26 @@ import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { Popup } from '@nutui/nutui-react-taro';
 import { useEffect, useState } from 'react';
-import ProductImg from '@/assets/images/8.5_4cm.png';
 import IconLocation from '@/assets/svgs/icon_car.svg';
+import type { AddressItem } from '@/api/modules/address';
 
 import './index.scss';
 
 interface PaySuccessPopupProps {
   visible: boolean;
   onClose: () => void;
+  address: AddressItem | null;
+  productImage: string;
 }
 
 const COUNTDOWN_SECONDS = 5;
 
-export default function PaySuccessPopup({ visible, onClose }: PaySuccessPopupProps) {
+export default function PaySuccessPopup({
+  visible,
+  onClose,
+  address,
+  productImage,
+}: PaySuccessPopupProps) {
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
 
   useEffect(() => {
@@ -28,7 +35,7 @@ export default function PaySuccessPopup({ visible, onClose }: PaySuccessPopupPro
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          onClose();
+          Taro.switchTab({ url: '/pages/index/index' });
           return 0;
         }
         return prev - 1;
@@ -36,7 +43,7 @@ export default function PaySuccessPopup({ visible, onClose }: PaySuccessPopupPro
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [visible, onClose]);
+  }, [visible]);
 
   const handleBackHome = () => {
     onClose();
@@ -47,6 +54,10 @@ export default function PaySuccessPopup({ visible, onClose }: PaySuccessPopupPro
     onClose();
     Taro.navigateTo({ url: '/pages/my-orders/index' });
   };
+
+  const addressText = address
+    ? `${address.province}${address.city}${address.district}${address.detailAddress}`
+    : '';
 
   return (
     <Popup
@@ -66,13 +77,15 @@ export default function PaySuccessPopup({ visible, onClose }: PaySuccessPopupPro
         </View>
 
         <View className='pay-success-card'>
-          <Image className='pay-success-image' src={ProductImg} mode='aspectFill' />
+          <Image className='pay-success-image' src={productImage} mode='aspectFill' />
           <View className='pay-success-info'>
             <Text className='pay-success-delivery'>预计明早发货</Text>
-            <View className='pay-success-address'>
-              <Image className='pay-success-address-icon' src={IconLocation} />
-              <Text className='pay-success-address-text'>辽宁省大连市甘井子区革贞普...</Text>
-            </View>
+            {addressText && (
+              <View className='pay-success-address'>
+                <Image className='pay-success-address-icon' src={IconLocation} />
+                <Text className='pay-success-address-text'>{addressText}</Text>
+              </View>
+            )}
           </View>
           <View className='pay-success-view-btn' onClick={handleViewOrder}>
             <Text className='pay-success-view-text'>查看订单</Text>
