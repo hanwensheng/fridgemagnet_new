@@ -152,9 +152,9 @@ export default function AddressPage() {
       safeAreaBackgroundColor='#f6f6f6'
     >
       {addresses.length === 0 ? (
-        <View className='flex flex-col items-center pt-20'>
-          <Image className='h-[137px] w-[137px]' src={EmptyIcon} mode='aspectFit' />
-          <Text className='mt-4 text-sm text-black/50'>暂无数据</Text>
+        <View className='flex flex-col items-center pt-[250px]'>
+          <Image className='h-[38px] w-[47px]' src={EmptyIcon} mode='aspectFit' />
+          <Text className='mt-[20px] text-xs text-black/50 tracking-[3px]'>暂无数据</Text>
         </View>
       ) : (
         <View className='px-3 pt-[20px]'>

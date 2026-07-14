@@ -1,5 +1,17 @@
 import { request } from '../request';
 
+export interface AddressParseResult {
+  name: string;
+  phone: string | number;
+  province: string;
+  city: string;
+  district: string;
+  detail: string;
+  address: string;
+  raw_address: string;
+  street: string;
+}
+
 export interface AddressItem {
   addressType: string;
   city: string;
@@ -69,6 +81,14 @@ export const addressApi = {
       method: 'POST',
       data,
       showLoading,
+    });
+  },
+
+  addressParse(addressText: string) {
+    return request<AddressParseResult>({
+      url: '/v1/appUserAddress/addressParse',
+      method: 'POST',
+      data: { addressText },
     });
   },
 };

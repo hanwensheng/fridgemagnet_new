@@ -108,8 +108,36 @@ export function useAddAddressLogic() {
         Taro.showToast({ title: '剪贴板为空', icon: 'none' });
         return;
       }
-      setForm((prev) => ({ ...prev, detail: data }));
-      Taro.showToast({ title: '已粘贴到详细地址', icon: 'none' });
+      Taro.showLoading({ title: '识别中...' });
+      try {
+        const parsed = await addressApi.addressParse(data);
+        Taro.hideLoading();
+        if (!parsed) {
+          Taro.showToast({ title: '未识别到地址信息', icon: 'none' });
+          setForm((prev) => ({ ...prev, detail: data }));
+          return;
+        }
+        const regionValue =
+          parsed.province && parsed.city && parsed.district
+            ? [parsed.province, parsed.city, parsed.district]
+            : [];
+        setForm((prev) => ({
+          ...prev,
+          name: parsed.name || prev.name,
+          phone: String(parsed.phone || prev.phone)
+            .replace(/\D/g, '')
+            .slice(0, 11),
+          region: regionValue.length > 0 ? regionValue.join(' ') : prev.region,
+          regionValue: regionValue.length > 0 ? regionValue : prev.regionValue,
+          detail: parsed.detail || data,
+        }));
+        Taro.showToast({ title: '已识别并填充', icon: 'success' });
+      } catch {
+        Taro.hideLoading();
+        // 识别失败兜底：粘贴到详细地址
+        setForm((prev) => ({ ...prev, detail: data }));
+        Taro.showToast({ title: '未识别到地址信息', icon: 'none' });
+      }
     } catch {
       Taro.showToast({ title: '读取剪贴板失败', icon: 'none' });
     }
