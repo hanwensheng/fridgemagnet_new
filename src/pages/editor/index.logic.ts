@@ -13,7 +13,13 @@ import PreviewBg85 from '@/assets/svgs/icon_preview_bg_8.5_4.svg';
 import PreviewBg75 from '@/assets/svgs/icon_preview_bg_7_5.5.svg';
 import PreviewBg34 from '@/assets/svgs/icon_preview_bg_3_4.5.svg';
 import type { SelectedSpec } from '@/components/spec-select-popup';
-import { getCropResult, setCropResult, getCropState, removeCropState } from './crop-state';
+import {
+  getCropResult,
+  setCropResult,
+  getCropState,
+  removeCropState,
+  clearAllCropState,
+} from './crop-state';
 
 export interface SizeOption {
   id: string;
@@ -158,6 +164,11 @@ function loadDraftData(): Record<string, any> | null {
 
 export function useEditorLogic() {
   const draftData = useMemo(() => loadDraftData(), []);
+  // 非草稿恢复场景：清除模块级裁剪状态，防止上一轮编辑的变换/原图污染新会话
+  // cropStateMap 是模块级 Map，跨页面跳转持久存在，但 itemIndex 会重新分配导致复用冲突
+  if (!draftData) {
+    clearAllCropState();
+  }
   const initialList = useMemo(() => {
     if (draftData) return (draftData.specList as SpecItem[]) || [];
     return parseSpecsFromRouter();

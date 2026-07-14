@@ -54,6 +54,18 @@ export default function Index() {
     checkDrafts();
   });
 
+  // 监听其它页面发起的"打开首页抽屉"事件
+  useEffect(() => {
+    const handler = () => {
+      hideTabBar();
+      setPopupVisible(true);
+    };
+    Taro.eventCenter.on('home:open-drawer', handler);
+    return () => {
+      Taro.eventCenter.off('home:open-drawer', handler);
+    };
+  }, []);
+
   // 调试：在开发者工具控制台看实际高度值
   // console.log('statusBarHeight:', statusBarHeight);
   // console.log('navBarHeight:', navBarHeight);
