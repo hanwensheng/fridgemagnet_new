@@ -1,7 +1,7 @@
 import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { Popup } from '@nutui/nutui-react-taro';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import IconLocation from '@/assets/svgs/icon_car.svg';
 import type { AddressItem } from '@/api/modules/address';
 
@@ -23,6 +23,8 @@ export default function PaySuccessPopup({
   productImage,
 }: PaySuccessPopupProps) {
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!visible) {
@@ -35,7 +37,7 @@ export default function PaySuccessPopup({
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          onClose();
+          onCloseRef.current();
           Taro.switchTab({ url: '/pages/index/index' });
           return 0;
         }
