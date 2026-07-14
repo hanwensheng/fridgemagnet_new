@@ -107,6 +107,15 @@ export const OrderStatus = {
 
 export type OrderStatusValue = (typeof OrderStatus)[keyof typeof OrderStatus];
 
+/** 订单商品图片 */
+export interface OrderImgItem {
+  gmtCreate: string;
+  gmtModified: string;
+  goodsId: string;
+  imgLink: string;
+  pkId: number;
+}
+
 /** 商户订单 */
 export interface MerchantOrder {
   address: string;
@@ -118,8 +127,10 @@ export interface MerchantOrder {
   deliveryTime: string;
   finishTime: string;
   gmtCreate: string;
+  gmtModified: string;
   goodsNum: number;
   goodsPrice: number;
+  imgList?: OrderImgItem[];
   isDelete: number;
   isReview: number;
   merchantId: string;
@@ -270,7 +281,7 @@ export const orderApi = {
   },
 
   /** 查询线上订单列表 */
-  findAllBySearchOnline(data?: { pageNum?: number; pageSize?: number }) {
+  findAllBySearchOnline(data?: { pageNum?: number; pageSize?: number; orderStatus?: number }) {
     return request<MerchantOrder[]>({
       url: '/v1/bizOrder/findAllBySearch',
       method: 'POST',

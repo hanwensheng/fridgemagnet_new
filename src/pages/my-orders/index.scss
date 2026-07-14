@@ -3,7 +3,8 @@
   flex-direction: column;
   box-sizing: border-box;
 }
-/* 可滚动tab */
+
+/* 可横向滚动 tab 栏 */
 .order-tabs {
   flex-shrink: 0;
   height: 36px;
@@ -54,7 +55,6 @@
 
 /* 订单列表 */
 .order-list {
-  flex: 1;
   overflow: hidden;
   padding: 0 12px;
 }
@@ -281,6 +281,12 @@
   margin-top: 10px;
 }
 
+.order-card-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .order-action-btn {
   height: 30px;
   padding: 0 10px;
@@ -307,6 +313,19 @@
 
 .order-action-text--default {
   color: #000;
+}
+
+/* 空状态 */
+.order-list-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 120px;
+}
+
+.order-list-empty-text {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.4);
 }
 
 .my-orders-safe-bottom {
