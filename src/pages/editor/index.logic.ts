@@ -142,16 +142,50 @@ function parseSpecsFromRouter(): SpecItem[] {
   }
 }
 
+/** 从 storage 读取草稿完整数据 */
+function loadDraftData(): Record<string, any> | null {
+  try {
+    const instance = Taro.getCurrentInstance();
+    const draftId = instance.router?.params?.draftId;
+    if (!draftId) return null;
+    const drafts = Taro.getStorageSync('fridge_magnet_editor_drafts');
+    if (!Array.isArray(drafts)) return null;
+    return drafts.find((d: any) => d && d.id === draftId) || null;
+  } catch {
+    return null;
+  }
+}
+
 export function useEditorLogic() {
-  const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [uploadMap, setUploadMap] = useState<Record<number, string>>({});
+  const draftData = useMemo(() => loadDraftData(), []);
+  const initialList = useMemo(() => {
+    if (draftData) return (draftData.specList as SpecItem[]) || [];
+    return parseSpecsFromRouter();
+  }, [draftData]);
+
+  const [activeIndex, setActiveIndex] = useState<number>(
+    draftData ? (draftData.activeIndex as number) || 0 : 0,
+  );
+  const [uploadMap, setUploadMap] = useState<Record<number, string>>(
+    draftData ? (draftData.uploadMap as Record<number, string>) || {} : {},
+  );
   /** 上传用图（工作区实物比例），区别于 uploadMap 的预览图 */
-  const [uploadFileMap, setUploadFileMap] = useState<Record<number, string>>({});
-  const [completedMap, setCompletedMap] = useState<Record<number, boolean>>({});
+  const [uploadFileMap, setUploadFileMap] = useState<Record<number, string>>(
+    draftData ? (draftData.uploadFileMap as Record<number, string>) || {} : {},
+  );
+  const [completedMap, setCompletedMap] = useState<Record<number, boolean>>(
+    draftData ? (draftData.completedMap as Record<number, boolean>) || {} : {},
+  );
   const [menuVisible, setMenuVisible] = useState(false);
-  const initialList = useMemo(() => parseSpecsFromRouter(), []);
+  const [exitPopupVisible, setExitPopupVisible] = useState(false);
   const [specList, setSpecList] = useState<SpecItem[]>(initialList);
-  const [nextIndex, setNextIndex] = useState<number>(initialList.length);
+  const [nextIndex, setNextIndex] = useState<number>(() => {
+    if (draftData) {
+      const list = (draftData.specList as SpecItem[]) || [];
+      return list.length > 0 ? Math.max(...list.map((s) => s.index)) + 1 : initialList.length;
+    }
+    return initialList.length;
+  });
   const [specPopupVisible, setSpecPopupVisible] = useState(false);
   const [specPopupKey, setSpecPopupKey] = useState(0);
 
@@ -345,6 +379,52 @@ export function useEditorLogic() {
     Taro.navigateTo({ url: '/pages/order-confirm/index' });
   };
 
+  const hasDraftData = Object.keys(uploadMap).length > 0;
+
+  /** 保存当前编辑数据到本地草稿列表，每次保存新增一份草稿 */
+  const saveDraft = () => {
+    const now = Date.now();
+    const d = new Date(now);
+    const savedAt = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    const draft = {
+      id: `${now}_${Math.random().toString(36).slice(2, 8)}`,
+      specList,
+      uploadMap,
+      uploadFileMap,
+      completedMap,
+      activeIndex,
+      createdAt: now,
+      savedAt,
+    };
+    const existing = Taro.getStorageSync('fridge_magnet_editor_drafts');
+    const list = Array.isArray(existing) ? existing : [];
+    Taro.setStorageSync('fridge_magnet_editor_drafts', [draft, ...list]);
+  };
+
+  const closeExitPopup = () => {
+    setExitPopupVisible(false);
+  };
+
+  const handleSaveDraftAndExit = () => {
+    saveDraft();
+    closeExitPopup();
+    Taro.navigateBack().catch(() => {});
+  };
+
+  const handleDirectExit = () => {
+    closeExitPopup();
+    Taro.navigateBack().catch(() => {});
+  };
+
+  /** 导航栏返回：有数据时弹窗提示，无数据直接返回 */
+  const handleNavLeftClick = () => {
+    if (hasDraftData) {
+      setExitPopupVisible(true);
+    } else {
+      Taro.navigateBack().catch(() => {});
+    }
+  };
+
   const toggleMenu = (e?: { stopPropagation?: () => void }) => {
     e?.stopPropagation?.();
     setMenuVisible((prev) => !prev);
@@ -369,6 +449,8 @@ export function useEditorLogic() {
     isSingle,
     allUploaded,
     currentHasImage,
+    hasDraftData,
+    exitPopupVisible,
     handleChooseImage,
     handleMenuClick,
     handleSpecAdd,
@@ -376,5 +458,9 @@ export function useEditorLogic() {
     handleConfirm,
     handleSubmit,
     toggleMenu,
+    handleNavLeftClick,
+    closeExitPopup,
+    handleSaveDraftAndExit,
+    handleDirectExit,
   };
 }

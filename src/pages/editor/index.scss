@@ -343,3 +343,64 @@
   line-height: 20px;
   font-weight: 500;
 }
+
+/* 退出弹窗 */
+.exit-popup-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.exit-popup-container {
+  position: fixed;
+  left: 12px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 220px;
+}
+
+.exit-popup-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  height: 54px;
+  padding: 0 20px;
+  border-radius: 12px;
+  box-sizing: border-box;
+
+  &--save {
+    background: #fff;
+
+    .exit-popup-text {
+      color: #000;
+    }
+  }
+
+  &--dark {
+    background: #1c1c1e;
+
+    .exit-popup-text {
+      color: #fff;
+    }
+  }
+}
+
+.exit-popup-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.exit-popup-text {
+  font-size: 14px;
+  font-weight: 510;
+  line-height: 22px;
+  white-space: nowrap;
+}

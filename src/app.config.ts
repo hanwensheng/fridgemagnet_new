@@ -11,6 +11,7 @@ export default {
     'pages/address/index',
     'pages/add-address/index',
     'pages/edit-profile/index',
+    'pages/draft/index',
   ],
   requiredPrivateInfos: ['chooseAddress'],
   window: {

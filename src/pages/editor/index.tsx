@@ -1,9 +1,14 @@
 import { View, Text, Image, ScrollView } from '@tarojs/components';
+import Taro from '@tarojs/taro';
+import { useMemo } from 'react';
 import BasePage from '@/components/base-page';
 import SpecSelectPopup from '@/components/spec-select-popup';
 import IconCheck from '@/assets/svgs/icon_check.svg';
 import IconUpload from '@/assets/svgs/icon_upload.svg';
 import IconMenu from '@/assets/svgs/icon_menu.svg';
+import IconSave from '@/assets/svgs/icon_save.svg';
+import IconExit from '@/assets/svgs/icon_exit.svg';
+import IconClose2 from '@/assets/svgs/icon_close2.svg';
 import {
   useEditorLogic,
   findSizeOption,
@@ -24,6 +29,7 @@ export default function Editor() {
     isSingle,
     allUploaded,
     currentHasImage,
+    exitPopupVisible,
     handleChooseImage,
     handleMenuClick,
     handleSpecAdd,
@@ -34,13 +40,33 @@ export default function Editor() {
     closeMenu,
     specPopupVisible,
     specPopupKey,
+    handleNavLeftClick,
+    closeExitPopup,
+    handleSaveDraftAndExit,
+    handleDirectExit,
   } = useEditorLogic();
+
+  const navBarHeight = useMemo(() => {
+    const systemInfo = Taro.getSystemInfoSync();
+    const statusBarHeight = systemInfo.statusBarHeight || 0;
+    let menuButtonInfo: { top: number; height: number };
+    try {
+      menuButtonInfo = Taro.getMenuButtonBoundingClientRect();
+    } catch {
+      menuButtonInfo = { top: statusBarHeight + 4, height: 32 };
+    }
+    const gap = menuButtonInfo.top - statusBarHeight;
+    return statusBarHeight + menuButtonInfo.height + gap * 2;
+  }, []);
+
+  const exitPopupTop = navBarHeight + 20;
 
   return (
     <BasePage
       navTitle='创作之旅'
       bottomBarHeight={56}
       safeAreaBackgroundColor='#F6F6F6'
+      onNavLeftClick={handleNavLeftClick}
       bottomBarComponent={
         <View className='editor-bottom-bar'>
           <View className='menu-area' onClick={toggleMenu}>
@@ -219,6 +245,33 @@ export default function Editor() {
         onClose={handleSpecPopupClose}
         onConfirm={handleSpecAdd}
       />
+
+      {exitPopupVisible && (
+        <>
+          <View className='exit-popup-mask' onClick={closeExitPopup} />
+          <View
+            className='exit-popup-container'
+            style={{ top: `${exitPopupTop}px` }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <View
+              className='exit-popup-item exit-popup-item--save'
+              onClick={handleSaveDraftAndExit}
+            >
+              <Image className='exit-popup-icon' src={IconSave} />
+              <Text className='exit-popup-text'>保存草稿并退出</Text>
+            </View>
+            <View className='exit-popup-item exit-popup-item--dark' onClick={handleDirectExit}>
+              <Image className='exit-popup-icon' src={IconExit} />
+              <Text className='exit-popup-text'>直接退出</Text>
+            </View>
+            <View className='exit-popup-item exit-popup-item--dark' onClick={closeExitPopup}>
+              <Image className='exit-popup-icon' src={IconClose2} />
+              <Text className='exit-popup-text'>取消</Text>
+            </View>
+          </View>
+        </>
+      )}
     </BasePage>
   );
 }

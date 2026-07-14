@@ -1,12 +1,13 @@
 import { View, Image } from '@tarojs/components';
-import Taro, { ENV_TYPE, useDidHide } from '@tarojs/taro';
-import { useState, useEffect, useMemo } from 'react';
+import Taro, { ENV_TYPE, useDidHide, useDidShow } from '@tarojs/taro';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import BasePage from '@/components/base-page';
 import SpecSelectPopup, { SelectedSpec } from '@/components/spec-select-popup';
 import { useTabBar } from '@/hooks/useTabBar';
 import logoIcon from '@/assets/svgs/icon_logo_black.svg';
 import HomeBg from '@/assets/images/home_bg.png';
 import HomeImg0 from '@/assets/images/home_img0.png';
+import IconSave from '@/assets/svgs/icon_save.svg';
 import './index.scss';
 
 export default function Index() {
@@ -32,6 +33,26 @@ export default function Index() {
     const gap = menuButtonInfo.top - statusBarHeight;
     return statusBarHeight + menuButtonInfo.height + gap * 2;
   }, [statusBarHeight, menuButtonInfo]);
+
+  // 草稿数量
+  const [draftCount, setDraftCount] = useState(0);
+
+  const checkDrafts = useCallback(() => {
+    try {
+      const raw = Taro.getStorageSync('fridge_magnet_editor_drafts');
+      setDraftCount(Array.isArray(raw) ? raw.length : 0);
+    } catch {
+      setDraftCount(0);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkDrafts();
+  }, [checkDrafts]);
+
+  useDidShow(() => {
+    checkDrafts();
+  });
 
   // 调试：在开发者工具控制台看实际高度值
   // console.log('statusBarHeight:', statusBarHeight);
@@ -107,6 +128,18 @@ export default function Index() {
       <View className='home-btn' onClick={handleMakeClick}>
         开始制作
       </View>
+      {draftCount > 0 && (
+        <View
+          className='home-draft'
+          style={{ bottom: 'max(calc(env(safe-area-inset-bottom) + 11px), 45px)' }}
+          onClick={() => Taro.navigateTo({ url: '/pages/draft/index' })}
+        >
+          <View className='home-draft-box'>
+            <Image src={IconSave} className='home-save-img' mode='widthFix' />
+            <View className='home-draft-num'>{draftCount}</View>
+          </View>
+        </View>
+      )}
       <SpecSelectPopup
         visible={popupVisible}
         onClose={handlePopupClose}

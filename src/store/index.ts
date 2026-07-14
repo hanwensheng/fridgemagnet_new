@@ -55,6 +55,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     Taro.removeStorageSync('fridge_magnet_drag_hint_shown');
     Taro.removeStorageSync('fridge_magnet_single_draft');
     Taro.removeStorageSync('fridge_magnet_package_draft');
+    Taro.removeStorageSync('fridge_magnet_editor_drafts');
     set({ token: null, userInfo: null });
   },
 }));
