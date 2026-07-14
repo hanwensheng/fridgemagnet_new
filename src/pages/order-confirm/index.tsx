@@ -7,7 +7,6 @@ import IconRight from '@/assets/svgs/icon_right2.svg';
 import IconRedUp from '@/assets/svgs/icon_red_up.svg';
 import IconAddAddress from '@/assets/svgs/icon_add_addres.svg';
 import IconSingle from '@/assets/svgs/icon_single.svg';
-import IconGroup from '@/assets/svgs/icon_group.svg';
 import { useOrderConfirmLogic } from './index.logic';
 import './index.scss';
 
@@ -94,8 +93,8 @@ export default function OrderConfirm() {
           <View key={item.id} className='order-item-card'>
             <View className='order-item-header'>
               <View className='order-item-type'>
-                <Image className='order-item-type-icon' src={isGroup ? IconGroup : IconSingle} />
-                <Text className='order-item-type-text'>{isGroup ? '组合' : '单品'}</Text>
+                <Image className='order-item-type-icon' src={IconSingle} />
+                <Text className='order-item-type-text'>单品</Text>
               </View>
             </View>
             <View className='order-item-body'>
