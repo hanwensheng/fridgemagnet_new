@@ -99,6 +99,12 @@ export default function MyOrders() {
     setActiveTab(key);
   };
 
+  /** 去制作：通知首页打开抽屉并跳转到首页 */
+  const handleGoMake = () => {
+    Taro.eventCenter.trigger('home:open-drawer');
+    Taro.switchTab({ url: '/pages/index/index' });
+  };
+
   // === 操作处理 ===
 
   /** 确认收货 */
@@ -252,7 +258,11 @@ export default function MyOrders() {
             </View>
           ) : orders.length === 0 ? (
             <View className='order-list-empty'>
-              <Text className='order-list-empty-text'>暂无订单</Text>
+              <Text className='order-list-empty-line'>暂无相关订单</Text>
+              <Text className='order-list-empty-line'>快去制作专属冰箱贴吧</Text>
+              <View className='order-list-empty-btn' onClick={handleGoMake}>
+                <Text className='order-list-empty-btn-text'>去制作</Text>
+              </View>
             </View>
           ) : (
             orders.map((order) => {
