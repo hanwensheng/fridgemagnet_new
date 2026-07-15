@@ -166,6 +166,17 @@
   overflow: hidden;
 }
 
+.order-images-scroll {
+  width: 260px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.order-images-scroll-inner {
+  display: flex;
+  gap: 10px;
+}
+
 .order-image-wrap {
   position: relative;
   width: 80px;

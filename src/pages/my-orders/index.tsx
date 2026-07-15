@@ -294,11 +294,22 @@ export default function MyOrders() {
                   <View className='order-card-body'>
                     {isGroup ? (
                       <View className='order-images-row'>
-                        {(order.imgList || []).map((img, idx) => (
-                          <View key={img.pkId || idx} className='order-image-wrap'>
-                            <Image className='order-image' src={img.imgLink} mode='aspectFill' />
+                        <ScrollView className='order-images-scroll' scrollX showScrollbar={false}>
+                          <View className='order-images-scroll-inner'>
+                            {(order.imgList || []).map((img, idx) => (
+                              <View key={img.pkId || idx} className='order-image-wrap'>
+                                <Image
+                                  className='order-image'
+                                  src={img.imgLink}
+                                  mode='aspectFill'
+                                />
+                                <View className='order-image-badge'>
+                                  <Text className='order-image-badge-text'>x1</Text>
+                                </View>
+                              </View>
+                            ))}
                           </View>
-                        ))}
+                        </ScrollView>
                         <View className='order-total-info'>
                           <Text className='order-total-count-text'>共 {order.goodsNum} 件</Text>
                         </View>
