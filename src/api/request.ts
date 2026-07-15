@@ -52,7 +52,7 @@ function showNetworkModal(title: string, content: string): Promise<void> {
       success: () => {
         isShowingNetworkModal = false;
         // 用户点击确认后，清空页面栈返回首页
-        Taro.switchTab({ url: '/pages/home/index' });
+        Taro.switchTab({ url: '/pages/index/index' });
         resolve();
       },
       fail: () => {

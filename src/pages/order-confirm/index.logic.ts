@@ -252,14 +252,10 @@ export function useOrderConfirmLogic() {
     } catch (err: any) {
       Taro.hideLoading();
       const msg = err?.errMsg?.includes('cancel') ? '支付已取消' : err?.message || '支付失败';
-      Taro.showToast({
-        title: msg,
-        icon: 'none',
-        duration: 1500,
-        complete: () => {
-          Taro.reLaunch({ url: '/pages/my-orders/index?from=cancel-pay' });
-        },
-      });
+      Taro.showToast({ title: msg, icon: 'none', duration: 1000 });
+      setTimeout(() => {
+        Taro.reLaunch({ url: '/pages/my-orders/index?from=cancel-pay' }).catch(() => {});
+      }, 1100);
     }
   }, [address, orderData]);
 

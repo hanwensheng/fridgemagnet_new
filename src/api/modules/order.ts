@@ -125,6 +125,7 @@ export interface MerchantOrder {
   courier: string;
   deliveryPrice: number;
   deliveryTime: string;
+  deliveryPromiseTime: string;
   finishTime: string;
   gmtCreate: string;
   gmtModified: string;
