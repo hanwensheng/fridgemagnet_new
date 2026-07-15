@@ -233,6 +233,7 @@ export function useEditorLogic() {
       success: (res) => {
         const imageUrl = res.tempFilePaths[0];
         setUploadMap((prev) => ({ ...prev, [itemIndex]: imageUrl }));
+        setUploadFileMap((prev) => ({ ...prev, [itemIndex]: imageUrl }));
         navigateToCrop(itemIndex, imageUrl, specName);
       },
     });
@@ -279,6 +280,9 @@ export function useEditorLogic() {
         setActiveIndex(activeIndex + 1);
         if (uploadMap[activeItem.index]) {
           setUploadMap((prev) => ({ ...prev, [newIndex]: prev[activeItem.index] }));
+        }
+        if (uploadFileMap[activeItem.index]) {
+          setUploadFileMap((prev) => ({ ...prev, [newIndex]: prev[activeItem.index] }));
         }
       }
       Taro.showToast({ title: '已复制', icon: 'none' });
