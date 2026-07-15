@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState, useCallback } from 'react';
 import Taro, { useDidShow, useUnload } from '@tarojs/taro';
 import { addressApi } from '@/api/modules/address';
 import { orderApi, type PriceInfo } from '@/api/modules/order';
@@ -174,13 +174,79 @@ export function useOrderConfirmLogic() {
     Taro.navigateTo({ url: '/pages/address/index?from=order-confirm' });
   };
 
-  const handlePay = () => {
+  const handlePay = useCallback(async () => {
     if (!address) {
       Taro.showToast({ title: '请先添加地址', icon: 'none' });
       return;
     }
-    setPayPopupVisible(true);
-  };
+    if (!orderData) return;
+
+    const { specs, uploadFileMap: fileMap } = orderData;
+
+    // 收集已上传图片的文件路径和对应商品ID
+    const filePaths: string[] = [];
+    const goodsIds: string[] = [];
+    specs.forEach((spec) => {
+      const fp = fileMap[spec.index];
+      if (fp) {
+        filePaths.push(fp);
+        goodsIds.push(spec.id);
+      }
+    });
+
+    if (filePaths.length === 0) {
+      Taro.showToast({ title: '请先上传图片', icon: 'none' });
+      return;
+    }
+
+    Taro.showLoading({ title: '上传中...', mask: true });
+    try {
+      const uploadedUrls = await orderApi.uploadImages(filePaths);
+
+      const imgList: { goodsId: string; imgLink: string }[] = goodsIds.map((id, i) => ({
+        goodsId: id,
+        imgLink: uploadedUrls[i],
+      }));
+
+      const fullAddress = `${address.province} ${address.city} ${address.district} ${address.detailAddress}`;
+
+      Taro.showLoading({ title: '发起支付...', mask: true });
+      const payResult = await orderApi.saveSingle({
+        imgList,
+        address: fullAddress,
+        recipient: address.recipient,
+        recipientPhone: address.recipientPhone,
+      });
+
+      // 订单已生成，清除存储数据
+      Taro.removeStorageSync('orderData');
+
+      if (!payResult?.payParams) {
+        throw new Error('支付信息获取失败');
+      }
+
+      await Taro.requestPayment({
+        timeStamp: payResult.payParams.timeStamp,
+        nonceStr: payResult.payParams.nonceStr,
+        package: payResult.payParams.package,
+        signType: payResult.payParams.signType as 'MD5' | 'HMAC-SHA256' | 'RSA',
+        paySign: payResult.payParams.paySign,
+      });
+
+      Taro.hideLoading();
+      setPayPopupVisible(true);
+    } catch (err: any) {
+      Taro.hideLoading();
+      if (err?.errMsg?.includes('cancel')) {
+        Taro.showToast({ title: '支付已取消', icon: 'none', duration: 2000 });
+      } else {
+        Taro.showToast({ title: err?.message || '支付失败', icon: 'none', duration: 2000 });
+      }
+      setTimeout(() => {
+        Taro.switchTab({ url: '/pages/my-orders/index' });
+      }, 500);
+    }
+  }, [address, orderData]);
 
   const toggleCouponPopup = () => setCouponPopupVisible((prev) => !prev);
   const closePayPopup = () => setPayPopupVisible(false);
