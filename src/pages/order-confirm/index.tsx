@@ -14,9 +14,8 @@ export default function OrderConfirm() {
   const {
     address,
     orderItems,
-    couponItems,
     totalCount,
-    couponTotalPrice,
+    totalPrice,
     totalDiscount,
     originalTotal,
     finalTotal,
@@ -136,8 +135,8 @@ export default function OrderConfirm() {
       />
       <CouponDetailPopup
         visible={couponPopupVisible}
-        items={couponItems}
-        totalPrice={couponTotalPrice}
+        items={orderItems}
+        totalPrice={totalPrice}
         totalDiscount={totalDiscount}
         totalCount={totalCount}
         onClose={closeCouponPopup}

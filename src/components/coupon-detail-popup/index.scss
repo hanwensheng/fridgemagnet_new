@@ -22,7 +22,8 @@
 
 .coupon-detail-list {
   flex: 1;
-  overflow: hidden;
+  height: 400px;
+  overflow: auto;
   margin-bottom: 16px;
   padding: 0 12px;
 }
@@ -63,7 +64,6 @@
   font-size: 8px;
   color: #f2330d;
   line-height: 14px;
-  height: 14px;
   border: 0.5px solid rgba(242, 51, 13, 0.5);
 }
 

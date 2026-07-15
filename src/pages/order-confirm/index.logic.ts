@@ -40,58 +40,55 @@ function parseOrderData(): OrderData | null {
   }
 }
 
-/** 构建商品列表，价格均来自首页传递的规格单价 */
-function buildOrderItems(data: OrderData): OrderItem[] {
-  const items = data.specs.map((spec) => ({
-    id: spec.id,
-    name: spec.intro || spec.name,
-    spec: spec.name,
-    quantity: 1,
-    price: spec.price || 0,
-    originalPrice: spec.price || 0,
-    discountAmount: 0,
-    image: data.uploadFileMap[spec.index] || ProductImg,
-  }));
+/** 构建商品列表，价格来自 orderApi 阶梯定价 */
+function buildOrderItems(data: OrderData, priceInfo: PriceInfo | null): OrderItem[] {
+  const count = data.specs.length;
+  const applyTiered = count > 1 && priceInfo;
+  const firstPrice = applyTiered ? Number(priceInfo.firstPrice) : 0;
+  const secondPrice = applyTiered ? Number(priceInfo.secondPrice) : 0;
+  const otherPrice = applyTiered ? Number(priceInfo.otherPrice) : 0;
+  // 参考原价均使用 orderApi.firstPrice
+  const refPrice = priceInfo ? Number(priceInfo.firstPrice) : data.specs[0]?.price || 0;
+
+  const items = data.specs.map((spec, i) => {
+    let price: number;
+    let discountAmount = 0;
+    let discountTag: string | undefined;
+
+    if (applyTiered) {
+      if (i === 0) {
+        price = firstPrice;
+      } else if (i === 1) {
+        price = secondPrice;
+        discountAmount = refPrice - secondPrice;
+        discountTag = `第2件，${price}元`;
+      } else {
+        price = otherPrice;
+        discountAmount = refPrice - otherPrice;
+        discountTag = `第${i + 1}件，${price}元`;
+      }
+    } else {
+      price = refPrice;
+    }
+
+    return {
+      id: spec.id,
+      name: spec.intro || spec.name,
+      spec: spec.name,
+      quantity: 1,
+      price,
+      originalPrice: refPrice,
+      discountAmount,
+      discountTag,
+      image: data.uploadFileMap[spec.index] || ProductImg,
+    };
+  });
+
   console.log(
     '[confirm] buildOrderItems 价格:',
     items.map((i) => i.price),
   );
   return items;
-}
-
-/** 为优惠弹层生成阶梯定价明细 */
-function buildCouponItems(orderItems: OrderItem[], info: PriceInfo): OrderItem[] {
-  const firstPrice = Number(info.firstPrice);
-  const secondPrice = Number(info.secondPrice);
-  const otherPrice = Number(info.otherPrice);
-
-  if (!firstPrice || orderItems.length <= 1) return orderItems;
-
-  return orderItems.map((item, i) => {
-    if (i === 0) {
-      return {
-        ...item,
-        price: firstPrice,
-        discountAmount: item.originalPrice - firstPrice,
-      };
-    }
-    if (i === 1) {
-      const price = secondPrice || firstPrice;
-      return {
-        ...item,
-        price,
-        discountAmount: item.originalPrice - price,
-        discountTag: `第2件，${price}元`,
-      };
-    }
-    const price = otherPrice || firstPrice;
-    return {
-      ...item,
-      price,
-      discountAmount: item.originalPrice - price,
-      discountTag: `第${i + 1}件，${price}元`,
-    };
-  });
 }
 
 export function useOrderConfirmLogic() {
@@ -103,60 +100,43 @@ export function useOrderConfirmLogic() {
 
   const orderData = useMemo(() => parseOrderData(), []);
 
-  // 商品列表：始终使用首页传递的原始价格
+  // 商品列表：priceInfo 就绪后应用阶梯定价
   const orderItems: OrderItem[] = useMemo(() => {
     if (!orderData) return [];
-    return buildOrderItems(orderData);
-  }, [orderData]);
+    return buildOrderItems(orderData, priceInfo);
+  }, [orderData, priceInfo]);
 
   const uploadFileMap = orderData?.uploadFileMap || {};
-
-  // 优惠弹层明细：应用 getPrice 阶梯价格
-  const couponItems: OrderItem[] = useMemo(() => {
-    if (!priceInfo || orderItems.length <= 1) return [];
-    return buildCouponItems(orderItems, priceInfo);
-  }, [orderItems, priceInfo]);
 
   const totalCount = useMemo(
     () => orderItems.reduce((sum, item) => sum + item.quantity, 0),
     [orderItems],
   );
 
-  // 总计 = 首页价格之和
+  // 商品总价（阶梯价之和）
   const totalPrice = useMemo(
     () => orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [orderItems],
   );
-
-  // 优惠弹层总计 = 阶梯价格之和
-  const couponTotalPrice = useMemo(
-    () => couponItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
-    [couponItems],
-  );
-
-  // 优惠金额 = 首页总计 - 阶梯总计
-  const totalDiscount = useMemo(() => {
-    if (couponItems.length === 0) return 0;
-    return totalPrice - couponTotalPrice;
-  }, [totalPrice, couponTotalPrice, couponItems.length]);
 
   const originalTotal = useMemo(
     () => orderItems.reduce((sum, item) => sum + item.originalPrice * item.quantity, 0),
     [orderItems],
   );
 
+  // 优惠 = 原价总计 - 阶梯价总计
+  const totalDiscount = useMemo(() => originalTotal - totalPrice, [originalTotal, totalPrice]);
+
   const isGroup = orderItems.length > 1;
 
+  // 运费：1件收 deliveryPrice，>1件免运费
   const shippingFee = useMemo(() => {
     if (orderItems.length >= 2) return 0;
     return priceInfo ? Number(priceInfo.deliveryPrice) : 0;
   }, [orderItems.length, priceInfo]);
 
-  // 底部栏应付总计 = 商品总价 - 优惠 + 运费
-  const finalTotal = useMemo(
-    () => totalPrice - totalDiscount + shippingFee,
-    [totalPrice, totalDiscount, shippingFee],
-  );
+  // 应付 = 商品总价 + 运费
+  const finalTotal = useMemo(() => totalPrice + shippingFee, [totalPrice, shippingFee]);
 
   useDidShow(() => {
     if (!mounted.current) {
@@ -209,11 +189,9 @@ export function useOrderConfirmLogic() {
   return {
     address,
     orderItems,
-    couponItems,
     uploadFileMap,
     totalCount,
     totalPrice,
-    couponTotalPrice,
     totalDiscount,
     originalTotal,
     finalTotal,

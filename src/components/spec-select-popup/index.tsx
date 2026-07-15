@@ -97,14 +97,14 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
     () =>
       items
         .filter((item) => item.selected)
-        .map(({ id, name, price, quantity, desc: intro }) => ({
+        .map(({ id, name, quantity, desc: intro }) => ({
           id,
           name,
-          price,
+          price: Number(priceInfo?.firstPrice || 0),
           quantity,
           intro,
         })),
-    [items],
+    [items, priceInfo],
   );
 
   // const safeAreaBottom = useMemo(() => {
@@ -168,7 +168,7 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
                 <Text className='text-sm text-black leading-[15px] font-[500]'>{item.desc}</Text>
                 <View className='flex items-center justify-between mt-[16px]'>
                   <Text className='text-sm text-black/40 leading-[18px]'>
-                    ¥{item.price.toFixed(2)}
+                    ¥{parseFloat(priceInfo?.firstPrice || '0').toFixed(2)}
                   </Text>
                   <View
                     className='flex flex-row items-center rounded-full bg-[#F4F4F5] w-[74px] h-[24px]'
