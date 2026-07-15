@@ -51,6 +51,15 @@ const TABS = [
 ];
 
 export default function MyOrders() {
+  /** 支付取消/失败跳转来时，返回按钮回首页 */
+  const isFromCancelPay = useMemo(() => {
+    try {
+      return Taro.getCurrentInstance()?.router?.params?.from === 'cancel-pay';
+    } catch {
+      return false;
+    }
+  }, []);
+
   const [activeTab, setActiveTab] = useState<string>('all');
   const [orders, setOrders] = useState<MerchantOrder[]>([]);
   const [loading, setLoading] = useState(false);
@@ -232,7 +241,12 @@ export default function MyOrders() {
   };
 
   return (
-    <BasePage navTitle='我的订单'>
+    <BasePage
+      navTitle='我的订单'
+      onNavLeftClick={
+        isFromCancelPay ? () => Taro.switchTab({ url: '/pages/index/index' }) : undefined
+      }
+    >
       <View className='my-orders-page'>
         {/* tab 栏（可横向滚动，固定在顶部） */}
         <ScrollView className='order-tabs' scrollX showScrollbar={false}>

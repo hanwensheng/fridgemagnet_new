@@ -55,7 +55,7 @@ export default function PaySuccessPopup({
 
   const handleViewOrder = () => {
     onClose();
-    Taro.navigateTo({ url: '/pages/my-orders/index' });
+    Taro.reLaunch({ url: '/pages/my-orders/index?from=cancel-pay' });
   };
 
   const addressText = address

@@ -2,6 +2,7 @@ import { useMemo, useRef, useState, useCallback } from 'react';
 import Taro, { useDidShow, useUnload } from '@tarojs/taro';
 import { addressApi } from '@/api/modules/address';
 import { orderApi, type PriceInfo } from '@/api/modules/order';
+import { useAppStore } from '@/store';
 import type { AddressItem } from '@/api/modules/address';
 import type { SpecItem } from '@/pages/editor/index.logic';
 import ProductImg from '@/assets/images/8.5_4cm.png';
@@ -211,12 +212,25 @@ export function useOrderConfirmLogic() {
       const fullAddress = `${address.province} ${address.city} ${address.district} ${address.detailAddress}`;
 
       Taro.showLoading({ title: '发起支付...', mask: true });
-      const payResult = await orderApi.saveSingle({
-        imgList,
-        address: fullAddress,
-        recipient: address.recipient,
-        recipientPhone: address.recipientPhone,
-      });
+
+      // 扫码推广入口 → saveAppend，普通入口 → saveSingle
+      const { merchantId, merchantPromoterId, merchantPackageId } = useAppStore.getState();
+      const payResult = merchantId
+        ? await orderApi.saveAppend({
+            imgList,
+            merchantId,
+            merchantPackageId: merchantPackageId || '1',
+            ...(merchantPromoterId ? { merchantPromoterId } : {}),
+            address: fullAddress,
+            recipient: address.recipient,
+            recipientPhone: address.recipientPhone,
+          })
+        : await orderApi.saveSingle({
+            imgList,
+            address: fullAddress,
+            recipient: address.recipient,
+            recipientPhone: address.recipientPhone,
+          });
 
       // 订单已生成，清除存储数据
       Taro.removeStorageSync('orderData');
@@ -237,14 +251,15 @@ export function useOrderConfirmLogic() {
       setPayPopupVisible(true);
     } catch (err: any) {
       Taro.hideLoading();
-      if (err?.errMsg?.includes('cancel')) {
-        Taro.showToast({ title: '支付已取消', icon: 'none', duration: 2000 });
-      } else {
-        Taro.showToast({ title: err?.message || '支付失败', icon: 'none', duration: 2000 });
-      }
-      setTimeout(() => {
-        Taro.switchTab({ url: '/pages/my-orders/index' });
-      }, 500);
+      const msg = err?.errMsg?.includes('cancel') ? '支付已取消' : err?.message || '支付失败';
+      Taro.showToast({
+        title: msg,
+        icon: 'none',
+        duration: 1500,
+        complete: () => {
+          Taro.reLaunch({ url: '/pages/my-orders/index?from=cancel-pay' });
+        },
+      });
     }
   }, [address, orderData]);
 
