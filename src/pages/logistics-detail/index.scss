@@ -1,0 +1,457 @@
+.logistics-page {
+  padding: 20px 12px 0;
+  box-sizing: border-box;
+  height: 100%;
+}
+
+/* 物流信息卡片 */
+.logistics-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+
+.logistics-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.logistics-courier-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.logistics-courier-text {
+  flex: 1;
+  font-size: 12px;
+  color: #000;
+  line-height: 15px;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.logistics-copy {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #000;
+  line-height: 15px;
+}
+
+/* 物流时间线 */
+.logistics-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.logistics-timeline-item {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+}
+
+.logistics-timeline-left {
+  width: 44px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-right: 12px;
+}
+
+.logistics-timeline-date {
+  font-size: 12px;
+  color: #000;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+.logistics-timeline-time {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+  margin-top: 2px;
+}
+
+.logistics-timeline-line {
+  width: 20px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  align-self: stretch;
+}
+
+.logistics-timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  background: #fff;
+  flex-shrink: 0;
+  margin-top: 2px;
+  z-index: 1;
+
+  &--active {
+    width: 10px;
+    height: 10px;
+    border: 0;
+    background: #1c1c1e;
+  }
+}
+
+.logistics-timeline-connector {
+  position: absolute;
+  top: 10px;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  border-left: 1px dashed rgba(0, 0, 0, 0.3);
+  transform: translateX(-50%);
+}
+
+.logistics-timeline-content {
+  flex: 1;
+  padding-left: 10px;
+  padding-bottom: 10px;
+
+  .logistics-timeline-item:last-child & {
+    padding-bottom: 0;
+  }
+}
+
+.logistics-timeline-status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logistics-timeline-status {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 15px;
+  font-weight: 400;
+  display: block;
+
+  &--active {
+    color: #000;
+    font-weight: 500;
+    font-size: 14px;
+  }
+}
+
+.logistics-timeline-time-full {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 15px;
+}
+
+.logistics-timeline-desc {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+  margin-top: 8px;
+  display: block;
+}
+
+.logistics-expand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 20px;
+}
+
+.logistics-expand-text {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+}
+
+.logistics-expand-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+  opacity: 0.5;
+
+  &--up {
+    transform: rotate(180deg);
+  }
+}
+
+/* 分割线 */
+.logistics-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 16px 0;
+}
+
+/* 地址区域（卡片内部） */
+.logistics-address-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.logistics-address-icon-wrap {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logistics-address-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.logistics-address-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.logistics-address-text {
+  font-size: 14px;
+  color: #000;
+  line-height: 15px;
+  font-weight: 400;
+}
+
+.logistics-address-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logistics-address-name {
+  font-size: 12px;
+  color: #000;
+  line-height: 15px;
+}
+
+.logistics-address-phone {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 15px;
+}
+
+/* 商品卡片 */
+.logistics-goods-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+
+.logistics-goods-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.logistics-goods-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logistics-goods-type-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.logistics-goods-type-text {
+  font-size: 14px;
+  color: #000;
+  line-height: 20px;
+  font-weight: 590;
+}
+
+.logistics-goods-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logistics-goods-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  background: #f6f6f6;
+  flex-shrink: 0;
+}
+
+.logistics-goods-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.logistics-goods-name {
+  font-size: 14px;
+  color: #000;
+  line-height: 20px;
+  font-weight: 400;
+}
+
+.logistics-goods-spec {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+  margin-top: 4px;
+  font-weight: 300;
+}
+
+.logistics-goods-count {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+  margin-top: 20px;
+  font-weight: 300;
+}
+
+/* 组合订单图片 */
+.logistics-images-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.logistics-images-scroll {
+  width: 260px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.logistics-images-scroll-inner {
+  display: flex;
+  gap: 10px;
+}
+
+.logistics-image-wrap {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f6f6f6;
+}
+
+.logistics-image {
+  width: 100%;
+  height: 100%;
+}
+
+.logistics-image-badge {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  min-width: 13px;
+  height: 13px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 0 1px;
+}
+
+.logistics-image-badge-text {
+  font-size: 10px;
+  color: #fff;
+}
+
+.logistics-total-info {
+  display: flex;
+  align-items: center;
+  padding-left: 8px;
+  flex-shrink: 0;
+}
+
+.logistics-total-count-text {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+/* 订单信息汇总（卡片内部） */
+.logistics-goods-summary {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.logistics-info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.logistics-info-label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+  font-weight: 300;
+}
+
+.logistics-info-value {
+  font-size: 14px;
+  color: #000;
+  line-height: 18px;
+  font-weight: 600;
+}
+
+.logistics-info-value-time {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: 300;
+}
+
+.logistics-info-no-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logistics-info-divider {
+  width: 1px;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.logistics-info-no {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+  font-weight: 300;
+}
+
+.logistics-info-copy {
+  font-size: 12px;
+  color: #000;
+  line-height: 18px;
+  font-weight: 300;
+}
+
+.logistics-safe-bottom {
+  height: 20px;
+}

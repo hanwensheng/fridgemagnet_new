@@ -159,6 +159,18 @@ export interface MerchantOrder {
   userPhone: string;
 }
 
+/** 物流轨迹项 */
+export interface TraceItem {
+  category: number;
+  categoryName: string;
+  operationRemark: string;
+  operationTime: string;
+  operationTitle: string;
+  operatorName: string;
+  state: string;
+  waybillCode: string;
+}
+
 export interface PriceInfo {
   /** 第一件价格 */
   firstPrice: string;
@@ -322,6 +334,13 @@ export const orderApi = {
     return request<SaveOrderResult>({
       url: `/v1/bizOrder/payOrder/${orderPkId}`,
       method: 'POST',
+    });
+  },
+
+  /** 查询物流轨迹 */
+  getOrderTrace(jdWayBillCode: string) {
+    return request<TraceItem[]>({
+      url: `/v1/bizOrder/getOrderTrace/${jdWayBillCode}`,
     });
   },
 

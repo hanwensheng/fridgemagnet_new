@@ -3,6 +3,7 @@ import Taro from '@tarojs/taro';
 import { useAppStore } from '@/store';
 import { orderApi, OrderStatus } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
+import { setLogisticsOrder } from '@/pages/logistics-detail/index.logic';
 
 /** 支付倒计时（分钟） */
 export const PAY_DEADLINE_MINUTES = 15;
@@ -136,14 +137,8 @@ export function useMyOrdersLogic() {
   };
 
   const handleViewLogistics = (order: MerchantOrder) => {
-    if (order.trackingNumber) {
-      Taro.setClipboardData({
-        data: order.trackingNumber,
-        success: () => Taro.showToast({ title: '快递单号已复制', icon: 'none' }),
-      });
-    } else {
-      Taro.showToast({ title: '暂无物流信息', icon: 'none' });
-    }
+    setLogisticsOrder(order);
+    Taro.navigateTo({ url: '/pages/logistics-detail/index' });
   };
 
   const getOrderImage = (order: MerchantOrder) => {

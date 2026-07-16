@@ -4,6 +4,7 @@ import BasePage from '@/components/base-page';
 import IconSingle from '@/assets/svgs/icon_single.svg';
 import IconGroup from '@/assets/svgs/icon_group.svg';
 import IconCar from '@/assets/svgs/icon_car_black.svg';
+import IconRight from '@/assets/svgs/icon_right2.svg';
 import { OrderStatus } from '@/api/modules/order';
 import { useOrderDetailLogic } from './index.logic';
 import './index.scss';
@@ -16,6 +17,7 @@ export default function OrderDetail() {
     displayPrice,
     countdownText,
     specText,
+    latestTrace,
     handleCopyOrderNo,
     handleCancel,
     handleDelete,
@@ -98,6 +100,18 @@ export default function OrderDetail() {
       <ScrollView className='order-detail-page' scrollY>
         {/* 地址卡片 */}
         <View className='order-detail-address-card'>
+          {status === OrderStatus.TO_BE_RECEIVED && (
+            <View className='order-detail-logistics-entry' onClick={handleViewLogistics}>
+              <Image className='order-detail-logistics-icon' src={IconCar} />
+              <Text className='order-detail-logistics-status'>
+                {latestTrace?.categoryName || '运输中'}
+              </Text>
+              <Text className='order-detail-logistics-text' numberOfLines={1}>
+                {latestTrace?.operationRemark || '快递运输中，请耐心等待'}
+              </Text>
+              <Image className='order-detail-logistics-arrow' src={IconRight} />
+            </View>
+          )}
           <Text className='order-detail-address-text'>{order.address}</Text>
           <View className='order-detail-address-user'>
             <Text className='order-detail-address-name'>{order.recipient}</Text>
@@ -160,30 +174,13 @@ export default function OrderDetail() {
               </Text>
             </View>
           )}
-          {status === OrderStatus.TO_BE_RECEIVED && order.deliveryPromiseTime && (
-            <View className='order-detail-shipping-info'>
-              <Image className='order-detail-shipping-icon' src={IconCar} />
-              <Text className='order-detail-shipping-label'>运输中</Text>
-              <Text className='order-detail-shipping-text'>{order.deliveryPromiseTime}</Text>
-            </View>
-          )}
-
-          {/* 组合订单实付行 */}
-          {isGroup && (
-            <View className='order-detail-payment-group'>
-              <Text className='order-detail-payment-label'>实付</Text>
-              <Text className='order-detail-payment-price'>¥{displayPrice.toFixed(2)}</Text>
-            </View>
-          )}
 
           {/* 订单信息汇总 */}
           <View className='order-detail-goods-summary'>
-            {!isGroup && (
-              <View className='order-detail-info-row order-detail-info-row--strong'>
-                <Text className='order-detail-info-label'>实付款</Text>
-                <Text className='order-detail-info-value'>¥{displayPrice.toFixed(2)}</Text>
-              </View>
-            )}
+            <View className='order-detail-info-row order-detail-info-row--strong'>
+              <Text className='order-detail-info-label'>实付款</Text>
+              <Text className='order-detail-info-value'>¥{displayPrice.toFixed(2)}</Text>
+            </View>
             <View className='order-detail-info-row'>
               <Text className='order-detail-info-label'>运费</Text>
               <Text className='order-detail-info-value'>

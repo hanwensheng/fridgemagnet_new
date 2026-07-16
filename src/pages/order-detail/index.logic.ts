@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import Taro from '@tarojs/taro';
 import { useAppStore } from '@/store';
-import { orderApi, OrderStatus } from '@/api/modules/order';
+import { orderApi, OrderStatus, TraceItem } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
 import { formatSizeLabel } from '@/utils/format';
+import { setLogisticsOrder } from '@/pages/logistics-detail/index.logic';
 
 /** 支付倒计时（分钟） */
 const PAY_DEADLINE_MINUTES = 15;
@@ -44,6 +45,7 @@ function getCurrentOrder(): MerchantOrder | null {
 
 export function useOrderDetailLogic() {
   const [now, setNow] = useState(() => Date.now());
+  const [traceList, setTraceList] = useState<TraceItem[]>([]);
 
   const order = useMemo(() => getCurrentOrder(), []);
 
@@ -51,6 +53,16 @@ export function useOrderDetailLogic() {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (!order?.trackingNumber) return;
+    orderApi
+      .getOrderTrace(order.trackingNumber)
+      .then((res) => {
+        setTraceList(Array.isArray(res) ? res : []);
+      })
+      .catch(() => {});
+  }, [order?.trackingNumber]);
 
   /** 导航标题 */
   const navTitle = useMemo(() => {
@@ -121,14 +133,8 @@ export function useOrderDetailLogic() {
 
   const handleViewLogistics = useCallback(() => {
     if (!order) return;
-    if (order.trackingNumber) {
-      Taro.setClipboardData({
-        data: order.trackingNumber,
-        success: () => Taro.showToast({ title: '快递单号已复制', icon: 'none' }),
-      });
-    } else {
-      Taro.showToast({ title: '暂无物流信息', icon: 'none' });
-    }
+    setLogisticsOrder(order);
+    Taro.navigateTo({ url: '/pages/logistics-detail/index' });
   }, [order]);
 
   const handlePay = useCallback(async () => {
@@ -169,6 +175,9 @@ export function useOrderDetailLogic() {
     return formatSizeLabel(order.imgList[0].width, order.imgList[0].height);
   }, [order]);
 
+  /** 最新物流轨迹 */
+  const latestTrace = useMemo(() => traceList[0], [traceList]);
+
   return {
     order,
     navTitle,
@@ -176,6 +185,7 @@ export function useOrderDetailLogic() {
     displayPrice,
     countdownText,
     specText,
+    latestTrace,
     handleCopyOrderNo,
     handleCancel,
     handleDelete,
