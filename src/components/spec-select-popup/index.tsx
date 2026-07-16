@@ -1,6 +1,7 @@
-import { View, Text, Image } from '@tarojs/components';
+import { View, Text, Image, Button } from '@tarojs/components';
 import { Popup } from '@nutui/nutui-react-taro';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import Taro from '@tarojs/taro';
 import CloseIcon from '@/assets/svgs/icon_popup_close.svg';
 import RadioActiveIcon from '@/assets/svgs/icon_radio_active.svg';
 import RadioIcon from '@/assets/svgs/icon_radio.svg';
@@ -12,6 +13,8 @@ import Img75 from '@/assets/images/7_5.5cm.png';
 import Img45 from '@/assets/images/4.5_3cm.png';
 import { productApi } from '@/api/modules/product';
 import { orderApi, type PriceInfo } from '@/api/modules/order';
+import { useAppStore } from '@/store';
+import { userApi } from '@/api/modules/user';
 import { formatSizeLabel } from '@/utils/format';
 
 import './index.scss';
@@ -65,6 +68,11 @@ function buildPriceText(priceInfo: PriceInfo | null): string {
 export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSelectPopupProps) {
   const [items, setItems] = useState<SpecItemState[]>([]);
   const [priceInfo, setPriceInfo] = useState<PriceInfo | null>(null);
+
+  const token = useAppStore((s) => s.token);
+  const setToken = useAppStore((s) => s.setToken);
+  const setUserInfo = useAppStore((s) => s.setUserInfo);
+  const isLoggedIn = !!token;
 
   useEffect(() => {
     productApi.getGoodsList().then((goodsList) => {
@@ -136,7 +144,56 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
     });
   };
 
+  const handleLogin = useCallback(
+    async (e: any) => {
+      if (process.env.TARO_ENV !== 'weapp') {
+        Taro.showToast({ title: '请使用微信小程序登录', icon: 'none' });
+        return;
+      }
+
+      if (e.detail.errMsg !== 'getPhoneNumber:ok') {
+        Taro.showToast({ title: '您已拒绝授权', icon: 'none' });
+        return;
+      }
+
+      if (selectedItems.length === 0) {
+        Taro.showToast({ title: '请至少选择一个规格', icon: 'none' });
+        return;
+      }
+
+      const phoneCode = e.detail.code;
+      Taro.showLoading({ title: '登录中...' });
+
+      try {
+        const loginRes = await Taro.login();
+        const res = await userApi.miniProgramLogin({
+          loginCode: loginRes.code,
+          phoneCode,
+        });
+
+        if (res.token) {
+          Taro.setStorageSync('token', res.token);
+          Taro.setStorageSync('userInfo', JSON.stringify(res));
+          setToken(res.token);
+          setUserInfo(res);
+          onConfirm?.(selectedItems);
+        } else {
+          Taro.showToast({ title: '登录失败', icon: 'none' });
+        }
+      } catch {
+        Taro.showToast({ title: '登录失败，请重试', icon: 'none' });
+      } finally {
+        Taro.hideLoading();
+      }
+    },
+    [selectedItems, onConfirm, setToken, setUserInfo],
+  );
+
   const handleConfirm = () => {
+    if (selectedItems.length === 0) {
+      Taro.showToast({ title: '请至少选择一个规格', icon: 'none' });
+      return;
+    }
     onConfirm?.(selectedItems);
   };
 
@@ -209,13 +266,24 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
           {buildPriceText(priceInfo)}
         </View>
 
-        <View
-          className='flex h-[56px] items-center justify-center rounded-full bg-[#1c1c1e]'
-          style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
-          onClick={handleConfirm}
-        >
-          <Text className='text-base font-bold text-white'>共 {totalCount} 件 去制作</Text>
-        </View>
+        {isLoggedIn ? (
+          <View
+            className='flex h-[56px] items-center justify-center rounded-full bg-[#1c1c1e]'
+            style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
+            onClick={handleConfirm}
+          >
+            <Text className='text-base font-bold text-white'>共 {totalCount} 件 去制作</Text>
+          </View>
+        ) : (
+          <Button
+            className='flex h-[56px] w-full items-center justify-center rounded-full bg-[#1c1c1e] !border-none !p-0'
+            style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
+            openType='getPhoneNumber'
+            onGetPhoneNumber={handleLogin}
+          >
+            <Text className='text-base font-bold text-white'>共 {totalCount} 件 去制作</Text>
+          </Button>
+        )}
 
         {/* {safeAreaBottom > 0 && <View style={{ height: `${safeAreaBottom}px` }} />} */}
       </View>
