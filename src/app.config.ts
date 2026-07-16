@@ -6,6 +6,7 @@ export default {
     'pages/editor-crop/index',
     'pages/order-confirm/index',
     'pages/my-orders/index',
+    'pages/order-detail/index',
     'pages/mine/index',
     'pages/customer-service/index',
     'pages/address/index',

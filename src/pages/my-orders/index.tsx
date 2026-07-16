@@ -6,6 +6,8 @@ import IconGroup from '@/assets/svgs/icon_group.svg';
 import IconCar from '@/assets/svgs/icon_car_black.svg';
 import { OrderStatus } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
+import { formatSizeLabel } from '@/utils/format';
+import { setCurrentOrder } from '@/pages/order-detail/index.logic';
 import { useMyOrdersLogic, TABS, STATUS_TEXT_MAP, HIGHLIGHT_STATUSES } from './index.logic';
 import './index.scss';
 
@@ -26,6 +28,11 @@ export default function MyOrders() {
     getDisplayPrice,
     getOrderCountdown,
   } = useMyOrdersLogic();
+
+  const handleGoOrderDetail = (order: MerchantOrder) => {
+    setCurrentOrder(order);
+    Taro.navigateTo({ url: '/pages/order-detail/index' });
+  };
 
   /** 渲染操作按钮 */
   const renderOrderAction = (order: MerchantOrder) => {
@@ -130,7 +137,11 @@ export default function MyOrders() {
               const mainImage = getOrderImage(order);
 
               return (
-                <View key={order.pkId} className='order-card'>
+                <View
+                  key={order.pkId}
+                  className='order-card'
+                  onClick={() => handleGoOrderDetail(order)}
+                >
                   {/* 头部：类型 + 状态 */}
                   <View className='order-card-header'>
                     <View className='order-card-type'>
@@ -176,6 +187,11 @@ export default function MyOrders() {
                         <Image className='order-single-image' src={mainImage} mode='aspectFill' />
                         <View className='order-single-info'>
                           <Text className='order-single-name'>冰箱贴一副</Text>
+                          {order.imgList?.[0]?.width && order.imgList?.[0]?.height && (
+                            <Text className='order-single-spec'>
+                              {formatSizeLabel(order.imgList[0].width, order.imgList[0].height)}
+                            </Text>
+                          )}
                           <View className='order-single-count-row'>
                             <Text className='order-single-count'>共 {order.goodsNum} 件</Text>
                             <View className='order-payment'>

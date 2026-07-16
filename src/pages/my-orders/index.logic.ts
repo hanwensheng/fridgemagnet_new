@@ -89,6 +89,14 @@ export function useMyOrdersLogic() {
   }, [fetchOrders]);
 
   useEffect(() => {
+    const handler = () => fetchOrders();
+    Taro.eventCenter.on('orders:refresh', handler);
+    return () => {
+      Taro.eventCenter.off('orders:refresh', handler);
+    };
+  }, [fetchOrders]);
+
+  useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);

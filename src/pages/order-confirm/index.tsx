@@ -1,5 +1,4 @@
 import { View, Text, Image, ScrollView } from '@tarojs/components';
-import Taro from '@tarojs/taro';
 import BasePage from '@/components/base-page';
 import PaySuccessPopup from '@/components/pay-success-popup';
 import CouponDetailPopup from '@/components/coupon-detail-popup';
@@ -33,7 +32,6 @@ export default function OrderConfirm() {
   return (
     <BasePage
       navTitle='确认订单'
-      onNavLeftClick={() => Taro.navigateBack().catch(() => {})}
       bottomBarComponent={
         <View className='order-bottom-bar'>
           <View className='order-total'>

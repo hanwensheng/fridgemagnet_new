@@ -112,8 +112,10 @@ export interface OrderImgItem {
   gmtCreate: string;
   gmtModified: string;
   goodsId: string;
+  height?: string;
   imgLink: string;
   pkId: number;
+  width?: string;
 }
 
 /** 商户订单 */
