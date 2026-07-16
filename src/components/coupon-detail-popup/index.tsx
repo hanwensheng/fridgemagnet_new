@@ -82,7 +82,13 @@ export default function CouponDetailPopup({
               </View>
             </View>
           </View>
-          <View className='coupon-detail-pay-btn' onClick={onPay}>
+          <View
+            className='coupon-detail-pay-btn'
+            onClick={() => {
+              onClose();
+              onPay();
+            }}
+          >
             <Text className='coupon-detail-pay-text'>微信支付</Text>
           </View>
         </View>
