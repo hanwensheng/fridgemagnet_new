@@ -146,6 +146,13 @@ export function useMyOrdersLogic() {
 
   const isGroupOrder = (order: MerchantOrder) => order.goodsNum > 1;
 
+  /** 默认用 payPrice，为空时用 orderPrice + deliveryPrice */
+  const getDisplayPrice = (order: MerchantOrder) => {
+    const pp = Number(order.payPrice);
+    if (pp) return pp;
+    return order.orderPrice + order.deliveryPrice;
+  };
+
   const getOrderCountdown = useCallback(
     (order: MerchantOrder) => {
       if (!order.gmtCreate) return { remaining: 0, isExpired: true, text: '' };
@@ -210,6 +217,7 @@ export function useMyOrdersLogic() {
     handlePayOrder,
     getOrderImage,
     isGroupOrder,
+    getDisplayPrice,
     getOrderCountdown,
   };
 }

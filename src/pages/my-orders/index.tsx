@@ -23,6 +23,7 @@ export default function MyOrders() {
     handlePayOrder,
     getOrderImage,
     isGroupOrder,
+    getDisplayPrice,
     getOrderCountdown,
   } = useMyOrdersLogic();
 
@@ -180,7 +181,7 @@ export default function MyOrders() {
                             <View className='order-payment'>
                               <Text className='order-payment-label'>实付</Text>
                               <Text className='order-payment-price'>
-                                ¥{Number(order.payPrice).toFixed(2)}
+                                ¥{getDisplayPrice(order).toFixed(2)}
                               </Text>
                             </View>
                           </View>
@@ -194,7 +195,7 @@ export default function MyOrders() {
                     <View className='order-payment-group'>
                       <Text className='order-payment-label'>实付</Text>
                       <Text className='order-payment-price'>
-                        ¥{Number(order.payPrice).toFixed(2)}
+                        ¥{getDisplayPrice(order).toFixed(2)}
                       </Text>
                     </View>
                   )}
