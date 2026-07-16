@@ -45,7 +45,7 @@ export default function OrderConfirm() {
               <Text className='order-total-count'>共 {totalCount} 件</Text>
               {isGroup && (
                 <View className='order-coupon-entry' onClick={toggleCouponPopup}>
-                  <Text className='order-coupon-text'>优惠 ¥{totalDiscount} 明细</Text>
+                  <Text className='order-coupon-text'>优惠 ¥{totalDiscount.toFixed(2)} 明细</Text>
                   <Image
                     className={`order-coupon-arrow ${couponPopupVisible ? 'order-coupon-arrow--up' : ''}`}
                     src={IconRedUp}
@@ -116,11 +116,11 @@ export default function OrderConfirm() {
           </View>
           <View className='order-summary-row'>
             <Text className='order-summary-label'>运费</Text>
-            <Text className='order-summary-value'>¥ {shippingFee}</Text>
+            <Text className='order-summary-value'>¥ {shippingFee.toFixed(2)}</Text>
           </View>
           <View className='order-summary-row'>
             <Text className='order-summary-label'>优惠</Text>
-            <Text className='order-summary-value'>¥ {totalDiscount}</Text>
+            <Text className='order-summary-value'>¥ {totalDiscount.toFixed(2)}</Text>
           </View>
         </View>
 

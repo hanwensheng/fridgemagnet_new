@@ -51,11 +51,11 @@ export default function CouponDetailPopup({
                     <Text className='coupon-detail-tag'>{item.discountTag}</Text>
                   </View>
                 ) : (
-                  <Text className='coupon-detail-subtotal'>小计 ¥{item.price}</Text>
+                  <Text className='coupon-detail-subtotal'>小计 ¥{item.price.toFixed(2)}</Text>
                 )}
                 {item.discountAmount > 0 && (
                   <Text className='coupon-detail-discount'>
-                    小计 ¥{item.price}，减{item.discountAmount}元
+                    小计 ¥{item.price.toFixed(2)}，减{item.discountAmount.toFixed(2)}元
                   </Text>
                 )}
               </View>
@@ -75,7 +75,9 @@ export default function CouponDetailPopup({
             <View className='coupon-detail-total-row'>
               <Text className='coupon-detail-total-count'>共 {totalCount} 件</Text>
               <View className='coupon-detail-entry' onClick={onClose}>
-                <Text className='coupon-detail-entry-text'>优惠 ¥{totalDiscount} 明细</Text>
+                <Text className='coupon-detail-entry-text'>
+                  优惠 ¥{totalDiscount.toFixed(2)} 明细
+                </Text>
                 <Image className='coupon-detail-entry-arrow' src={IconRedUp} />
               </View>
             </View>

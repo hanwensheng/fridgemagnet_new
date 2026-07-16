@@ -61,11 +61,11 @@ function buildOrderItems(data: OrderData, priceInfo: PriceInfo | null): OrderIte
         price = firstPrice;
       } else if (i === 1) {
         price = secondPrice;
-        discountAmount = refPrice - secondPrice;
+        discountAmount = Number((refPrice - secondPrice).toFixed(2));
         discountTag = `第2件，${price}元`;
       } else {
         price = otherPrice;
-        discountAmount = refPrice - otherPrice;
+        discountAmount = Number((refPrice - otherPrice).toFixed(2));
         discountTag = `第${i + 1}件，${price}元`;
       }
     } else {
@@ -126,7 +126,10 @@ export function useOrderConfirmLogic() {
   );
 
   // 优惠 = 原价总计 - 阶梯价总计
-  const totalDiscount = useMemo(() => originalTotal - totalPrice, [originalTotal, totalPrice]);
+  const totalDiscount = useMemo(
+    () => Number((originalTotal - totalPrice).toFixed(2)),
+    [originalTotal, totalPrice],
+  );
 
   const isGroup = orderItems.length > 1;
 
@@ -137,7 +140,10 @@ export function useOrderConfirmLogic() {
   }, [orderItems.length, priceInfo]);
 
   // 应付 = 商品总价 + 运费
-  const finalTotal = useMemo(() => totalPrice + shippingFee, [totalPrice, shippingFee]);
+  const finalTotal = useMemo(
+    () => Number((totalPrice + shippingFee).toFixed(2)),
+    [totalPrice, shippingFee],
+  );
 
   useDidShow(() => {
     if (!mounted.current) {
