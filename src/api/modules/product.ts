@@ -141,6 +141,7 @@ export interface BizMerchantInfo {
 export interface BizPopularDesign {
   designImg: string;
   designName: string;
+  designType: string;
   gmtCreate: string;
   gmtModified: string;
   height: string;
