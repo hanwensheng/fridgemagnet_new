@@ -4,7 +4,7 @@ import { addressApi } from '@/api/modules/address';
 import { orderApi, type PriceInfo } from '@/api/modules/order';
 import { useAppStore } from '@/store';
 import type { AddressItem } from '@/api/modules/address';
-import type { SpecItem } from '@/pages/editor/index.logic';
+import type { SpecItem } from '@/pages-sub/editor/index.logic';
 import ProductImg from '@/assets/images/8.5_4cm.png';
 
 export interface OrderItem {
@@ -178,7 +178,7 @@ export function useOrderConfirmLogic() {
   });
 
   const handleAddressClick = () => {
-    Taro.navigateTo({ url: '/pages/address/index?from=order-confirm' });
+    Taro.navigateTo({ url: '/pages-sub/address/index?from=order-confirm' });
   };
 
   const handlePay = useCallback(async () => {
@@ -260,7 +260,7 @@ export function useOrderConfirmLogic() {
       const msg = err?.errMsg?.includes('cancel') ? '支付已取消' : err?.message || '支付失败';
       Taro.showToast({ title: msg, icon: 'none', duration: 1000 });
       setTimeout(() => {
-        Taro.reLaunch({ url: '/pages/my-orders/index?from=cancel-pay' }).catch(() => {});
+        Taro.reLaunch({ url: '/pages-sub/my-orders/index?from=cancel-pay' }).catch(() => {});
       }, 1100);
     }
   }, [address, orderData]);

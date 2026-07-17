@@ -16,13 +16,13 @@ export function useMineLogic() {
   const navigateByType = useCallback((type: string) => {
     switch (type) {
       case 'address':
-        Taro.navigateTo({ url: '/pages/address/index' });
+        Taro.navigateTo({ url: '/pages-sub/address/index' });
         break;
       case 'order':
-        Taro.navigateTo({ url: '/pages/my-orders/index' });
+        Taro.navigateTo({ url: '/pages-sub/my-orders/index' });
         break;
       case 'service':
-        Taro.navigateTo({ url: '/pages/customer-service/index' });
+        Taro.navigateTo({ url: '/pages-sub/customer-service/index' });
         break;
     }
   }, []);
@@ -90,7 +90,7 @@ export function useMineLogic() {
   }, [logout]);
 
   const handleEditProfile = useCallback(() => {
-    Taro.navigateTo({ url: '/pages/edit-profile/index' });
+    Taro.navigateTo({ url: '/pages-sub/edit-profile/index' });
   }, []);
 
   return {

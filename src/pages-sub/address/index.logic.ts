@@ -59,11 +59,11 @@ export function useAddressLogic() {
   );
 
   const handleAdd = useCallback(() => {
-    Taro.navigateTo({ url: '/pages/add-address/index' });
+    Taro.navigateTo({ url: '/pages-sub/add-address/index' });
   }, []);
 
   const handleEdit = useCallback((pkId: string) => {
-    Taro.navigateTo({ url: `/pages/add-address/index?id=${pkId}` });
+    Taro.navigateTo({ url: `/pages-sub/add-address/index?id=${pkId}` });
   }, []);
 
   const handleDelete = useCallback(async (pkId: string) => {

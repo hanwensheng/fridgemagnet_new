@@ -210,7 +210,7 @@ export function useEditorLogic() {
     const size = getUploadAreaSize(specName);
     const preview = getPreviewImgSize(specName);
     Taro.navigateTo({
-      url: `/pages/editor-crop/index?imageUrl=${encodeURIComponent(imageUrl)}&itemIndex=${itemIndex}&width=${size.w}&height=${size.h}&previewW=${preview.w}&previewH=${preview.h}`,
+      url: `/pages-sub/editor-crop/index?imageUrl=${encodeURIComponent(imageUrl)}&itemIndex=${itemIndex}&width=${size.w}&height=${size.h}&previewW=${preview.w}&previewH=${preview.h}`,
     });
   };
 
@@ -391,7 +391,7 @@ export function useEditorLogic() {
       uploadMap,
       uploadFileMap,
     });
-    Taro.navigateTo({ url: '/pages/order-confirm/index' });
+    Taro.navigateTo({ url: '/pages-sub/order-confirm/index' });
   };
 
   const hasDraftData = Object.keys(uploadMap).length > 0;

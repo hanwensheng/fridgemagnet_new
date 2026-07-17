@@ -7,7 +7,7 @@ import IconCar from '@/assets/svgs/icon_car_black.svg';
 import { OrderStatus } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
 import { formatSizeLabel } from '@/utils/format';
-import { setCurrentOrder } from '@/pages/order-detail/index.logic';
+import { setCurrentOrder } from '@/pages-sub/order-detail/index.logic';
 import { useMyOrdersLogic, TABS, STATUS_TEXT_MAP, HIGHLIGHT_STATUSES } from './index.logic';
 import './index.scss';
 
@@ -31,7 +31,7 @@ export default function MyOrders() {
 
   const handleGoOrderDetail = (order: MerchantOrder) => {
     setCurrentOrder(order);
-    Taro.navigateTo({ url: '/pages/order-detail/index' });
+    Taro.navigateTo({ url: '/pages-sub/order-detail/index' });
   };
 
   /** 渲染操作按钮 */

@@ -2,7 +2,7 @@ import { View, Text, Image, ScrollView } from '@tarojs/components';
 import { Popup } from '@nutui/nutui-react-taro';
 import IconClose from '@/assets/svgs/icon_popup_close.svg';
 import IconRedUp from '@/assets/svgs/icon_red_up.svg';
-import type { OrderItem } from '@/pages/order-confirm/index.logic';
+import type { OrderItem } from '@/pages-sub/order-confirm/index.logic';
 
 import './index.scss';
 

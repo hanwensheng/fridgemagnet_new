@@ -4,7 +4,7 @@ import { useAppStore } from '@/store';
 import { orderApi, OrderStatus, TraceItem } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
 import { formatSizeLabel } from '@/utils/format';
-import { setLogisticsOrder } from '@/pages/logistics-detail/index.logic';
+import { setLogisticsOrder } from '@/pages-sub/logistics-detail/index.logic';
 
 /** 支付倒计时（分钟） */
 const PAY_DEADLINE_MINUTES = 15;
@@ -134,7 +134,7 @@ export function useOrderDetailLogic() {
   const handleViewLogistics = useCallback(() => {
     if (!order) return;
     setLogisticsOrder(order);
-    Taro.navigateTo({ url: '/pages/logistics-detail/index' });
+    Taro.navigateTo({ url: '/pages-sub/logistics-detail/index' });
   }, [order]);
 
   const handlePay = useCallback(async () => {

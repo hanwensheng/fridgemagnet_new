@@ -3,7 +3,7 @@ import Taro from '@tarojs/taro';
 import { useAppStore } from '@/store';
 import { orderApi, OrderStatus } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
-import { setLogisticsOrder } from '@/pages/logistics-detail/index.logic';
+import { setLogisticsOrder } from '@/pages-sub/logistics-detail/index.logic';
 
 /** 支付倒计时（分钟） */
 export const PAY_DEADLINE_MINUTES = 15;
@@ -138,7 +138,7 @@ export function useMyOrdersLogic() {
 
   const handleViewLogistics = (order: MerchantOrder) => {
     setLogisticsOrder(order);
-    Taro.navigateTo({ url: '/pages/logistics-detail/index' });
+    Taro.navigateTo({ url: '/pages-sub/logistics-detail/index' });
   };
 
   const getOrderImage = (order: MerchantOrder) => {

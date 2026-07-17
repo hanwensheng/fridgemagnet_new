@@ -1,7 +1,7 @@
 import Taro, { useDidShow } from '@tarojs/taro';
 import { useState, useCallback } from 'react';
-import { getPreviewBg } from '@/pages/editor/index.logic';
-import type { SpecItem } from '@/pages/editor/index.logic';
+import { getPreviewBg } from '@/pages-sub/editor/index.logic';
+import type { SpecItem } from '@/pages-sub/editor/index.logic';
 
 const DRAFT_STORAGE_KEY = 'fridge_magnet_editor_drafts';
 
@@ -87,7 +87,7 @@ export function useDraftLogic() {
   const handleEdit = (draft: DraftItem) => {
     const specsJson = encodeURIComponent(JSON.stringify(draft.specList));
     Taro.navigateTo({
-      url: `/pages/editor/index?specs=${specsJson}&draftId=${draft.id}`,
+      url: `/pages-sub/editor/index?specs=${specsJson}&draftId=${draft.id}`,
     });
   };
 
