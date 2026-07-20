@@ -1,7 +1,10 @@
 import { View, Image, Button, Text, Canvas } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import BasePage from '@/components/base-page';
-import iconMerchantAdd from '@/assets/svgs/icon_merchant_add.svg';
+import iconMerchantAdd from '@/assets/svgs/icon_promotion_logo.svg';
+import iconRadio from '@/assets/svgs/icon_radio.svg';
+import iconRadioActive from '@/assets/svgs/icon_radio_active.svg';
+import iconWxLogo from '@/assets/svgs/icon_wx_logo.svg';
 import iconCode from '@/assets/images/kf_code.png';
 import iconQrCode from '@/assets/images/qr_code.png';
 import { useMerchantPromoterLogic } from './index.logic';
@@ -30,6 +33,26 @@ const MerchantPromoter = () => {
 
           <View className='title'>注册成为平台推广员</View>
 
+          <View className='agreement-row' onClick={toggleAgreement}>
+            <Image
+              className='radio-icon'
+              src={agreedToTerms ? iconRadioActive : iconRadio}
+              mode='aspectFit'
+            />
+            <View className='agreement-text'>
+              我同意并阅读
+              <Text
+                className='agreement-link'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleViewAgreement();
+                }}
+              >
+                《推广居间合作协议》
+              </Text>
+            </View>
+          </View>
+
           <Button
             className='wx-login-btn'
             openType={agreedToTerms ? 'getPhoneNumber' : undefined}
@@ -47,26 +70,11 @@ const MerchantPromoter = () => {
             }
             disabled={isLoading}
           >
-            {isLoading ? '登录中...' : '微信登陆'}
+            <View className='btn-content'>
+              <Image className='btn-icon' src={iconWxLogo} mode='aspectFit' />
+              <Text>{isLoading ? '登录中...' : '微信登录'}</Text>
+            </View>
           </Button>
-
-          <View className='agreement-row' onClick={toggleAgreement}>
-            <View className={`checkbox ${agreedToTerms ? 'checked' : ''}`}>
-              {agreedToTerms && <Text className='check-mark'>✓</Text>}
-            </View>
-            <View className='agreement-text'>
-              我同意并阅读
-              <Text
-                className='agreement-link'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleViewAgreement();
-                }}
-              >
-                《推广居间合作协议》
-              </Text>
-            </View>
-          </View>
         </View>
       </BasePage>
     );

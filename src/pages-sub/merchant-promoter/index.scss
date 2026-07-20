@@ -1,5 +1,4 @@
 .content {
-  padding: 32px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10,28 +9,23 @@
 
   // 未登录 - 用户图标
   .icon-circle {
-    width: 192rpx;
-    height: 192rpx;
-    border-radius: 64rpx;
-    background-color: #eae7ea;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 26px;
-    box-shadow: 0 4rpx 30rpx rgba(0, 0, 0, 0.03);
-
+    margin-top: 80px;
+    width: 74px;
+    height: 74px;
     .icon-img {
-      width: 88rpx;
-      height: 64rpx;
+      width: 74px;
+      height: 74px;
     }
   }
 
   // 标题文字
   .title {
-    font-size: 40rpx;
-    font-weight: 500;
+    font-size: 18px;
+    font-weight: 400;
     color: #000;
-    line-height: 20px;
+    line-height: 22px;
+    letter-spacing: 5px;
+    margin-top: 40px;
   }
 
   // 标题 - 间距
@@ -41,67 +35,67 @@
 
   // 微信登陆按钮
   .wx-login-btn {
-    width: 352rpx;
-    height: 94rpx;
-    background-color: #000;
+    width: 310px;
+    height: 56px;
+    background-color: #07c060;
     color: #fff;
-    border-radius: 72rpx;
-    font-size: 28rpx;
-    font-weight: 400;
+    border-radius: 100px;
+    font-size: 16px;
+    font-weight: 700;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 26px 0;
+    margin: 20px 0;
     padding: 0;
+    box-shadow:
+      0 8px 10px -6px rgba(0, 0, 0, 0.1),
+      0 20px 25px -5px rgba(0, 0, 0, 0.1);
 
     &::after {
       border: none;
+    }
+
+    .btn-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .btn-icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 10rpx;
+      }
     }
   }
 
   // 协议行
   .agreement-row {
     display: flex;
-    align-items: flex-start;
-    font-size: 24rpx;
+    align-items: center;
+    font-size: 12px;
+    line-height: 22px;
     color: #000;
-    padding: 12rpx 0;
     cursor: pointer;
     user-select: none;
+    margin-top: 300px;
+    -webkit-tap-highlight-color: transparent;
 
-    .checkbox {
-      width: 24rpx;
-      height: 24rpx;
-      border: 2rpx solid #d9d9d9;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 12rpx;
-      margin-top: 2rpx;
+    .radio-icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
       flex-shrink: 0;
-
-      &.checked {
-        background-color: #000;
-        border-color: #000;
-
-        .check-mark {
-          color: #fff;
-          font-size: 18rpx;
-          line-height: 1;
-        }
-      }
     }
 
     .agreement-text {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      color: #8c8c8c;
+      color: rgba(0, 0, 0, 0.5);
 
       .agreement-link {
-        color: #000;
+        color: #08f;
         margin-left: 4rpx;
       }
     }
