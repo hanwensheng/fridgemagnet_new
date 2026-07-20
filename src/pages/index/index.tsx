@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import BasePage from '@/components/base-page';
 import SpecSelectPopup, { SelectedSpec } from '@/components/spec-select-popup';
 import { useTabBar } from '@/hooks/useTabBar';
-import { useAppStore } from '@/store';
 import { productApi, BizPopularDesign } from '@/api';
 import logoIcon from '@/assets/svgs/icon_logo_black.svg';
 import HomeBg from '@/assets/images/home_bg.png';
@@ -114,32 +113,6 @@ export default function Index() {
       .getPopularDesignList({ pageNum: 1, pageSize: 20 })
       .then((res) => setPopularDesigns(res.list))
       .catch(() => {});
-  }, []);
-
-  // 解析扫码进入的 scene 参数，格式: merchantId.promoterId
-  const sceneParsed = useRef(false);
-  useEffect(() => {
-    if (sceneParsed.current) return;
-    sceneParsed.current = true;
-
-    try {
-      const scene = Taro.getCurrentInstance()?.router?.params?.scene;
-      if (!scene || typeof scene !== 'string') return;
-
-      const dotIndex = scene.indexOf('.');
-      const merchantId = dotIndex > 0 ? scene.substring(0, dotIndex) : scene;
-      const merchantPromoterId = dotIndex > 0 ? scene.substring(dotIndex + 1) : '';
-
-      if (merchantId) {
-        useAppStore.getState().setMerchantContext({
-          merchantId,
-          merchantPromoterId: merchantPromoterId || undefined,
-        });
-        console.log('[home] scene 解析:', { merchantId, merchantPromoterId });
-      }
-    } catch (e) {
-      console.error('[home] scene 解析失败:', e);
-    }
   }, []);
 
   useDidShow(() => {

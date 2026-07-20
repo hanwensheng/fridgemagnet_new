@@ -1,7 +1,8 @@
 import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import BasePage from '@/components/base-page';
+import { useAppStore } from '@/store';
 
 import LogoIcon from '@/assets/svgs/icon_logo.svg';
 import SplashBg from '@/assets/images/splash_bg.png';
@@ -103,6 +104,32 @@ export default function Splash() {
     return () => {
       clearTimeout(fallbackTimer);
     };
+  }, []);
+
+  // 解析扫码进入的 scene 参数，格式: merchantId.promoterId
+  const sceneParsed = useRef(false);
+  useEffect(() => {
+    if (sceneParsed.current) return;
+    sceneParsed.current = true;
+
+    try {
+      const scene = Taro.getCurrentInstance()?.router?.params?.scene;
+      if (!scene || typeof scene !== 'string') return;
+
+      const dotIndex = scene.indexOf('.');
+      const merchantId = dotIndex > 0 ? scene.substring(0, dotIndex) : scene;
+      const merchantPromoterId = dotIndex > 0 ? scene.substring(dotIndex + 1) : '';
+
+      if (merchantId) {
+        useAppStore.getState().setMerchantContext({
+          merchantId,
+          merchantPromoterId: merchantPromoterId || undefined,
+        });
+        console.log('[splash] scene 解析:', { merchantId, merchantPromoterId });
+      }
+    } catch (e) {
+      console.error('[splash] scene 解析失败:', e);
+    }
   }, []);
 
   return (
