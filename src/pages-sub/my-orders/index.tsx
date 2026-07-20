@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { ENV_TYPE } from '@tarojs/taro';
 import BasePage from '@/components/base-page';
 import IconSingle from '@/assets/svgs/icon_single.svg';
 import IconGroup from '@/assets/svgs/icon_group.svg';
@@ -28,6 +29,28 @@ export default function MyOrders() {
     getDisplayPrice,
     getOrderCountdown,
   } = useMyOrdersLogic();
+
+  /** 计算导航栏下方可用高度，使 tab 栏固定不跟随页面滚动 */
+  const pageHeight = useMemo(() => {
+    const systemInfo = Taro.getSystemInfoSync();
+    const statusBarH = systemInfo.statusBarHeight || 0;
+    const isWeapp = Taro.getEnv() === ENV_TYPE.WEAPP;
+
+    let menuButtonInfo: { top: number; height: number };
+    if (isWeapp) {
+      try {
+        menuButtonInfo = Taro.getMenuButtonBoundingClientRect();
+      } catch {
+        menuButtonInfo = { top: statusBarH + 4, height: 32 };
+      }
+    } else {
+      menuButtonInfo = { top: statusBarH + 4, height: 32 };
+    }
+
+    const gap = menuButtonInfo.top - statusBarH;
+    const navBarH = statusBarH + menuButtonInfo.height + gap * 2;
+    return systemInfo.screenHeight - navBarH;
+  }, []);
 
   const handleGoOrderDetail = (order: MerchantOrder) => {
     setCurrentOrder(order);
@@ -97,7 +120,7 @@ export default function MyOrders() {
         isFromCancelPay ? () => Taro.switchTab({ url: '/pages/index/index' }) : undefined
       }
     >
-      <View className='my-orders-page'>
+      <View className='my-orders-page' style={{ height: `${pageHeight}px` }}>
         {/* tab 栏 */}
         <ScrollView className='order-tabs' scrollX showScrollbar={false}>
           <View className='order-tabs-inner'>
@@ -115,7 +138,7 @@ export default function MyOrders() {
         </ScrollView>
 
         {/* 订单列表 */}
-        <View className='order-list'>
+        <ScrollView className='order-list' scrollY>
           {loading ? (
             <View className='order-list-empty'>
               <Text className='order-list-empty-text'>加载中...</Text>
@@ -243,7 +266,7 @@ export default function MyOrders() {
             })
           )}
           <View className='my-orders-safe-bottom' />
-        </View>
+        </ScrollView>
       </View>
     </BasePage>
   );
