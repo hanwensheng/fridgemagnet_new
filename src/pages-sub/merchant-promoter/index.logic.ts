@@ -1,18 +1,40 @@
-import { useState, useEffect } from 'react';
-import Taro from '@tarojs/taro';
+import { useState, useEffect, useMemo } from 'react';
+import Taro, { ENV_TYPE } from '@tarojs/taro';
 import { useAppStore } from '@/store';
 import { userApi } from '@/api/modules/user';
 
 type ViewState = 'login' | 'already-promoter' | 'success' | 'merchant-bind-success';
 
 export const useMerchantPromoterLogic = () => {
-  const [viewState, setViewState] = useState<ViewState>('login');
+  const [viewState, setViewState] = useState<ViewState>('success');
   const [merchantId, setMerchantId] = useState<string>('');
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const { isLoggedIn } = useAppStore();
+
+  /** 计算状态栏 + 导航栏高度 */
+  const navBarHeight = useMemo(() => {
+    const systemInfo = Taro.getSystemInfoSync();
+    const statusBarH = systemInfo.statusBarHeight || 0;
+    const isWeapp = Taro.getEnv() === ENV_TYPE.WEAPP;
+
+    let menuButtonInfo: { top: number; height: number };
+    if (isWeapp) {
+      try {
+        menuButtonInfo = Taro.getMenuButtonBoundingClientRect();
+      } catch {
+        menuButtonInfo = { top: statusBarH + 4, height: 32 };
+      }
+    } else {
+      menuButtonInfo = { top: statusBarH + 4, height: 32 };
+    }
+
+    const gap = menuButtonInfo.top - statusBarH;
+    return statusBarH + menuButtonInfo.height + gap * 2;
+  }, []);
 
   useEffect(() => {
     const params = Taro.getCurrentInstance().router?.params;
@@ -24,6 +46,21 @@ export const useMerchantPromoterLogic = () => {
       checkPromoterStatus();
     }
   }, [isLoggedIn]);
+
+  /** 成功状态时设置导航栏为白色文字，其他状态恢复黑色 */
+  useEffect(() => {
+    if (viewState === 'success') {
+      Taro.setNavigationBarColor({
+        frontColor: '#ffffff',
+        backgroundColor: '#1e1e20',
+      });
+    } else {
+      Taro.setNavigationBarColor({
+        frontColor: '#000000',
+        backgroundColor: '#F6F6F6',
+      });
+    }
+  }, [viewState]);
 
   const checkPromoterStatus = async () => {
     // 检查用户是否已经是推广员
@@ -115,6 +152,7 @@ export const useMerchantPromoterLogic = () => {
     }
 
     try {
+      setIsSaving(true);
       Taro.showLoading({ title: '生成中...', mask: true });
 
       // 获取 Canvas 节点
@@ -131,43 +169,26 @@ export const useMerchantPromoterLogic = () => {
       const ctx = canvas.getContext('2d');
       const dpr = Taro.getSystemInfoSync().pixelRatio;
 
-      // 设置画布尺寸（与背景图实际尺寸一致：750 * 1454）
-      const canvasWidth = 750;
-      const canvasHeight = 1454;
+      // 画布尺寸：设计稿 375px 宽度，导出 750px (2x)
+      const designWidth = 375;
+      const designHeight = 812;
+      const canvasWidth = designWidth * 2; // 750
+      const canvasHeight = designHeight * 2; // 1624
       canvas.width = canvasWidth * dpr;
       canvas.height = canvasHeight * dpr;
-      ctx.scale(dpr, dpr);
+      ctx.scale(dpr * 2, dpr * 2); // 所有绘制坐标按设计稿一倍尺寸
 
-      // 加载背景图
-      const bgImage = canvas.createImage();
-      await new Promise<void>((resolve, reject) => {
-        bgImage.onload = () => resolve();
-        bgImage.onerror = () => reject(new Error('背景图加载失败'));
-        // 使用推广码背景图
-        bgImage.src = require('@/assets/images/qr_code.png');
-      });
+      // 加载图片的辅助函数
+      const loadImage = (src: string): Promise<any> => {
+        return new Promise((resolve, reject) => {
+          const img = canvas.createImage();
+          img.onload = () => resolve(img);
+          img.onerror = () => reject(new Error(`图片加载失败: ${src}`));
+          img.src = src;
+        });
+      };
 
-      // 绘制背景图
-      ctx.drawImage(bgImage, 0, 0, canvasWidth, canvasHeight);
-
-      // 加载二维码图片
-      const qrImage = canvas.createImage();
-      await new Promise<void>((resolve, reject) => {
-        qrImage.onload = () => resolve();
-        qrImage.onerror = () => reject(new Error('二维码加载失败'));
-        qrImage.src = qrCodeUrl;
-      });
-
-      // 二维码参数（二倍图，一倍图参数需要 ×2）
-      // 一倍图：148×148, border:2px, radius:18px, 底部距离:105px
-      const qrSize = 148 * 2; // 296px
-      const borderWidth = 2 * 2; // 4px
-      const borderRadius = 18 * 2; // 36px
-      const bottomDistance = 105 * 2; // 210px
-      const qrX = (canvasWidth - qrSize) / 2; // 水平居中
-      const qrY = canvasHeight - bottomDistance - qrSize; // 距离底部 210px
-
-      // 手动绘制圆角矩形的辅助函数
+      // 圆角矩形辅助函数
       const drawRoundRect = (x: number, y: number, w: number, h: number, r: number) => {
         ctx.beginPath();
         ctx.moveTo(x + r, y);
@@ -182,23 +203,100 @@ export const useMerchantPromoterLogic = () => {
         ctx.closePath();
       };
 
-      // 绘制白色带圆角的边框背景
-      ctx.fillStyle = '#EDD8C2';
-      drawRoundRect(
-        qrX - borderWidth,
-        qrY - borderWidth,
-        qrSize + borderWidth * 2,
-        qrSize + borderWidth * 2,
-        borderRadius,
-      );
+      // 带 letter-spacing 的文字绘制辅助函数（Canvas 不支持 letter-spacing）
+      const fillTextWithSpacing = (text: string, x: number, y: number, spacing: number) => {
+        const charWidths: number[] = [];
+        let totalWidth = 0;
+        for (let i = 0; i < text.length; i++) {
+          const w = ctx.measureText(text[i]).width;
+          charWidths.push(w);
+          totalWidth += w + (i < text.length - 1 ? spacing : 0);
+        }
+        let cursorX = x - totalWidth / 2;
+        for (let i = 0; i < text.length; i++) {
+          ctx.fillText(text[i], cursorX, y);
+          cursorX += charWidths[i] + spacing;
+        }
+      };
+
+      // ===== 1. 背景色 =====
+      ctx.fillStyle = '#1e1e20';
+      ctx.fillRect(0, 0, designWidth, designHeight);
+
+      // ===== 2. 标题文字 =====
+      // .success-title: margin-top:0→, top:70px, font-size:28px, font-weight:800, line-height:34px, letter-spacing:3px, color:#FFF
+      ctx.fillStyle = '#FFF';
+      ctx.font = '800 28px sans-serif';
+      ctx.textBaseline = 'top';
+      const titleTop = 70;
+      fillTextWithSpacing('传自己的照片', designWidth / 2, titleTop, 3);
+
+      // .success-sub: font-size:14px, line-height:20px, letter-spacing:12px, margin-top:6px, color:#FFF
+      const subTop = titleTop + 34 + 6; // titleTop + title行高 + margin-top
+      ctx.font = '400 14px sans-serif';
+      fillTextWithSpacing('定制冰箱贴', designWidth / 2, subTop, 12);
+
+      // ===== 3. 背景大图 (.icon-qrcode: 375×537) =====
+      const bgImg = await loadImage(require('@/assets/images/splash_bg.png'));
+      const bgY = subTop + 20 + 10; // subTop + sub行高 + 间距
+      ctx.drawImage(bgImg, 0, bgY, 375, 537);
+
+      // ===== 4. 装饰图片 =====
+      // .SplashImg1: 135×140, top:115px, left:108px
+      const sp1 = await loadImage(require('@/assets/images/splash_img1.png'));
+      ctx.drawImage(sp1, 108, bgY + 115, 135, 140);
+
+      // .SplashImg2: 75×93, top:210px, left:95px
+      const sp2 = await loadImage(require('@/assets/images/splash_img2.png'));
+      ctx.drawImage(sp2, 95, bgY + 210, 75, 93);
+
+      // .SplashImg3: 130×100, top:250px, left:152px
+      const sp3 = await loadImage(require('@/assets/images/splash_img3.png'));
+      ctx.drawImage(sp3, 152, bgY + 250, 130, 100);
+
+      // ===== 5. 二维码 (.icon-qrcode2: 205×205, border-radius:24px, top:375px, 水平居中, border:15px solid #FFF, bg:#FFF) =====
+      const qrImg = await loadImage(qrCodeUrl);
+      const qrSize = 205;
+      const qrBorderWidth = 15;
+      const qrBorderRadius = 24;
+      const qrX = (designWidth - qrSize) / 2;
+      const qrY = bgY + 375;
+
+      // 白色边框背景
+      ctx.fillStyle = '#FFF';
+      drawRoundRect(qrX, qrY, qrSize, qrSize, qrBorderRadius);
       ctx.fill();
 
-      // 裁剪出圆角区域，然后绘制二维码
+      // 裁剪绘制二维码
       ctx.save();
-      drawRoundRect(qrX, qrY, qrSize, qrSize, borderRadius - borderWidth);
+      drawRoundRect(
+        qrX + qrBorderWidth,
+        qrY + qrBorderWidth,
+        qrSize - qrBorderWidth * 2,
+        qrSize - qrBorderWidth * 2,
+        qrBorderRadius - qrBorderWidth > 0 ? qrBorderRadius - qrBorderWidth : 0,
+      );
       ctx.clip();
-      ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
+      ctx.drawImage(
+        qrImg,
+        qrX + qrBorderWidth,
+        qrY + qrBorderWidth,
+        qrSize - qrBorderWidth * 2,
+        qrSize - qrBorderWidth * 2,
+      );
       ctx.restore();
+
+      // ===== 6. 底部文案 (footer-box) =====
+      // .footer-title: font-size:16px, line-height:22px, letter-spacing:5px
+      const footerY = qrY + qrSize + 30; // margin-top:30px 等效间距
+      ctx.fillStyle = '#FFF';
+      ctx.font = '500 16px sans-serif';
+      ctx.textBaseline = 'top';
+      fillTextWithSpacing('欢迎体验冰箱贴上爱', designWidth / 2, footerY, 5);
+
+      // .footer-sub: font-size:10px, line-height:22px, letter-spacing:1px
+      ctx.font = '400 10px sans-serif';
+      fillTextWithSpacing('当我们，把回忆做成冰箱贴', designWidth / 2, footerY + 22, 1);
 
       // 转换为临时文件
       const tempFilePath = await new Promise<string>((resolve, reject) => {
@@ -225,7 +323,9 @@ export const useMerchantPromoterLogic = () => {
         icon: 'success',
         duration: 2000,
       });
+      setIsSaving(false);
     } catch (error: any) {
+      setIsSaving(false);
       Taro.hideLoading();
       console.error('保存推广码失败:', error);
 
@@ -267,7 +367,9 @@ export const useMerchantPromoterLogic = () => {
     qrCodeUrl,
     isLoading,
     agreedToTerms,
+    isSaving,
     isLoggedIn: isLoggedIn(),
+    navBarHeight,
     handleGetPhoneNumber,
     handleSaveQrCode,
     toggleAgreement,

@@ -12,6 +12,7 @@
     margin-top: 80px;
     width: 74px;
     height: 74px;
+
     .icon-img {
       width: 74px;
       height: 74px;
@@ -133,76 +134,112 @@
     line-height: 20px;
   }
 
-  // 底部按钮
-  // .bottom-actions {
-  //   width: 100%;
-  //   display: flex;
-  //   flex-direction: column;
-  //   align-items: center;
-  //   gap: 24rpx;
-
-  //   .action-btn {
-  //     width: 500rpx;
-  //     height: 88rpx;
-  //     border-radius: 44rpx;
-  //     font-size: 32rpx;
-  //     font-weight: 500;
-  //     border: none;
-  //     display: flex;
-  //     align-items: center;
-  //     justify-content: center;
-  //     padding: 0;
-
-  //     &::after {
-  //       border: none;
-  //     }
-
-  //     &.primary {
-  //       background-color: #000;
-  //       color: #fff;
-  //     }
-
-  //     &.secondary {
-  //       background-color: #f5f5f5;
-  //       color: #666;
-  //     }
-  //   }
-  // }
   // 二维码图标
-  .content-success-top {
-    padding-top: 40px;
-  }
-  .icon-box {
-    width: 259px;
-    height: 503px;
-    position: relative;
-    border: 1px solid #c6c6c6;
-    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
-  }
-  .icon-qrcode {
-    width: 259px;
-    height: 503px;
-  }
-  .icon-qrcode2 {
-    width: 106px;
-    height: 106px;
-    border: 2px solid #edd8c2;
-    border-radius: 18px;
+  &.content-success-top {
     position: absolute;
-    bottom: 72px;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: #1e1e20;
+  }
+
+  .success-title {
+    margin-top: 10px;
+    font-weight: 800;
+    line-height: 34px;
+    letter-spacing: 3px;
+    font-size: 28px;
+    text-align: center;
+    color: #fff;
+  }
+
+  .success-sub {
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 12px;
+    margin-top: 6px;
+    text-align: center;
+    color: #fff;
+  }
+
+  .SplashImg1 {
+    width: 135px;
+    height: 140px;
+    position: absolute;
+    top: 115px;
+    left: 108px;
+  }
+
+  .SplashImg2 {
+    width: 75px;
+    height: 93px;
+    position: absolute;
+    top: 210px;
+    left: 95px;
+  }
+
+  .SplashImg3 {
+    width: 130px;
+    height: 100px;
+    position: absolute;
+    top: 250px;
+    left: 152px;
+  }
+
+  .icon-box {
+    width: 375px;
+    position: relative;
+  }
+
+  .icon-qrcode {
+    width: 375px;
+    height: 537px;
+  }
+
+  .icon-qrcode2 {
+    width: 205px;
+    height: 205px;
+    border-radius: 24px;
+    position: absolute;
+    top: 375px;
     left: 50%;
     transform: translateX(-50%);
+    background-color: #fff;
+    border: 15px solid #fff;
   }
+
   .save-tip {
-    width: 192px;
-    height: 47px;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 47px;
-    color: white;
-    background-color: #000;
-    border-radius: 23px;
+    width: 310px;
+    height: 56px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 56px;
+    color: #000;
+    background-color: #fff;
+    border-radius: 100px;
     text-align: center;
-    margin-top: 50px;
+    margin-top: 30px;
+  }
+
+  .footer-box {
+    margin-top: 30px;
+    text-align: center;
+    color: white;
+  }
+
+  .footer-title {
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: 5px;
+  }
+
+  .footer-sub {
+    font-size: 10px;
+    line-height: 22px;
+    letter-spacing: 1px;
   }
 }
