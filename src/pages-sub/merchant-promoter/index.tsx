@@ -138,9 +138,16 @@ const MerchantPromoter = () => {
     );
   }
 
-  // 商户绑定成功状态 - 只显示 toast，隐藏页面内容
+  // 商户绑定成功状态 - 显示成功提示，2 秒后自动跳转首页
   if (viewState === 'merchant-bind-success') {
-    return null;
+    return (
+      <BasePage navTitle='绑定成功' navShowBack={false}>
+        <View className='content'>
+          <View className='title'>绑定商户成功</View>
+          <View className='title title-mt'>即将返回首页...</View>
+        </View>
+      </BasePage>
+    );
   }
 
   return null;

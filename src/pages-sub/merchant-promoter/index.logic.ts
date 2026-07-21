@@ -62,6 +62,16 @@ export const useMerchantPromoterLogic = () => {
     }
   }, [viewState]);
 
+  /** 绑定商户成功后 2 秒自动跳回首页 */
+  useEffect(() => {
+    if (viewState === 'merchant-bind-success') {
+      const timer = setTimeout(() => {
+        Taro.switchTab({ url: '/pages/index/index' });
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [viewState]);
+
   const checkPromoterStatus = async () => {
     // 检查用户是否已经是推广员
     // 这里假设可以通过 userInfo 判断，根据实际接口调整
