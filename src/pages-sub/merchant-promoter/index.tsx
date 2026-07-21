@@ -6,7 +6,6 @@ import iconRadio from '@/assets/svgs/icon_radio.svg';
 import iconRadioActive from '@/assets/svgs/icon_radio_active.svg';
 import iconWxLogo from '@/assets/svgs/icon_wx_logo.svg';
 import iconCode from '@/assets/images/kf_code.png';
-import iconQrCode from '@/assets/images/qr_code.png';
 import SplashBg from '@/assets/images/splash_bg.png';
 import SplashImg1 from '@/assets/images/splash_img1.png';
 import SplashImg2 from '@/assets/images/splash_img2.png';

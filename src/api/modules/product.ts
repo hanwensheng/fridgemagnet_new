@@ -247,7 +247,7 @@ export const productApi = {
     return request<BizPopularDesignListData>({
       url: '/v1/bizPopularDesign/findPageBySearch',
       method: 'POST',
-      data: { pageNum: 1, pageSize: 10, ...params },
+      data: { pageNum: 1, pageSize: 100, ...params },
     });
   },
 };

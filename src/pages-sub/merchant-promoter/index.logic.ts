@@ -6,7 +6,7 @@ import { userApi } from '@/api/modules/user';
 type ViewState = 'login' | 'already-promoter' | 'success' | 'merchant-bind-success';
 
 export const useMerchantPromoterLogic = () => {
-  const [viewState, setViewState] = useState<ViewState>('success');
+  const [viewState, setViewState] = useState<ViewState>('login');
   const [merchantId, setMerchantId] = useState<string>('');
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -169,14 +169,12 @@ export const useMerchantPromoterLogic = () => {
       const ctx = canvas.getContext('2d');
       const dpr = Taro.getSystemInfoSync().pixelRatio;
 
-      // 画布尺寸：设计稿 375px 宽度，导出 750px (2x)
+      // 画布尺寸：设计稿 375×812，导出 2x 倍率，dpr 自适应
       const designWidth = 375;
       const designHeight = 812;
-      const canvasWidth = designWidth * 2; // 750
-      const canvasHeight = designHeight * 2; // 1624
-      canvas.width = canvasWidth * dpr;
-      canvas.height = canvasHeight * dpr;
-      ctx.scale(dpr * 2, dpr * 2); // 所有绘制坐标按设计稿一倍尺寸
+      canvas.width = designWidth * 2 * dpr;
+      canvas.height = designHeight * 2 * dpr;
+      ctx.scale(2 * dpr, 2 * dpr);
 
       // 加载图片的辅助函数
       const loadImage = (src: string): Promise<any> => {
@@ -238,29 +236,33 @@ export const useMerchantPromoterLogic = () => {
 
       // ===== 3. 背景大图 (.icon-qrcode: 375×537) =====
       const bgImg = await loadImage(require('@/assets/images/splash_bg.png'));
-      const bgY = subTop + 20 + 10; // subTop + sub行高 + 间距
+      const bgY = subTop + 20; // subTop + sub行高，无额外间距
       ctx.drawImage(bgImg, 0, bgY, 375, 537);
 
-      // ===== 4. 装饰图片 =====
+      // .icon-box 顶部坐标：页面中绝对定位元素都以 icon-box 为参照，而非背景图
+      // 页面中背景图距 icon-box 顶部 = 标题margin-top(10) + 标题行高(34) + 副标题margin-top(6) + 副标题行高(20) = 70px
+      const iconBoxTop = titleTop - 10; // 标题有 margin-top:10px，所以 icon-box 顶部 = titleTop - 10
+
+      // ===== 4. 装饰图片（绝对定位，相对 .icon-box 顶部） =====
       // .SplashImg1: 135×140, top:115px, left:108px
       const sp1 = await loadImage(require('@/assets/images/splash_img1.png'));
-      ctx.drawImage(sp1, 108, bgY + 115, 135, 140);
+      ctx.drawImage(sp1, 108, iconBoxTop + 115, 135, 140);
 
       // .SplashImg2: 75×93, top:210px, left:95px
       const sp2 = await loadImage(require('@/assets/images/splash_img2.png'));
-      ctx.drawImage(sp2, 95, bgY + 210, 75, 93);
+      ctx.drawImage(sp2, 95, iconBoxTop + 210, 75, 93);
 
       // .SplashImg3: 130×100, top:250px, left:152px
       const sp3 = await loadImage(require('@/assets/images/splash_img3.png'));
-      ctx.drawImage(sp3, 152, bgY + 250, 130, 100);
+      ctx.drawImage(sp3, 142, iconBoxTop + 285, 130, 100);
 
-      // ===== 5. 二维码 (.icon-qrcode2: 205×205, border-radius:24px, top:375px, 水平居中, border:15px solid #FFF, bg:#FFF) =====
+      // ===== 5. 二维码（绝对定位，相对 .icon-box 顶部，top:375px） =====
       const qrImg = await loadImage(qrCodeUrl);
       const qrSize = 205;
       const qrBorderWidth = 15;
       const qrBorderRadius = 24;
       const qrX = (designWidth - qrSize) / 2;
-      const qrY = bgY + 375;
+      const qrY = iconBoxTop + 375 + 60;
 
       // 白色边框背景
       ctx.fillStyle = '#FFF';
