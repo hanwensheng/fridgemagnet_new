@@ -81,7 +81,7 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
         name: formatSizeLabel(goods.width, goods.height),
         desc: goods.intro,
         price: goods.price,
-        image: getLocalImage(goods.width, goods.height),
+        image: goods.goodsImg || getLocalImage(goods.width, goods.height),
         selected: false,
         quantity: 1,
       }));
