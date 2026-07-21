@@ -61,9 +61,16 @@ export default function CustomTabBar(props: CustomTabBarProps) {
     };
   }, []);
 
-  // 小程序端：优先使用微信框架注入的 selected，兜底使用内部 state（默认 0 = 首页）
+  // 小程序端：优先使用微信框架注入的 selected，否则用 getCurrentPages 兜底
   // H5 端：selected 来自 state（tabbar:change 事件驱动）
-  const currentIndex = process.env.TARO_ENV === 'weapp' ? (props.selected ?? selected) : selected;
+  const currentIndex =
+    process.env.TARO_ENV === 'weapp'
+      ? (props.selected ??
+        Math.max(
+          TABS.findIndex((t) => t.pagePath === `/${Taro.getCurrentPages().slice(-1)[0]?.route}`),
+          0,
+        ))
+      : selected;
 
   const switchTab = useCallback(
     (index: number) => {
