@@ -74,6 +74,13 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
   const setUserInfo = useAppStore((s) => s.setUserInfo);
   const isLoggedIn = !!token;
 
+  // 每次打开抽屉时重置选中状态和步进器
+  useEffect(() => {
+    if (visible) {
+      setItems((prev) => prev.map((item) => ({ ...item, selected: false, quantity: 1 })));
+    }
+  }, [visible]);
+
   useEffect(() => {
     productApi.getGoodsList().then((goodsList) => {
       const specItems: SpecItemState[] = goodsList.map((goods) => ({
@@ -198,95 +205,110 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
   };
 
   return (
-    <Popup
-      visible={visible}
-      position='bottom'
-      onClose={onClose}
-      round
-      closeable
-      closeIcon={<Image src={CloseIcon} className='h-[16px] w-[16px]' />}
-      className='spec-select-popup'
-      style={{ backgroundColor: '#f6f6f6' }}
-      zIndex={1000}
-    >
-      <View className='px-[12px] pt-[56px]'>
-        <View className='flex flex-col gap-[12px]'>
-          {items.map((item, index) => (
-            <View
-              key={item.id}
-              className={`flex flex-row items-center rounded-[24px] bg-white px-[16px] py-[20px] border-[4px] border-solid box-border w-[351px] h-[143px] ${item.selected ? 'border-[rgba(0,0,0,0.10)]' : 'border-transparent'}`}
-              onClick={() => toggleSelected(index)}
-            >
-              <View className='flex flex-col items-center'>
-                <Image src={item.image} mode='aspectFit' className='h-[88px] w-[88px]' />
-                <Text className='text-sm text-black leading-[15px]'>{item.name}</Text>
-              </View>
-              <View className='ml-[16px] flex flex-1 flex-col justify-center w-[183px]'>
-                <Text className='text-sm text-black leading-[15px] font-[500]'>{item.desc}</Text>
-                <View className='flex items-center justify-between mt-[16px]'>
-                  <Text className='text-sm text-black/40 leading-[18px]'>
-                    ¥{parseFloat(priceInfo?.firstPrice || '0').toFixed(2)}
-                  </Text>
-                  <View
-                    className='flex flex-row items-center rounded-full bg-[#F4F4F5] w-[74px] h-[24px]'
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <View
-                      className='flex h-[24px] w-[29px] items-center justify-center'
-                      onClick={() => changeQuantity(index, -1)}
-                    >
-                      <Image
-                        src={item.quantity <= 1 ? IconSubDisable : IconSub}
-                        className='h-[22px] w-[13px]'
-                      />
-                    </View>
-                    <Text className='w-[16px] text-center text-xs text-black font-[500]'>
-                      {item.quantity}
+    <>
+      {/* 自定义遮罩：始终存在于 DOM 中，仅通过 opacity 控制显示/隐藏，避免 DOM 增删导致的闪烁 */}
+      <View
+        className='fixed inset-0'
+        style={{
+          zIndex: 1001,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          opacity: visible ? 1 : 0,
+          pointerEvents: visible ? 'auto' : 'none',
+          transition: 'opacity 0.3s',
+        }}
+        onClick={onClose}
+      />
+      <Popup
+        visible={visible}
+        position='bottom'
+        onClose={onClose}
+        round
+        closeable
+        overlay={false}
+        closeIcon={<Image src={CloseIcon} className='h-[16px] w-[16px]' />}
+        className='spec-select-popup'
+        style={{ backgroundColor: '#f6f6f6' }}
+        zIndex={1002}
+      >
+        <View className='px-[12px] pt-[56px]'>
+          <View className='flex flex-col gap-[12px]'>
+            {items.map((item, index) => (
+              <View
+                key={item.id}
+                className={`flex flex-row items-center rounded-[24px] bg-white px-[16px] py-[20px] border-[4px] border-solid box-border w-[351px] h-[143px] ${item.selected ? 'border-[rgba(0,0,0,0.10)]' : 'border-transparent'}`}
+                onClick={() => toggleSelected(index)}
+              >
+                <View className='flex flex-col items-center'>
+                  <Image src={item.image} mode='aspectFit' className='h-[88px] w-[88px]' />
+                  <Text className='text-sm text-black leading-[15px]'>{item.name}</Text>
+                </View>
+                <View className='ml-[16px] flex flex-1 flex-col justify-center w-[183px]'>
+                  <Text className='text-sm text-black leading-[15px] font-[500]'>{item.desc}</Text>
+                  <View className='flex items-center justify-between mt-[16px]'>
+                    <Text className='text-sm text-black/40 leading-[18px]'>
+                      ¥{parseFloat(priceInfo?.firstPrice || '0').toFixed(2)}
                     </Text>
                     <View
-                      className='flex h-[24px] w-[29px] items-center justify-center'
-                      onClick={() => changeQuantity(index, 1)}
+                      className='flex flex-row items-center rounded-full bg-[#F4F4F5] w-[74px] h-[24px]'
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <Image src={IconAdd} className='h-[22px] w-[13px]' />
+                      <View
+                        className='flex h-[24px] w-[29px] items-center justify-center'
+                        onClick={() => changeQuantity(index, -1)}
+                      >
+                        <Image
+                          src={item.quantity <= 1 ? IconSubDisable : IconSub}
+                          className='h-[22px] w-[13px]'
+                        />
+                      </View>
+                      <Text className='w-[16px] text-center text-xs text-black font-[500]'>
+                        {item.quantity}
+                      </Text>
+                      <View
+                        className='flex h-[24px] w-[29px] items-center justify-center'
+                        onClick={() => changeQuantity(index, 1)}
+                      >
+                        <Image src={IconAdd} className='h-[22px] w-[13px]' />
+                      </View>
                     </View>
                   </View>
                 </View>
+                <View className='ml-[16px]'>
+                  <Image
+                    src={item.selected ? RadioActiveIcon : RadioIcon}
+                    className='h-[16px] w-[16px]'
+                  />
+                </View>
               </View>
-              <View className='ml-[16px]'>
-                <Image
-                  src={item.selected ? RadioActiveIcon : RadioIcon}
-                  className='h-[16px] w-[16px]'
-                />
-              </View>
-            </View>
-          ))}
-        </View>
-
-        <View className='mb-[48px] mt-[20px] text-center text-xs text-[#945317]'>
-          {buildPriceText(priceInfo)}
-        </View>
-
-        {isLoggedIn ? (
-          <View
-            className='flex h-[56px] items-center justify-center rounded-full bg-[#1c1c1e]'
-            style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
-            onClick={handleConfirm}
-          >
-            <Text className='text-base font-bold text-white'>共 {totalCount} 件 去制作</Text>
+            ))}
           </View>
-        ) : (
-          <Button
-            className='flex h-[56px] w-full items-center justify-center rounded-full bg-[#1c1c1e] !border-none !p-0'
-            style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
-            openType='getPhoneNumber'
-            onGetPhoneNumber={handleLogin}
-          >
-            <Text className='text-base font-bold text-white'>共 {totalCount} 件 去制作</Text>
-          </Button>
-        )}
 
-        {/* {safeAreaBottom > 0 && <View style={{ height: `${safeAreaBottom}px` }} />} */}
-      </View>
-    </Popup>
+          <View className='mb-[48px] mt-[20px] text-center text-xs text-[#945317]'>
+            {buildPriceText(priceInfo)}
+          </View>
+
+          {isLoggedIn ? (
+            <View
+              className='flex h-[56px] items-center justify-center rounded-full bg-[#1c1c1e]'
+              style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
+              onClick={handleConfirm}
+            >
+              <Text className='text-base font-bold text-white'>共 {totalCount} 件 去制作</Text>
+            </View>
+          ) : (
+            <Button
+              className='flex h-[56px] w-full items-center justify-center rounded-full bg-[#1c1c1e] !border-none !p-0'
+              style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
+              openType='getPhoneNumber'
+              onGetPhoneNumber={handleLogin}
+            >
+              <Text className='text-base font-bold text-white'>共 {totalCount} 件 去制作</Text>
+            </Button>
+          )}
+
+          {/* {safeAreaBottom > 0 && <View style={{ height: `${safeAreaBottom}px` }} />} */}
+        </View>
+      </Popup>
+    </>
   );
 }
