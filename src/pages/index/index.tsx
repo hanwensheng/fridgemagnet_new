@@ -1,5 +1,11 @@
 import { View, Image } from '@tarojs/components';
-import Taro, { ENV_TYPE, useDidHide, useDidShow } from '@tarojs/taro';
+import Taro, {
+  ENV_TYPE,
+  useDidHide,
+  useDidShow,
+  useShareAppMessage,
+  useShareTimeline,
+} from '@tarojs/taro';
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import BasePage from '@/components/base-page';
 import SpecSelectPopup, { SelectedSpec } from '@/components/spec-select-popup';
@@ -7,6 +13,7 @@ import { useTabBar } from '@/hooks/useTabBar';
 import { productApi, BizPopularDesign } from '@/api';
 import logoIcon from '@/assets/svgs/icon_logo_black.svg';
 import HomeBg from '@/assets/images/home_bg.png';
+import ShareBg from '@/assets/images/share_bg.png';
 import HomeImg0 from '@/assets/images/home_img0.png';
 import HomeImg1 from '@/assets/images/home_img1.png';
 import HomeImg2 from '@/assets/images/home_img2.png';
@@ -164,6 +171,17 @@ export default function Index() {
   useDidHide(() => {
     showTabBar();
   });
+
+  // 分享给朋友
+  useShareAppMessage(() => ({
+    title: '把自己的照片做成冰箱贴',
+    imageUrl: ShareBg,
+  }));
+
+  // 分享到朋友圈
+  useShareTimeline(() => ({
+    title: '把自己的照片做成冰箱贴',
+  }));
 
   // home-img0 弹簧动画触发
   useEffect(() => {
