@@ -15,7 +15,7 @@ export default function OrderDetail() {
     navTitle,
     isGroup,
     displayPrice,
-    countdownText,
+    countdown,
     specText,
     latestTrace,
     handleCopyOrderNo,
@@ -47,9 +47,9 @@ export default function OrderDetail() {
             <View className='order-detail-btn order-detail-btn--default' onClick={handleCancel}>
               <Text className='order-detail-btn-text order-detail-btn-text--default'>取消订单</Text>
             </View>
-            {countdownText && (
+            {!countdown.isExpired && (
               <View className='order-detail-btn order-detail-btn--primary' onClick={handlePay}>
-                <Text className='order-detail-btn-text'>立即支付 {countdownText}</Text>
+                <Text className='order-detail-btn-text'>立即支付 {countdown.text}</Text>
               </View>
             )}
           </View>

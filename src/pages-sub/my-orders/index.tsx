@@ -30,8 +30,8 @@ export default function MyOrders() {
     getOrderCountdown,
   } = useMyOrdersLogic();
 
-  /** 计算导航栏下方可用高度，使 tab 栏固定不跟随页面滚动 */
-  const pageHeight = useMemo(() => {
+  /** 计算导航栏高度，用于 tab 固定定位 */
+  const navBarHeight = useMemo(() => {
     const systemInfo = Taro.getSystemInfoSync();
     const statusBarH = systemInfo.statusBarHeight || 0;
     const isWeapp = Taro.getEnv() === ENV_TYPE.WEAPP;
@@ -48,8 +48,7 @@ export default function MyOrders() {
     }
 
     const gap = menuButtonInfo.top - statusBarH;
-    const navBarH = statusBarH + menuButtonInfo.height + gap * 2;
-    return systemInfo.screenHeight - navBarH;
+    return statusBarH + menuButtonInfo.height + gap * 2;
   }, []);
 
   const handleGoOrderDetail = (order: MerchantOrder) => {
@@ -68,14 +67,20 @@ export default function MyOrders() {
         <View className='order-card-footer-actions'>
           <View
             className='order-action-btn order-action-btn--default'
-            onClick={() => handleCancel(order.pkId)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCancel(order.pkId);
+            }}
           >
             <Text className='order-action-text order-action-text--default'>取消订单</Text>
           </View>
           {!isExpired && (
             <View
               className='order-action-btn order-action-btn--primary'
-              onClick={() => handlePayOrder(order)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handlePayOrder(order);
+              }}
             >
               <Text className='order-action-text'>立即支付 {countdownText}</Text>
             </View>
@@ -90,7 +95,10 @@ export default function MyOrders() {
           <View className='order-card-footer-actions'>
             <View
               className='order-action-btn order-action-btn--default'
-              onClick={() => handleViewLogistics(order)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleViewLogistics(order);
+              }}
             >
               <Text className='order-action-text order-action-text--default'>查看物流</Text>
             </View>
@@ -103,7 +111,10 @@ export default function MyOrders() {
         return (
           <View
             className='order-action-btn order-action-btn--default'
-            onClick={() => handleDelete(order.pkId)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(order.pkId);
+            }}
           >
             <Text className='order-action-text order-action-text--default'>删除订单</Text>
           </View>
@@ -120,9 +131,14 @@ export default function MyOrders() {
         isFromCancelPay ? () => Taro.switchTab({ url: '/pages/index/index' }) : undefined
       }
     >
-      <View className='my-orders-page' style={{ height: `${pageHeight}px` }}>
+      <View className='my-orders-page'>
         {/* tab 栏 */}
-        <ScrollView className='order-tabs' scrollX showScrollbar={false}>
+        <ScrollView
+          className='order-tabs'
+          style={{ top: `${navBarHeight}px` }}
+          scrollX
+          showScrollbar={false}
+        >
           <View className='order-tabs-inner'>
             {TABS.map((tab) => (
               <View
@@ -138,7 +154,7 @@ export default function MyOrders() {
         </ScrollView>
 
         {/* 订单列表 */}
-        <ScrollView className='order-list' scrollY>
+        <View className='order-list'>
           {loading ? (
             <View className='order-list-empty'>
               <Text className='order-list-empty-text'>加载中...</Text>
@@ -266,7 +282,7 @@ export default function MyOrders() {
             })
           )}
           <View className='my-orders-safe-bottom' />
-        </ScrollView>
+        </View>
       </View>
     </BasePage>
   );

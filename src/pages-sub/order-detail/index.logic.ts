@@ -85,14 +85,17 @@ export function useOrderDetailLogic() {
     return Number(order.orderPrice) + Number(order.deliveryPrice);
   }, [order]);
 
-  /** 倒计时文案 */
-  const countdownText = useMemo(() => {
-    if (!order?.gmtCreate) return '';
+  /** 倒计时文案及是否过期 */
+  const countdown = useMemo(() => {
+    if (!order?.gmtCreate) return { text: '', isExpired: true };
     const status = Number(order.orderStatus);
-    if (status !== OrderStatus.NOT_PAY) return '';
+    if (status !== OrderStatus.NOT_PAY) return { text: '', isExpired: true };
     const deadline = new Date(order.gmtCreate).getTime() + PAY_DEADLINE_MINUTES * 60 * 1000;
     const remaining = Math.max(0, Math.floor((deadline - now) / 1000));
-    return formatCountdown(remaining);
+    return {
+      text: formatCountdown(remaining),
+      isExpired: remaining <= 0,
+    };
   }, [order, now]);
 
   const handleCopyOrderNo = useCallback(() => {
@@ -183,7 +186,7 @@ export function useOrderDetailLogic() {
     navTitle,
     isGroup,
     displayPrice,
-    countdownText,
+    countdown,
     specText,
     latestTrace,
     handleCopyOrderNo,
