@@ -49,7 +49,7 @@ interface SpecSelectPopupProps {
 /** 尺寸 -> 本地预览图映射（宽x高，mm） */
 const LOCAL_IMAGE_MAP: Record<string, string> = {
   '85x40': Img85,
-  '70x55': Img75,
+  '55x70': Img75,
   '30x45': Img45,
 };
 

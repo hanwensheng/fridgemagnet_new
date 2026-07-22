@@ -59,7 +59,17 @@ export const SIZE_OPTIONS: SizeOption[] = [
 
 /** 尺寸名 -> SIZE_OPTIONS 映射，用于匹配 tab 图片 */
 export function findSizeOption(name: string): SizeOption | undefined {
-  return SIZE_OPTIONS.find((opt) => opt.label === name);
+  const direct = SIZE_OPTIONS.find((opt) => opt.label === name);
+  if (direct) return direct;
+  // 后端返回的宽高可能互换（如 55x70 vs 70x55），尝试反转后匹配
+  try {
+    const match = name.match(/^([\d.]+)\*([\d.]+)cm$/);
+    if (match) {
+      const reversed = `${parseFloat(match[2])}*${parseFloat(match[1])}cm`;
+      return SIZE_OPTIONS.find((opt) => opt.label === reversed);
+    }
+  } catch {}
+  return undefined;
 }
 
 /** 规格名 -> 预览花边背景图 */
