@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView } from '@tarojs/components';
+import { View, Text, Image } from '@tarojs/components';
 import BasePage from '@/components/base-page';
 import PaySuccessPopup from '@/components/pay-success-popup';
 import CouponDetailPopup from '@/components/coupon-detail-popup';
@@ -58,7 +58,7 @@ export default function OrderConfirm() {
         </View>
       }
     >
-      <ScrollView className='order-page' scrollY>
+      <View className='order-page'>
         {/* 地址卡片 */}
         <View className='order-address-card' onClick={handleAddressClick}>
           {address ? (
@@ -123,7 +123,7 @@ export default function OrderConfirm() {
         </View>
 
         <View className='order-safe-bottom' />
-      </ScrollView>
+      </View>
 
       <PaySuccessPopup
         visible={payPopupVisible}

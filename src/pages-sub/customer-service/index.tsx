@@ -7,7 +7,12 @@ export default function CustomerServicePage() {
     <BasePage navTitle='联系客服'>
       <View className='flex justify-center pt-[152px]'>
         <View className='relative flex h-[289px] w-[289px] items-center justify-center rounded-[32px] bg-white'>
-          <Image className='h-[188px] w-[188px]' src={KfCodeImage} mode='aspectFit' />
+          <Image
+            className='h-[188px] w-[188px]'
+            src={KfCodeImage}
+            mode='aspectFit'
+            showMenuByLongpress
+          />
         </View>
       </View>
     </BasePage>
