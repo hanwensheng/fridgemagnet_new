@@ -164,6 +164,14 @@ function loadDraftData(): Record<string, any> | null {
 
 export function useEditorLogic() {
   const draftData = useMemo(() => loadDraftData(), []);
+  /** 编辑已有草稿时的草稿 id；从首页进入时为 null */
+  const editingDraftId = useMemo(() => {
+    try {
+      return Taro.getCurrentInstance().router?.params?.draftId || null;
+    } catch {
+      return null;
+    }
+  }, []);
   // 非草稿恢复场景：清除模块级裁剪状态，防止上一轮编辑的变换/原图污染新会话
   // cropStateMap 是模块级 Map，跨页面跳转持久存在，但 itemIndex 会重新分配导致复用冲突
   if (!draftData) {
@@ -396,24 +404,48 @@ export function useEditorLogic() {
 
   const hasDraftData = Object.keys(uploadMap).length > 0;
 
-  /** 保存当前编辑数据到本地草稿列表，每次保存新增一份草稿 */
+  /** 保存草稿：从草稿箱进入时更新已有记录，从首页进入时新增记录 */
   const saveDraft = () => {
     const now = Date.now();
     const d = new Date(now);
     const savedAt = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-    const draft = {
-      id: `${now}_${Math.random().toString(36).slice(2, 8)}`,
-      specList,
-      uploadMap,
-      uploadFileMap,
-      completedMap,
-      activeIndex,
-      createdAt: now,
-      savedAt,
-    };
     const existing = Taro.getStorageSync('fridge_magnet_editor_drafts');
     const list = Array.isArray(existing) ? existing : [];
-    Taro.setStorageSync('fridge_magnet_editor_drafts', [draft, ...list]);
+
+    if (editingDraftId) {
+      // 从草稿箱进入 → 更新已有草稿
+      const idx = list.findIndex((item: any) => item && item.id === editingDraftId);
+      const draft = {
+        id: editingDraftId,
+        specList,
+        uploadMap,
+        uploadFileMap,
+        completedMap,
+        activeIndex,
+        createdAt: idx >= 0 ? (list[idx].createdAt as number) || now : now,
+        savedAt,
+      };
+      if (idx >= 0) {
+        list[idx] = draft;
+      } else {
+        // 兼容：草稿 id 在 storage 中不存在时仍追加
+        list.unshift(draft);
+      }
+      Taro.setStorageSync('fridge_magnet_editor_drafts', list);
+    } else {
+      // 从首页进入 → 新增草稿
+      const draft = {
+        id: `${now}_${Math.random().toString(36).slice(2, 8)}`,
+        specList,
+        uploadMap,
+        uploadFileMap,
+        completedMap,
+        activeIndex,
+        createdAt: now,
+        savedAt,
+      };
+      Taro.setStorageSync('fridge_magnet_editor_drafts', [draft, ...list]);
+    }
   };
 
   const closeExitPopup = () => {
