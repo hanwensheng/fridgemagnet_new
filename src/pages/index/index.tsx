@@ -22,6 +22,8 @@ import HomeImg4 from '@/assets/images/home_img4.png';
 import HomeImg5 from '@/assets/images/home_img5.png';
 import HomeImg6 from '@/assets/images/home_img6.png';
 import IconSave from '@/assets/svgs/icon_save.svg';
+import HomeLaceAcross from '@/assets/svgs/home_lace_across.svg';
+import HomeLaceVertical from '@/assets/svgs/home_lace_vertical.svg';
 import './index.scss';
 
 // 二楼下拉动画配置
@@ -360,19 +362,35 @@ export default function Index() {
     const list = col1Designs.length > 0 ? col1Designs : Array(6).fill(null);
     return list.map((d, i) => (
       <View key={`col1-${i}`} className='home-grid-col-item'>
-        {d ? (
-          <Image
-            className='home-grid-col-img'
-            src={d.designImg}
-            style={{ width: pxToRpx(173), height: pxToRpx(113) }}
-            mode='aspectFill'
-          />
-        ) : (
-          <View
-            className='home-grid-col-img'
-            style={{ width: pxToRpx(173), height: pxToRpx(113) }}
-          />
-        )}
+        <View
+          className='home-grid-col-lace-bg'
+          style={{ width: pxToRpx(173), height: pxToRpx(113) }}
+        >
+          <Image className='home-grid-col-lace' src={HomeLaceAcross} mode='aspectFill' />
+          {d ? (
+            <Image
+              className='home-grid-col-img'
+              src={d.designImg}
+              mode='aspectFill'
+              style={{
+                width: pxToRpx(151),
+                height: pxToRpx(91),
+                left: pxToRpx(11),
+                top: pxToRpx(11),
+              }}
+            />
+          ) : (
+            <View
+              className='home-grid-col-img'
+              style={{
+                width: pxToRpx(151),
+                height: pxToRpx(91),
+                left: pxToRpx(11),
+                top: pxToRpx(11),
+              }}
+            />
+          )}
+        </View>
       </View>
     ));
   }, [col1Designs]);
@@ -381,19 +399,35 @@ export default function Index() {
     const list = col2Designs.length > 0 ? col2Designs : Array(6).fill(null);
     return list.map((d, i) => (
       <View key={`col2-${i}`} className='home-grid-col-item'>
-        {d ? (
-          <Image
-            className='home-grid-col-img'
-            src={d.designImg}
-            style={{ width: pxToRpx(108), height: pxToRpx(129) }}
-            mode='aspectFill'
-          />
-        ) : (
-          <View
-            className='home-grid-col-img'
-            style={{ width: pxToRpx(108), height: pxToRpx(129) }}
-          />
-        )}
+        <View
+          className='home-grid-col-lace-bg'
+          style={{ width: pxToRpx(108), height: pxToRpx(129) }}
+        >
+          <Image className='home-grid-col-lace' src={HomeLaceVertical} mode='aspectFill' />
+          {d ? (
+            <Image
+              className='home-grid-col-img'
+              src={d.designImg}
+              mode='aspectFill'
+              style={{
+                width: pxToRpx(88),
+                height: pxToRpx(109),
+                left: pxToRpx(10),
+                top: pxToRpx(10),
+              }}
+            />
+          ) : (
+            <View
+              className='home-grid-col-img'
+              style={{
+                width: pxToRpx(88),
+                height: pxToRpx(109),
+                left: pxToRpx(10),
+                top: pxToRpx(10),
+              }}
+            />
+          )}
+        </View>
       </View>
     ));
   }, [col2Designs]);
