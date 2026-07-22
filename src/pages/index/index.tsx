@@ -36,6 +36,20 @@ const SCENE_CONFIG = {
   transitionDuration: 600,
 };
 
+// 走马灯：固定速度 40 设计稿 px/s，唯一图 < 3 用 3 份拷贝，≥ 3 用 2 份拷贝
+const MARQUEE_SPEED = 40;
+const COL1_ITEM_WIDTH = 173 + 22 + 8; // 203
+const COL2_ITEM_WIDTH = 108 + 22 + 8; // 138
+const MARQUEE_GAP = 10;
+
+const getCopies = (uniqueCount: number) => (uniqueCount < 3 ? 3 : 2);
+const getKeyframeName = (copies: number) => `marquee-scroll-${copies}`;
+
+const calcMarqueeDuration = (uniqueCount: number, itemWidth: number) => {
+  const oneCopyWidth = uniqueCount * (itemWidth + MARQUEE_GAP);
+  return oneCopyWidth / MARQUEE_SPEED;
+};
+
 const lerp = (start: number, end: number, progress: number) => start + (end - start) * progress;
 const pxToRpx = (px: number) => `${px * 2}rpx`;
 
@@ -358,79 +372,122 @@ export default function Index() {
     [popularDesigns],
   );
 
-  const col1Items = useMemo(() => {
-    const list = col1Designs.length > 0 ? col1Designs : Array(6).fill(null);
-    return list.map((d, i) => (
-      <View key={`col1-${i}`} className='home-grid-col-item'>
+  // 走马灯渲染：辅助函数，避免 col1/col2 重复代码
+  const renderCarouselItem = useCallback(
+    (
+      d: BizPopularDesign | null,
+      prefix: string,
+      i: number,
+      laceSrc: string,
+      laceW: number,
+      laceH: number,
+      imgW: number,
+      imgH: number,
+      imgLeft: number,
+      imgTop: number,
+    ) => (
+      <View key={`${prefix}-${i}`} className='home-grid-col-item'>
         <View
           className='home-grid-col-lace-bg'
-          style={{ width: pxToRpx(173), height: pxToRpx(113) }}
+          style={{ width: pxToRpx(laceW), height: pxToRpx(laceH) }}
         >
-          <Image className='home-grid-col-lace' src={HomeLaceAcross} mode='aspectFill' />
+          <Image className='home-grid-col-lace' src={laceSrc} mode='aspectFill' />
           {d ? (
             <Image
               className='home-grid-col-img'
               src={d.designImg}
               mode='aspectFill'
               style={{
-                width: pxToRpx(151),
-                height: pxToRpx(91),
-                left: pxToRpx(11),
-                top: pxToRpx(11),
+                width: pxToRpx(imgW),
+                height: pxToRpx(imgH),
+                left: pxToRpx(imgLeft),
+                top: pxToRpx(imgTop),
               }}
             />
           ) : (
             <View
               className='home-grid-col-img'
               style={{
-                width: pxToRpx(151),
-                height: pxToRpx(91),
-                left: pxToRpx(11),
-                top: pxToRpx(11),
+                width: pxToRpx(imgW),
+                height: pxToRpx(imgH),
+                left: pxToRpx(imgLeft),
+                top: pxToRpx(imgTop),
               }}
             />
           )}
         </View>
       </View>
-    ));
-  }, [col1Designs]);
+    ),
+    [],
+  );
+
+  const col1Items = useMemo(() => {
+    const list = col1Designs.length > 0 ? col1Designs : Array(6).fill(null);
+    const copies = getCopies(list.length);
+    const result: JSX.Element[] = [];
+    for (let copy = 0; copy < copies; copy++) {
+      for (let i = 0; i < list.length; i++) {
+        result.push(
+          renderCarouselItem(
+            list[i],
+            `col1-c${copy}`,
+            i,
+            HomeLaceAcross,
+            173,
+            113,
+            151,
+            91,
+            11,
+            11,
+          ),
+        );
+      }
+    }
+    return result;
+  }, [col1Designs, renderCarouselItem]);
 
   const col2Items = useMemo(() => {
     const list = col2Designs.length > 0 ? col2Designs : Array(6).fill(null);
-    return list.map((d, i) => (
-      <View key={`col2-${i}`} className='home-grid-col-item'>
-        <View
-          className='home-grid-col-lace-bg'
-          style={{ width: pxToRpx(108), height: pxToRpx(129) }}
-        >
-          <Image className='home-grid-col-lace' src={HomeLaceVertical} mode='aspectFill' />
-          {d ? (
-            <Image
-              className='home-grid-col-img'
-              src={d.designImg}
-              mode='aspectFill'
-              style={{
-                width: pxToRpx(88),
-                height: pxToRpx(109),
-                left: pxToRpx(10),
-                top: pxToRpx(10),
-              }}
-            />
-          ) : (
-            <View
-              className='home-grid-col-img'
-              style={{
-                width: pxToRpx(88),
-                height: pxToRpx(109),
-                left: pxToRpx(10),
-                top: pxToRpx(10),
-              }}
-            />
-          )}
-        </View>
-      </View>
-    ));
-  }, [col2Designs]);
+    const copies = getCopies(list.length);
+    const result: JSX.Element[] = [];
+    for (let copy = 0; copy < copies; copy++) {
+      for (let i = 0; i < list.length; i++) {
+        result.push(
+          renderCarouselItem(
+            list[i],
+            `col2-c${copy}`,
+            i,
+            HomeLaceVertical,
+            108,
+            129,
+            88,
+            109,
+            10,
+            10,
+          ),
+        );
+      }
+    }
+    return result;
+  }, [col2Designs, renderCarouselItem]);
+
+  // 走马灯：< 3 张 3 份拷贝 -33.333%，≥ 3 张 2 份拷贝 -50%
+  const marqueeStyles = useMemo(() => {
+    const count1 = col1Designs.length > 0 ? col1Designs.length : 6;
+    const count2 = col2Designs.length > 0 ? col2Designs.length : 6;
+    const copies1 = getCopies(count1);
+    const copies2 = getCopies(count2);
+    const dur1 = calcMarqueeDuration(count1, COL1_ITEM_WIDTH);
+    const dur2 = calcMarqueeDuration(count2, COL2_ITEM_WIDTH);
+    const kfn1 = getKeyframeName(copies1);
+    const kfn2 = getKeyframeName(copies2);
+    return {
+      col1: transitionReady ? { animation: `${kfn1} ${dur1}s linear infinite` } : undefined,
+      col2: transitionReady
+        ? { animation: `${kfn2} ${dur2}s linear infinite`, animationDirection: 'reverse' as const }
+        : undefined,
+    };
+  }, [col1Designs, col2Designs, transitionReady]);
 
   return (
     <BasePage navShowBack={false} navTitle='冰箱贴上爱' navTitleIcon={logoIcon}>
@@ -493,14 +550,12 @@ export default function Index() {
           style={gridPlaceholderStyle}
         >
           <View className='home-grid-col'>
-            <View className='home-grid-col-inner'>
-              {col1Items}
+            <View className='home-grid-col-inner' style={marqueeStyles.col1}>
               {col1Items}
             </View>
           </View>
           <View className='home-grid-col'>
-            <View className='home-grid-col-inner'>
-              {col2Items}
+            <View className='home-grid-col-inner' style={marqueeStyles.col2}>
               {col2Items}
             </View>
           </View>

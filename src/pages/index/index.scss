@@ -29,15 +29,9 @@
 .home-grid-col-inner {
   display: inline-flex;
   gap: 10px;
-}
-
-.home-grid-placeholder--ready {
-  .home-grid-col-inner {
-    animation: marquee-scroll 25s linear infinite;
-  }
-  .home-grid-col:nth-child(2) .home-grid-col-inner {
-    animation-direction: reverse;
-  }
+  // 左右各补 gap 的一半，让总宽度 = 2N × (itemWidth + gap)，
+  // 从而 translateX(-50%) = N × (itemWidth + gap) 完美对齐循环点
+  padding: 0 5px;
 }
 
 .home-grid-col-item {
@@ -227,11 +221,20 @@
   border: 2px solid #d5d5d5;
 }
 
-@keyframes marquee-scroll {
+@keyframes marquee-scroll-2 {
   0% {
     transform: translateX(0);
   }
   100% {
     transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-scroll-3 {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333%);
   }
 }
