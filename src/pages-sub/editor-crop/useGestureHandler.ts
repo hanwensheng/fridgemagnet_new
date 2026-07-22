@@ -218,7 +218,7 @@ export function useGestureHandler(state: TransformState, options: GestureOptions
       const cx = e.touches[0].clientX || e.touches[0].x;
       // 水平位移驱动旋转
       const dx = cx - touchRef.current.startX;
-      const newRotate = touchRef.current.lastRotate + dx * 0.5;
+      const newRotate = touchRef.current.lastRotate - dx * 0.5;
       onUpdate({ rotate: newRotate });
     },
     [onUpdate],
