@@ -25,7 +25,7 @@
   width: 37px;
   height: 37px;
   transform: translate(-50%, -50%);
-  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
   will-change: transform;
 }
 
@@ -38,7 +38,7 @@
   line-height: 18px;
   color: #fff;
   opacity: 0;
-  transition: opacity 0.8s ease;
+  transition: opacity 0.8s ease 0.3s;
 }
 
 .splash-overlay {
@@ -50,7 +50,7 @@
   z-index: 5;
   background-color: #000;
   opacity: 1;
-  transition: opacity 0.8s ease;
+  transition: opacity 0.8s ease 0.3s;
 
   &--hidden {
     opacity: 0;
