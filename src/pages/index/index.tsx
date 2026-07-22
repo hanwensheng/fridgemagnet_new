@@ -60,6 +60,8 @@ export default function Index() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [transitionReady, setTransitionReady] = useState(false);
   const touchStartY = useRef(0);
+  const popupVisibleRef = useRef(false);
+  popupVisibleRef.current = popupVisible;
 
   const systemInfo = Taro.getSystemInfoSync();
   const statusBarHeight = systemInfo.statusBarHeight || 0;
@@ -124,6 +126,10 @@ export default function Index() {
 
   useDidShow(() => {
     checkDrafts();
+    // 从后台恢复时，如果抽屉仍打开，重新隐藏 TabBar
+    if (popupVisibleRef.current) {
+      hideTabBar();
+    }
   });
 
   // 监听其它页面发起的"打开首页抽屉"事件
