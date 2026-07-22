@@ -8,12 +8,11 @@ import { setLogisticsOrder } from '@/pages-sub/logistics-detail/index.logic';
 /** 支付倒计时（分钟） */
 export const PAY_DEADLINE_MINUTES = 15;
 
-/** HH:MM:SS 格式化 */
+/** MM:SS 格式化 */
 export function formatCountdown(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
+  const m = Math.floor(seconds / 60);
   const s = seconds % 60;
-  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
 /** 状态码 → 展示文案 */
