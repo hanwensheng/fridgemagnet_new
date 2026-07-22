@@ -189,6 +189,23 @@
   z-index: 1001;
 }
 
+.home-img4-loading {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  animation: home-loading-spin 2s linear infinite;
+}
+
+@keyframes home-loading-spin {
+  0% {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  100% {
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
 .home-draft-box {
   width: 100%;
   height: 100%;

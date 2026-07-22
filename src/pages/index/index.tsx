@@ -22,6 +22,7 @@ import HomeImg4 from '@/assets/images/home_img4.png';
 import HomeImg5 from '@/assets/images/home_img5.png';
 import HomeImg6 from '@/assets/images/home_img6.png';
 import IconSave from '@/assets/svgs/icon_save.svg';
+import HomeLoading from '@/assets/svgs/home_loading.svg';
 import HomeLaceAcross from '@/assets/svgs/home_lace_across.svg';
 import HomeLaceVertical from '@/assets/svgs/home_lace_vertical.svg';
 import './index.scss';
@@ -192,6 +193,9 @@ export default function Index() {
 
   useDidHide(() => {
     showTabBar();
+    // 页面隐藏时重置二楼下拉状态，回来时已是初始态
+    setProgress(0);
+    setIsAnimating(false);
   });
 
   // 分享给朋友
@@ -335,6 +339,16 @@ export default function Index() {
       width: pxToRpx(lerp(a.width, b.width, progress)),
       top: pxToRpx(lerp(a.top, b.top, progress)),
       left: pxToRpx(lerp(a.left, b.left, progress)),
+      transition: elementTransition,
+    }),
+    [progress, elementTransition],
+  );
+
+  const loadingStyle = useMemo(
+    () => ({
+      top: pxToRpx(lerp(80, 40, progress)),
+      width: pxToRpx(lerp(30, 20, progress)),
+      height: pxToRpx(lerp(30, 20, progress)),
       transition: elementTransition,
     }),
     [progress, elementTransition],
@@ -516,12 +530,20 @@ export default function Index() {
           style={getElementStyle(ELEMENT_LAYOUTS.img3.a, ELEMENT_LAYOUTS.img3.b)}
           mode='widthFix'
         />
-        <Image
-          src={HomeImg4}
-          className='home-img4'
-          style={getElementStyle(ELEMENT_LAYOUTS.img4.a, ELEMENT_LAYOUTS.img4.b)}
-          mode='widthFix'
-        />
+        <View
+          style={{
+            ...getElementStyle(ELEMENT_LAYOUTS.img4.a, ELEMENT_LAYOUTS.img4.b),
+            position: 'relative',
+          }}
+        >
+          <Image src={HomeImg4} className='home-img4' mode='widthFix' style={{ width: '100%' }} />
+          <Image
+            src={HomeLoading}
+            className='home-img4-loading'
+            mode='aspectFill'
+            style={loadingStyle}
+          />
+        </View>
         <Image
           src={HomeImg5}
           className='home-img5'
