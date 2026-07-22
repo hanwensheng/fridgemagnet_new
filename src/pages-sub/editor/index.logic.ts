@@ -220,6 +220,7 @@ export function useEditorLogic() {
 
   const activeItem = specList[activeIndex] || null;
   const isSingle = specList.length === 1;
+  const shouldCenter = specList.length <= 2;
   const allUploaded = specList.every((item) => uploadMap[item.index]);
   const currentHasImage = activeItem ? !!uploadMap[activeItem.index] : false;
 
@@ -504,6 +505,7 @@ export function useEditorLogic() {
     specPopupKey,
     activeItem,
     isSingle,
+    shouldCenter,
     allUploaded,
     currentHasImage,
     hasDraftData,

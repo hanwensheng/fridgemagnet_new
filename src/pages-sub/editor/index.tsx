@@ -26,7 +26,7 @@ export default function Editor() {
     menuVisible,
     specList,
     activeItem,
-    isSingle,
+    shouldCenter,
     allUploaded,
     currentHasImage,
     exitPopupVisible,
@@ -107,8 +107,8 @@ export default function Editor() {
     >
       <View className='editor-page' onClick={closeMenu}>
         {/* 尺寸选择 */}
-        <View className={`size-selector ${isSingle ? 'size-selector--center' : ''}`}>
-          {isSingle ? (
+        <View className={`size-selector ${shouldCenter ? 'size-selector--center' : ''}`}>
+          {shouldCenter ? (
             <View className='size-selector-inner'>
               {specList.map((specItem, specIdx) => {
                 const option = findSizeOption(specItem.name);
@@ -117,6 +117,7 @@ export default function Editor() {
                 const showCheck = hasImage;
                 return (
                   <View key={specIdx} className='size-item-row'>
+                    {specIdx > 0 && <View className='size-divider' />}
                     <View
                       className={`size-item ${active ? 'size-item--active' : ''}`}
                       onClick={() => setActiveIndex(specIdx)}
