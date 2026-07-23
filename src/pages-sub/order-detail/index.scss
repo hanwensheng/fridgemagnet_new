@@ -124,9 +124,18 @@
 
 .order-detail-goods-info {
   flex: 1;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.order-detail-goods-title-wrap {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  flex: 1;
 }
 
 .order-detail-goods-name {
@@ -134,6 +143,11 @@
   color: #000;
   line-height: 20px;
   font-weight: 400;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-all;
 }
 
 .order-detail-goods-spec {
@@ -142,14 +156,17 @@
   line-height: 18px;
   margin-top: 4px;
   font-weight: 300;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .order-detail-goods-count {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.5);
   line-height: 18px;
-  margin-top: 20px;
   font-weight: 300;
+  flex-shrink: 0;
 }
 
 /* 组合订单图片 */

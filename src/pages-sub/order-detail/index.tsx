@@ -157,8 +157,10 @@ export default function OrderDetail() {
                 mode='aspectFill'
               />
               <View className='order-detail-goods-info'>
-                <Text className='order-detail-goods-name'>冰箱贴一副</Text>
-                {specText && <Text className='order-detail-goods-spec'>{specText}</Text>}
+                <View className='order-detail-goods-title-wrap'>
+                  <Text className='order-detail-goods-name'>{order.orderTitle || ''}</Text>
+                  {specText && <Text className='order-detail-goods-spec'>{specText}</Text>}
+                </View>
                 <Text className='order-detail-goods-count'>共 {order.goodsNum} 件</Text>
               </View>
             </View>

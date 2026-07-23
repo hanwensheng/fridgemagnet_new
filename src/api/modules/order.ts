@@ -142,6 +142,7 @@ export interface MerchantOrder {
   merchantPackageName: string;
   orderImg: string;
   orderNo: string;
+  orderTitle?: string;
   orderPrice: number;
   orderSource: string;
   orderStatus: OrderStatusValue | string;

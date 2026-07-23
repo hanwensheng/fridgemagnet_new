@@ -128,15 +128,29 @@
 
 .order-single-info {
   flex: 1;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.order-single-title-wrap {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  flex: 1;
 }
 
 .order-single-name {
   font-size: 14px;
   color: #000;
   line-height: 20px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  word-break: break-all;
 }
 
 .order-single-spec {
@@ -144,13 +158,16 @@
   color: rgba(0, 0, 0, 0.5);
   line-height: 18px;
   margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .order-single-count-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 20px;
+  flex-shrink: 0;
 }
 
 .order-single-count {

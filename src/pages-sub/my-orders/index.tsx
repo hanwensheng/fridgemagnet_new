@@ -225,12 +225,14 @@ export default function MyOrders() {
                       <View className='order-single-item'>
                         <Image className='order-single-image' src={mainImage} mode='aspectFill' />
                         <View className='order-single-info'>
-                          <Text className='order-single-name'>冰箱贴一副</Text>
-                          {order.imgList?.[0]?.width && order.imgList?.[0]?.height && (
-                            <Text className='order-single-spec'>
-                              {formatSizeLabel(order.imgList[0].width, order.imgList[0].height)}
-                            </Text>
-                          )}
+                          <View className='order-single-title-wrap'>
+                            <Text className='order-single-name'>{order.orderTitle || ''}</Text>
+                            {order.imgList?.[0]?.width && order.imgList?.[0]?.height && (
+                              <Text className='order-single-spec'>
+                                {formatSizeLabel(order.imgList[0].width, order.imgList[0].height)}
+                              </Text>
+                            )}
+                          </View>
                           <View className='order-single-count-row'>
                             <Text className='order-single-count'>共 {order.goodsNum} 件</Text>
                             <View className='order-payment'>
