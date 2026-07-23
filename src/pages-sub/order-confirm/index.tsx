@@ -97,8 +97,10 @@ export default function OrderConfirm() {
             <View className='order-item-body'>
               <Image className='order-item-image' src={item.image} mode='aspectFill' />
               <View className='order-item-info'>
-                <Text className='order-item-name'>{item.name}</Text>
-                <Text className='order-item-spec'>{item.spec}</Text>
+                <View className='order-item-detail'>
+                  <Text className='order-item-name'>{item.name}</Text>
+                  <Text className='order-item-spec'>{item.spec}</Text>
+                </View>
                 <Text className='order-item-count'>共 {item.quantity} 件</Text>
               </View>
               <Text className='order-item-price'>¥{item.price.toFixed(2)}</Text>
