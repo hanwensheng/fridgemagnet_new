@@ -380,6 +380,8 @@
   color: #fff;
   line-height: 18px;
   font-weight: 400;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 
   &--default {
     color: #000;

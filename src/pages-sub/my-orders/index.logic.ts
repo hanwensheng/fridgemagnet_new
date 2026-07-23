@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import Taro from '@tarojs/taro';
 import { useAppStore } from '@/store';
 import { orderApi, OrderStatus } from '@/api/modules/order';
@@ -168,6 +168,22 @@ export function useMyOrdersLogic() {
     },
     [now],
   );
+
+  // 倒计时到期时刷新列表（仅触发一次）
+  const hasTriggeredExpiredRefresh = useRef(false);
+
+  useEffect(() => {
+    if (hasTriggeredExpiredRefresh.current) return;
+
+    const anyExpired = orders.some(
+      (o) => Number(o.orderStatus) === OrderStatus.NOT_PAY && getOrderCountdown(o).isExpired,
+    );
+
+    if (anyExpired) {
+      hasTriggeredExpiredRefresh.current = true;
+      fetchOrders();
+    }
+  }, [now, orders, getOrderCountdown, fetchOrders]);
 
   const handlePayOrder = useCallback(
     async (order: MerchantOrder) => {
