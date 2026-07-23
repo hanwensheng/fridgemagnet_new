@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import Taro, { ENV_TYPE } from '@tarojs/taro';
 import { useAppStore } from '@/store';
 import { userApi } from '@/api/modules/user';
@@ -12,6 +12,8 @@ export const useMerchantPromoterLogic = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [agreedToTerms, setAgreedToTerms] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [countdown, setCountdown] = useState<number>(5);
+  const countdownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { isLoggedIn } = useAppStore();
 
@@ -62,15 +64,35 @@ export const useMerchantPromoterLogic = () => {
     }
   }, [viewState]);
 
-  /** 绑定商户成功后 2 秒自动跳回首页 */
+  /** 绑定商户成功后倒计时 5 秒自动跳回首页 */
   useEffect(() => {
     if (viewState === 'merchant-bind-success') {
-      const timer = setTimeout(() => {
-        Taro.switchTab({ url: '/pages/index/index' });
-      }, 2000);
-      return () => clearTimeout(timer);
+      setCountdown(5);
+      countdownTimerRef.current = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            Taro.switchTab({ url: '/pages/index/index' });
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => {
+        if (countdownTimerRef.current) {
+          clearInterval(countdownTimerRef.current);
+          countdownTimerRef.current = null;
+        }
+      };
     }
   }, [viewState]);
+
+  const handleGoHome = () => {
+    if (countdownTimerRef.current) {
+      clearInterval(countdownTimerRef.current);
+      countdownTimerRef.current = null;
+    }
+    Taro.switchTab({ url: '/pages/index/index' });
+  };
 
   const checkPromoterStatus = async () => {
     // 检查用户是否已经是推广员
@@ -382,8 +404,10 @@ export const useMerchantPromoterLogic = () => {
     isSaving,
     isLoggedIn: isLoggedIn(),
     navBarHeight,
+    countdown,
     handleGetPhoneNumber,
     handleSaveQrCode,
+    handleGoHome,
     toggleAgreement,
     handleViewAgreement,
   };

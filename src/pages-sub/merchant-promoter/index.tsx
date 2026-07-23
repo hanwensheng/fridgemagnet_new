@@ -5,6 +5,7 @@ import iconMerchantAdd from '@/assets/svgs/icon_promotion_logo.svg';
 import iconRadio from '@/assets/svgs/icon_radio.svg';
 import iconRadioActive from '@/assets/svgs/icon_radio_active.svg';
 import iconWxLogo from '@/assets/svgs/icon_wx_logo.svg';
+import iconSuccess from '@/assets/svgs/icon_success.svg';
 import iconCode from '@/assets/images/kf_code.png';
 import SplashBg from '@/assets/images/splash_bg.png';
 import SplashImg1 from '@/assets/images/splash_img1.png';
@@ -21,8 +22,10 @@ const MerchantPromoter = () => {
     agreedToTerms,
     isSaving,
     navBarHeight,
+    countdown,
     handleGetPhoneNumber,
     handleSaveQrCode,
+    handleGoHome,
     toggleAgreement,
     handleViewAgreement,
   } = useMerchantPromoterLogic();
@@ -141,10 +144,16 @@ const MerchantPromoter = () => {
   // 商户绑定成功状态 - 显示成功提示，2 秒后自动跳转首页
   if (viewState === 'merchant-bind-success') {
     return (
-      <BasePage navTitle='绑定成功' navShowBack={false}>
+      <BasePage navShowBack={false}>
         <View className='content'>
-          <View className='title'>绑定商户成功</View>
-          <View className='title title-mt'>即将返回首页...</View>
+          <Image className='iconSuccess' src={iconSuccess} mode='aspectFit' />
+          <View className='suc-title'>绑定成功</View>
+          <View className='title-sub'>
+            当前页面将在 <Text className='title-num'>{countdown}</Text> 秒后关闭
+          </View>
+          <View className='go-home' onClick={handleGoHome}>
+            去首页
+          </View>
         </View>
       </BasePage>
     );
