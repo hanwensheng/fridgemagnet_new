@@ -5,7 +5,8 @@ import { useDraftLogic } from './index.logic';
 import './index.scss';
 
 export default function DraftPage() {
-  const { drafts, handleEdit, handleDelete } = useDraftLogic();
+  const { drafts, handleEdit, handleDelete, setSwipeRef, handleSwipeOpen, handleSwipeClose } =
+    useDraftLogic();
 
   return (
     <BasePage navTitle='草稿箱'>
@@ -18,6 +19,9 @@ export default function DraftPage() {
           {drafts.map((draft) => (
             <Swipe
               key={draft.id}
+              ref={(r: any) => setSwipeRef(draft.id, r)}
+              onOpen={() => handleSwipeOpen(draft.id)}
+              onClose={() => handleSwipeClose(draft.id)}
               rightAction={
                 <View className='draft-del' onClick={() => handleDelete(draft.id)}>
                   <Text className='draft-del-text'>删除</Text>
@@ -29,8 +33,10 @@ export default function DraftPage() {
                   <Image className='draft-thumbnail-img' src={draft.thumbnail} mode='aspectFill' />
                 </View>
                 <View className='draft-info'>
-                  <Text className='draft-title'>{draft.title}</Text>
-                  <Text className='draft-sizes'>{draft.sizes}</Text>
+                  <View>
+                    <Text className='draft-title'>{draft.title}</Text>
+                    <Text className='draft-sizes'>{draft.sizes}</Text>
+                  </View>
                   <Text className='draft-time'>最后编辑时间：{draft.savedAt}</Text>
                 </View>
               </View>

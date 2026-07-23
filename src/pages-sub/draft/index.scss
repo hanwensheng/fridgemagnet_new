@@ -19,7 +19,7 @@
   padding: 20px;
   box-sizing: border-box;
   width: 100%;
-  height: 110px;
+  height: 120px;
 }
 
 .draft-thumbnail {
@@ -43,6 +43,8 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  justify-content: space-between;
+  height: 80px;
 }
 
 .draft-title {
@@ -51,8 +53,10 @@
   color: #000;
   line-height: 20px;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  word-break: break-all;
 }
 
 .draft-sizes {
@@ -69,12 +73,11 @@
   font-size: 12px;
   color: rgba(0, 0, 0, 0.5);
   line-height: 18px;
-  margin-top: 20px;
 }
 
 .draft-del {
   width: 80px;
-  height: 110px;
+  height: 120px;
   background: #f05b3e;
   border-radius: 0 16px 16px 0;
   display: flex;

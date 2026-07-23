@@ -66,6 +66,8 @@ export default defineConfig<'webpack5'>(async (merge) => {
       webpackChain(chain) {
         chain.resolve.plugin('tsconfig-paths').use(TsconfigPathsPlugin);
         chain.plugin('weapp-tailwindcss').use(UnifiedWebpackPluginV5, [{ rem2rpx: true }]);
+        // 修复 NutUI Swipe 等组件 export var 被 webpack5 usedExports 优化剥离的问题
+        chain.optimization.usedExports(false);
         chain.module
           .rule('script')
           .use('thread-loader')

@@ -1,5 +1,5 @@
 import Taro, { useDidShow } from '@tarojs/taro';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { getPreviewBg } from '@/pages-sub/editor/index.logic';
 import type { SpecItem } from '@/pages-sub/editor/index.logic';
 
@@ -64,6 +64,8 @@ function toDraftItem(raw: any): DraftItem | null {
 
 export function useDraftLogic() {
   const [drafts, setDrafts] = useState<DraftItem[]>([]);
+  const swipeRefs = useRef<Map<string, any>>(new Map());
+  const openSwipeIdRef = useRef<string | null>(null);
 
   const loadDrafts = useCallback(() => {
     try {
@@ -119,9 +121,34 @@ export function useDraftLogic() {
     });
   };
 
+  const setSwipeRef = useCallback((id: string, ref: any) => {
+    if (ref) {
+      swipeRefs.current.set(id, ref);
+    } else {
+      swipeRefs.current.delete(id);
+    }
+  }, []);
+
+  const handleSwipeOpen = useCallback((id: string) => {
+    const prevId = openSwipeIdRef.current;
+    if (prevId && prevId !== id) {
+      swipeRefs.current.get(prevId)?.close();
+    }
+    openSwipeIdRef.current = id;
+  }, []);
+
+  const handleSwipeClose = useCallback((id: string) => {
+    if (openSwipeIdRef.current === id) {
+      openSwipeIdRef.current = null;
+    }
+  }, []);
+
   return {
     drafts,
     handleEdit,
     handleDelete,
+    setSwipeRef,
+    handleSwipeOpen,
+    handleSwipeClose,
   };
 }
