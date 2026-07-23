@@ -12,6 +12,8 @@ interface GestureOptions {
   onEnd: (state: TransformState) => void;
   enableSnap?: boolean;
   snapThreshold?: number;
+  onScaleBtnStart?: () => void;
+  onRotateBtnStart?: () => void;
 }
 
 /**
@@ -168,11 +170,12 @@ export function useGestureHandler(state: TransformState, options: GestureOptions
   const onScaleBtnTouchStart = useCallback(
     (e: any) => {
       e.stopPropagation();
+      options.onScaleBtnStart?.();
       touchRef.current.startX = e.touches[0].clientX || e.touches[0].x;
       touchRef.current.startY = e.touches[0].clientY || e.touches[0].y;
       touchRef.current.lastScale = state.scale;
     },
-    [state.scale],
+    [state.scale, options.onScaleBtnStart],
   );
 
   const onScaleBtnTouchMove = useCallback(
@@ -200,6 +203,7 @@ export function useGestureHandler(state: TransformState, options: GestureOptions
   const onRotateBtnTouchStart = useCallback(
     (e: any) => {
       e.stopPropagation();
+      options.onRotateBtnStart?.();
       const cx = e.touches[0].clientX || e.touches[0].x;
       const cy = e.touches[0].clientY || e.touches[0].y;
       // 记录触摸起始角度（以触点自身为参考点）
@@ -209,7 +213,7 @@ export function useGestureHandler(state: TransformState, options: GestureOptions
       touchRef.current.startY = cy;
       touchRef.current.lastRotate = state.rotate;
     },
-    [state.rotate],
+    [state.rotate, options.onRotateBtnStart],
   );
 
   const onRotateBtnTouchMove = useCallback(

@@ -74,7 +74,12 @@ export function useEditorCropLogic() {
       translateY: transform.translateY,
       rotate: transform.rotate,
     },
-    { onUpdate: handleGestureUpdate, onEnd: handleGestureEnd },
+    {
+      onUpdate: handleGestureUpdate,
+      onEnd: handleGestureEnd,
+      onScaleBtnStart: () => setActiveTab('zoom'),
+      onRotateBtnStart: () => setActiveTab('rotate'),
+    },
   );
 
   useEffect(() => {
