@@ -415,7 +415,7 @@ export function useEditorLogic() {
 
   const hasDraftData = Object.keys(uploadMap).length > 0;
 
-  /** 保存草稿：从草稿箱进入时更新已有记录，从首页进入时新增记录 */
+  /** 保存草稿：从草稿箱进入时新增草稿并删除旧记录，从首页进入时新增记录 */
   const saveDraft = () => {
     const now = Date.now();
     const d = new Date(now);
@@ -424,25 +424,22 @@ export function useEditorLogic() {
     const list = Array.isArray(existing) ? existing : [];
 
     if (editingDraftId) {
-      // 从草稿箱进入 → 更新已有草稿
-      const idx = list.findIndex((item: any) => item && item.id === editingDraftId);
+      // 从草稿箱进入 → 新增草稿 + 删除旧记录
+      const filtered = list.filter((item: any) => !item || item.id !== editingDraftId);
       const draft = {
-        id: editingDraftId,
+        id: `${now}_${Math.random().toString(36).slice(2, 8)}`,
         specList,
         uploadMap,
         uploadFileMap,
         completedMap,
         activeIndex,
-        createdAt: idx >= 0 ? (list[idx].createdAt as number) || now : now,
+        createdAt: now,
         savedAt,
       };
-      if (idx >= 0) {
-        list[idx] = draft;
-      } else {
-        // 兼容：草稿 id 在 storage 中不存在时仍追加
-        list.unshift(draft);
-      }
-      Taro.setStorageSync('fridge_magnet_editor_drafts', list);
+      // 插入后按时间倒序排列
+      const next = [draft, ...filtered];
+      next.sort((a: any, b: any) => (b?.createdAt || 0) - (a?.createdAt || 0));
+      Taro.setStorageSync('fridge_magnet_editor_drafts', next);
     } else {
       // 从首页进入 → 新增草稿
       const draft = {
