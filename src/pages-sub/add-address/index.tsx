@@ -4,6 +4,7 @@ import BasePage from '@/components/base-page';
 import WxIcon from '@/assets/svgs/icon_wx.svg';
 import LocationIcon from '@/assets/svgs/icon_location.svg';
 import CloseIcon from '@/assets/svgs/icon_close.svg';
+import CopyIcon from '@/assets/svgs/icon_address_copy.svg';
 import { useAddAddressLogic } from './index.logic';
 
 function FormRow({
@@ -70,25 +71,25 @@ export default function AddAddressPage() {
       onNavLeftClick={handleBack}
       bottomBarComponent={bottomBar}
     >
-      <View className='mx-3 mt-5 flex flex-row items-center justify-between rounded-2xl bg-white px-5 py-5'>
-        <Text className='text-sm text-black/30'>复制地址，帮你快速填写</Text>
-        <View className='flex flex-row items-center gap-3'>
-          <View
-            className='flex items-center justify-center rounded-full border border-black/10 px-3 py-1'
-            onClick={handlePaste}
-          >
-            <Text className='text-xs text-black'>粘贴并识别</Text>
-          </View>
-          <Image
-            className='h-[27px] w-[27px]'
-            src={WxIcon}
-            mode='aspectFit'
-            onClick={handleUseWechatAddress}
-          />
+      <View className='mx-3 mt-[20px] flex flex-row items-center rounded-2xl bg-white h-[47px]'>
+        <View
+          className='flex flex-1 flex-row items-center justify-center gap-2'
+          onClick={handlePaste}
+        >
+          <Image className='h-[16px] w-[16px]' src={CopyIcon} mode='aspectFit' />
+          <Text className='text-sm text-[#08f]'>从剪贴板识别</Text>
+        </View>
+        <View className='h-4 w-px bg-black/10' />
+        <View
+          className='flex flex-1 flex-row items-center justify-center gap-2'
+          onClick={handleUseWechatAddress}
+        >
+          <Image className='h-[20px] w-[20px]' src={WxIcon} mode='aspectFit' />
+          <Text className='text-sm text-black'>选择微信地址</Text>
         </View>
       </View>
 
-      <View className='mx-3 mt-5 rounded-2xl bg-white px-5'>
+      <View className='mx-3 mt-[10px] rounded-2xl bg-white px-5'>
         <FormRow label='收货人' required>
           <Input
             className='flex-1 text-sm text-black'
