@@ -1,5 +1,7 @@
 .my-orders-page {
-  min-height: 100vh;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 固定定位 tab 栏 */
