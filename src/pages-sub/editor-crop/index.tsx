@@ -123,7 +123,7 @@ export default function EditorCrop() {
 
         {/* 刻度尺 — 滑动控制缩放/旋转 */}
         <View
-          className='ruler'
+          className={`ruler${rulerOffset !== 0 ? ' ruler--active' : ''}`}
           onTouchStart={handleRulerTouchStart}
           onTouchMove={handleRulerTouchMove}
           onTouchEnd={handleRulerTouchEnd}

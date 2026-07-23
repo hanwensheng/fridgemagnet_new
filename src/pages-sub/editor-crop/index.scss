@@ -170,6 +170,7 @@
   transform: translateX(-50%);
   z-index: 1;
   pointer-events: none;
+  border-radius: 2px;
 }
 
 /* 刻度线容器 */
@@ -189,6 +190,7 @@
   height: 10px;
   background: rgba(28, 28, 30, 0.25);
   flex-shrink: 0;
+  border-radius: 1px;
 
   &--major {
     height: 16px;
@@ -196,10 +198,27 @@
   }
 
   &--center {
-    height: 4px;
-    background: #1c1c1e;
-    width: 4px;
-    border-radius: 4px;
+    display: none;
+    position: relative;
+  }
+}
+
+/* 偏离零点时显示中心标记 */
+.ruler--active {
+  .ruler-mark--center {
+    display: block;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: -7px;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 3px;
+      border-radius: 3px;
+      background: #1c1c1e;
+    }
   }
 }
 
