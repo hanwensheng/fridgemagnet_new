@@ -1,5 +1,5 @@
 import Taro, { useDidShow } from '@tarojs/taro';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import Tab7Img from '@/assets/images/tab_7_5.5.png';
 import Tab8Img from '@/assets/images/tab_8.5_4.png';
 import Tab4Img from '@/assets/images/tab_4.5_3.png';
@@ -217,6 +217,17 @@ export function useEditorLogic() {
   });
   const [specPopupVisible, setSpecPopupVisible] = useState(false);
   const [specPopupKey, setSpecPopupKey] = useState(0);
+  const [scrollToTabId, setScrollToTabId] = useState('');
+  // 初始滚动（仅从草稿箱恢复时触发一次）
+  const didInitScroll = useRef(false);
+  useEffect(() => {
+    if (didInitScroll.current) return;
+    didInitScroll.current = true;
+    if (specList.length > 2) {
+      setScrollToTabId(`tab-${activeIndex}`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const activeItem = specList[activeIndex] || null;
   const isSingle = specList.length === 1;
@@ -397,6 +408,8 @@ export function useEditorLogic() {
     }
     if (nextIdx >= 0) {
       setActiveIndex(nextIdx);
+      setScrollToTabId(''); // 先清空确保值变化，再设置触发滚动
+      setTimeout(() => setScrollToTabId(`tab-${nextIdx}`), 0);
     }
   };
 
@@ -518,5 +531,6 @@ export function useEditorLogic() {
     closeExitPopup,
     handleSaveDraftAndExit,
     handleDirectExit,
+    scrollToTabId,
   };
 }

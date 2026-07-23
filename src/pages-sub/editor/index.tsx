@@ -44,6 +44,7 @@ export default function Editor() {
     closeExitPopup,
     handleSaveDraftAndExit,
     handleDirectExit,
+    scrollToTabId,
   } = useEditorLogic();
 
   const navBarHeight = useMemo(() => {
@@ -152,7 +153,12 @@ export default function Editor() {
               })}
             </View>
           ) : (
-            <ScrollView className='size-selector-scroll' scrollX showScrollbar={false}>
+            <ScrollView
+              className='size-selector-scroll'
+              scrollX
+              showScrollbar={false}
+              scrollIntoView={scrollToTabId}
+            >
               <View className='size-selector-inner'>
                 {specList.map((specItem, specIdx) => {
                   const option = findSizeOption(specItem.name);
@@ -160,7 +166,7 @@ export default function Editor() {
                   const hasImage = !!uploadMap[specItem.index];
                   const showCheck = hasImage;
                   return (
-                    <View key={specIdx} className='size-item-row'>
+                    <View key={specIdx} className='size-item-row' id={`tab-${specIdx}`}>
                       {specIdx > 0 && <View className='size-divider' />}
                       <View
                         className={`size-item ${active ? 'size-item--active' : ''}`}
