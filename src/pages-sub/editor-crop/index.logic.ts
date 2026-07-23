@@ -172,6 +172,7 @@ export function useEditorCropLogic() {
       top: '50%',
       marginLeft: `${-displayW / 2}px`,
       marginTop: `${-displayH / 2}px`,
+      borderRadius: '8px',
       transform: `translate3d(${translateX}px, ${translateY}px, 0) rotate(${rotate}deg) scale(${scale}) scaleX(${flipH ? -1 : 1}) scaleY(${flipV ? -1 : 1})`,
       transformOrigin: 'center center',
     }),
