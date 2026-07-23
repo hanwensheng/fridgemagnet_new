@@ -229,11 +229,47 @@ export function useEditorLogic() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /**
+   * 同步读取裁剪结果，避免页面显示闪烁
+   *
+   * 问题：从裁剪页 navigateBack 后，useDidShow 在渲染之后执行，
+   *      导致第一次渲染仍使用旧的 uploadMap → 短暂显示旧图。
+   * 方案：在渲染阶段同步读取模块级变量 getCropResult()，
+   *      直接推导出本次渲染应使用的 uploadMap，不经 useMemo 缓存。
+   */
+  const pendingCropRef = useRef<ReturnType<typeof getCropResult>>(null);
+  pendingCropRef.current = getCropResult();
+
+  const r = pendingCropRef.current;
+  const resolvedUploadMap = !r
+    ? uploadMap
+    : r.clear
+      ? (() => {
+          const next = { ...uploadMap };
+          delete next[r.itemIndex];
+          return next;
+        })()
+      : r.imageUrl
+        ? { ...uploadMap, [r.itemIndex]: r.imageUrl }
+        : uploadMap;
+
+  const resolvedUploadFileMap = !r
+    ? uploadFileMap
+    : r.clear
+      ? (() => {
+          const next = { ...uploadFileMap };
+          delete next[r.itemIndex];
+          return next;
+        })()
+      : r.uploadUrl
+        ? { ...uploadFileMap, [r.itemIndex]: r.uploadUrl }
+        : uploadFileMap;
+
   const activeItem = specList[activeIndex] || null;
   const isSingle = specList.length === 1;
   const shouldCenter = specList.length <= 2;
-  const allUploaded = specList.every((item) => uploadMap[item.index]);
-  const currentHasImage = activeItem ? !!uploadMap[activeItem.index] : false;
+  const allUploaded = specList.every((item) => resolvedUploadMap[item.index]);
+  const currentHasImage = activeItem ? !!resolvedUploadMap[activeItem.index] : false;
 
   /** 跳转裁剪页 */
   const navigateToCrop = (itemIndex: number, imageUrl: string, specName: string) => {
@@ -247,7 +283,7 @@ export function useEditorLogic() {
   const handleChooseImage = (itemIndex: number) => {
     const specItem = specList.find((s) => s.index === itemIndex);
     const specName = specItem?.name || '8.5*4cm';
-    const existingImage = uploadMap[itemIndex];
+    const existingImage = resolvedUploadMap[itemIndex];
     if (existingImage) {
       // 已有图片 → 进入编辑页，优先使用保存的原图 URL 以便用户继续编辑
       const saved = getCropState(itemIndex);
@@ -308,11 +344,14 @@ export function useEditorLogic() {
         newList.splice(activeIndex + 1, 0, copyItem);
         setSpecList(newList);
         setActiveIndex(activeIndex + 1);
-        if (uploadMap[activeItem.index]) {
-          setUploadMap((prev) => ({ ...prev, [newIndex]: prev[activeItem.index] }));
+        if (resolvedUploadMap[activeItem.index]) {
+          setUploadMap((prev) => ({ ...prev, [newIndex]: resolvedUploadMap[activeItem.index] }));
         }
-        if (uploadFileMap[activeItem.index]) {
-          setUploadFileMap((prev) => ({ ...prev, [newIndex]: prev[activeItem.index] }));
+        if (resolvedUploadFileMap[activeItem.index]) {
+          setUploadFileMap((prev) => ({
+            ...prev,
+            [newIndex]: resolvedUploadFileMap[activeItem.index],
+          }));
         }
       }
       Taro.showToast({ title: '已复制', icon: 'none' });
@@ -382,7 +421,7 @@ export function useEditorLogic() {
   };
 
   const handleConfirm = () => {
-    if (!activeItem || !uploadMap[activeItem.index]) {
+    if (!activeItem || !resolvedUploadMap[activeItem.index]) {
       Taro.showToast({ title: '请先上传图片', icon: 'none' });
       return;
     }
@@ -392,7 +431,7 @@ export function useEditorLogic() {
     let nextIdx = -1;
     // 优先相邻下一个
     for (let i = activeIndex + 1; i < specList.length; i++) {
-      if (!uploadMap[specList[i].index]) {
+      if (!resolvedUploadMap[specList[i].index]) {
         nextIdx = i;
         break;
       }
@@ -400,7 +439,7 @@ export function useEditorLogic() {
     // 若无，全局遍历从头找
     if (nextIdx < 0) {
       for (let i = 0; i < activeIndex; i++) {
-        if (!uploadMap[specList[i].index]) {
+        if (!resolvedUploadMap[specList[i].index]) {
           nextIdx = i;
           break;
         }
@@ -420,13 +459,13 @@ export function useEditorLogic() {
     );
     Taro.setStorageSync('orderData', {
       specs: specList,
-      uploadMap,
-      uploadFileMap,
+      uploadMap: resolvedUploadMap,
+      uploadFileMap: resolvedUploadFileMap,
     });
     Taro.navigateTo({ url: '/pages-sub/order-confirm/index' });
   };
 
-  const hasDraftData = Object.keys(uploadMap).length > 0;
+  const hasDraftData = Object.keys(resolvedUploadMap).length > 0;
 
   /** 保存草稿：从草稿箱进入时新增草稿并删除旧记录，从首页进入时新增记录 */
   const saveDraft = () => {
@@ -442,8 +481,8 @@ export function useEditorLogic() {
       const draft = {
         id: `${now}_${Math.random().toString(36).slice(2, 8)}`,
         specList,
-        uploadMap,
-        uploadFileMap,
+        uploadMap: resolvedUploadMap,
+        uploadFileMap: resolvedUploadFileMap,
         completedMap,
         activeIndex,
         createdAt: now,
@@ -458,8 +497,8 @@ export function useEditorLogic() {
       const draft = {
         id: `${now}_${Math.random().toString(36).slice(2, 8)}`,
         specList,
-        uploadMap,
-        uploadFileMap,
+        uploadMap: resolvedUploadMap,
+        uploadFileMap: resolvedUploadFileMap,
         completedMap,
         activeIndex,
         createdAt: now,
@@ -505,8 +544,8 @@ export function useEditorLogic() {
   return {
     activeIndex,
     setActiveIndex,
-    uploadMap,
-    uploadFileMap,
+    uploadMap: resolvedUploadMap,
+    uploadFileMap: resolvedUploadFileMap,
     completedMap,
     menuVisible,
     closeMenu,
