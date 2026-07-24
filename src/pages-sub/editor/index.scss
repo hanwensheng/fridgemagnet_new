@@ -187,42 +187,46 @@
 
 /* 各规格尺寸（px 会被 Taro 自动转为 rpx，随屏缩放） */
 .preview-wrap--85x4 {
-  width: 285px;
-  height: 192px;
+  width: 289px;
+  height: 195px;
 }
 .preview-wrap--75x55 {
-  width: 224px;
-  height: 285px;
+  width: 221px;
+  height: 289px;
 }
 .preview-wrap--34x45 {
-  width: 190px;
-  height: 285px;
+  width: 193px;
+  height: 289px;
 }
 
 .preview-bg--85x4 {
-  width: 285px;
-  height: 192px;
+  width: 289px;
+  height: 195px;
 }
 .preview-bg--75x55 {
-  width: 224px;
-  height: 285px;
+  width: 221px;
+  height: 289px;
 }
 .preview-bg--34x45 {
-  width: 190px;
-  height: 285px;
+  width: 193px;
+  height: 289px;
 }
 
 .preview-img--85x4 {
-  width: 250px;
-  height: 155px;
+  width: 253px;
+  height: 159px;
+  margin-left: 1px;
+  margin-top: 3px;
 }
 .preview-img--75x55 {
-  width: 182px;
-  height: 250px;
+  width: 185px;
+  height: 253px;
+  margin-left: 1px;
 }
 .preview-img--34x45 {
-  width: 154px;
-  height: 250px;
+  width: 157px;
+  height: 253px;
+  margin-left: 1px;
 }
 
 /* 花边背景图 */
@@ -235,7 +239,7 @@
 /* 用户上传的预览图 */
 .upload-preview {
   position: relative;
-  border-radius: 6px;
+  border-radius: 4px;
   z-index: 1;
 }
 
