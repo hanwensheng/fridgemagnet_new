@@ -49,7 +49,9 @@ export default function OrderDetail() {
             </View>
             {!countdown.isExpired && (
               <View className='order-detail-btn order-detail-btn--primary' onClick={handlePay}>
-                <Text className='order-detail-btn-text'>立即支付 {countdown.text}</Text>
+                <Text className='order-detail-btn-text'>
+                  立即支付 <Text className='order-time'>{countdown.text}</Text>
+                </Text>
               </View>
             )}
           </View>

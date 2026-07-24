@@ -82,7 +82,9 @@ export default function MyOrders() {
                 handlePayOrder(order);
               }}
             >
-              <Text className='order-action-text'>立即支付 {countdownText}</Text>
+              <Text className='order-action-text'>
+                立即支付 <Text className='order-time'>{countdownText}</Text>
+              </Text>
             </View>
           )}
         </View>

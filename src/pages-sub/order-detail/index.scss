@@ -384,7 +384,7 @@
 
   &--primary {
     background: #1c1c1e;
-    width: 155px;
+    padding: 0 29px 0 36px;
   }
 
   &--default {
@@ -403,4 +403,9 @@
   &--default {
     color: #000;
   }
+}
+
+.order-time {
+  display: inline-block;
+  width: 35px;
 }

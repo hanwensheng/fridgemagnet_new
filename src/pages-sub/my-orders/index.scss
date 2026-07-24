@@ -327,7 +327,8 @@
 
   &--primary {
     background: #1c1c1e;
-    width: 105px;
+    // width: 105px;
+    padding: 0 8px 0 10px;
   }
 
   &--default {
@@ -342,6 +343,12 @@
   line-height: 18px;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
+}
+
+.order-time {
+  width: 35px;
+  display: inline-block;
+  text-align: center;
 }
 
 .order-action-text--default {
