@@ -64,7 +64,7 @@ export default function Editor() {
 
   return (
     <BasePage
-      navTitle='创作之旅'
+      navTitle='设计你的美好'
       bottomBarHeight={56}
       safeAreaBackgroundColor='#F6F6F6'
       onNavLeftClick={handleNavLeftClick}
