@@ -175,6 +175,9 @@ export default function AddAddressPage() {
         title='选择地区'
         options={regionOptions}
         closeable
+        popupProps={{
+          lockScroll: false,
+        }}
         onClose={handleCascaderClose}
         onChange={handleCascaderChange}
       />

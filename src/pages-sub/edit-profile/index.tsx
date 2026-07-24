@@ -147,6 +147,9 @@ export default function EditProfilePage() {
         title='选择地区'
         options={regionOptions}
         closeable
+        popupProps={{
+          lockScroll: false,
+        }}
         onClose={handleCascaderClose}
         onChange={handleCascaderChange}
       />
