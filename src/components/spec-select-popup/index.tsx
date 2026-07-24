@@ -240,7 +240,9 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
               >
                 <View className='flex flex-col items-center'>
                   <Image src={item.image} mode='aspectFit' className='h-[88px] w-[88px]' />
-                  <Text className='text-sm text-black leading-[15px]'>{item.name}</Text>
+                  <Text className='text-sm text-black leading-[15px]'>
+                    {item.name.replace('cm', ' cm')}
+                  </Text>
                 </View>
                 <View className='ml-[16px] flex flex-1 flex-col justify-center w-[183px]'>
                   <Text className='text-sm text-black leading-[15px] font-[500]'>{item.desc}</Text>
