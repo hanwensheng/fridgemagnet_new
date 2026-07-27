@@ -184,9 +184,13 @@ export function useEditorLogic() {
   }, []);
   // 非草稿恢复场景：清除模块级裁剪状态，防止上一轮编辑的变换/原图污染新会话
   // cropStateMap 是模块级 Map，跨页面跳转持久存在，但 itemIndex 会重新分配导致复用冲突
-  if (!draftData) {
-    clearAllCropState();
-  }
+  // 必须放在 useEffect 中只执行一次，否则每次 re-render 都会清空刚由裁剪页保存的状态
+  useEffect(() => {
+    if (!draftData) {
+      clearAllCropState();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const initialList = useMemo(() => {
     if (draftData) return (draftData.specList as SpecItem[]) || [];
     return parseSpecsFromRouter();

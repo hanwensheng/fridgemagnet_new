@@ -82,6 +82,9 @@ export function useEditorCropLogic() {
     },
   );
 
+  // 标记是否从 cropState 恢复了 imgW/imgH，防止 handleImageLoad 覆盖
+  const imgRestoredRef = useRef(false);
+
   useEffect(() => {
     const instance = Taro.getCurrentInstance();
     const url = instance.router?.params?.imageUrl;
@@ -103,8 +106,12 @@ export function useEditorCropLogic() {
       if (saved?.originalImageUrl) {
         setImageUrl(saved.originalImageUrl);
         setOriginalImageUrl(saved.originalImageUrl);
-        setImgW(saved.imgW || 0);
-        setImgH(saved.imgH || 0);
+        // 恢复图片尺寸和变换：imgW/imgH 与 transform 来自同一次保存，坐标系一致
+        const restoredW = saved.imgW || 0;
+        const restoredH = saved.imgH || 0;
+        imgRestoredRef.current = restoredW > 0 && restoredH > 0;
+        setImgW(restoredW);
+        setImgH(restoredH);
         setTransform({
           scale: saved.transform?.scale ?? 1,
           translateX: saved.transform?.translateX ?? 0,
@@ -138,6 +145,11 @@ export function useEditorCropLogic() {
   /** 图片加载完成：获取自然尺寸，按最大 crop 维度 cap 到合理 CSS px 值 */
   const handleImageLoad = useCallback(
     (e: any) => {
+      // 已从 cropState 恢复了有效尺寸 → 跳过，保持 imgW/imgH 与 transform 坐标系一致
+      if (imgRestoredRef.current) {
+        imgRestoredRef.current = false;
+        return;
+      }
       const natW = e.detail?.width || 0;
       const natH = e.detail?.height || 0;
       if (!natW || !natH) return;
