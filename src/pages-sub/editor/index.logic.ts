@@ -293,6 +293,7 @@ export function useEditorLogic() {
     }
     // 无图片 → 先选择再进入编辑页
     // 使用 chooseMedia 代替 chooseImage，避免 Android 系统相机拍照后出现二次确认页
+    // 注意：此处不设置 uploadMap，避免 state 更新触发预览渲染闪烁，再被 navigateTo 打断
     Taro.chooseMedia({
       count: 1,
       mediaType: ['image'],
@@ -300,8 +301,8 @@ export function useEditorLogic() {
       sourceType: ['album', 'camera'],
       success: (res) => {
         const imageUrl = res.tempFiles[0].tempFilePath;
-        setUploadMap((prev) => ({ ...prev, [itemIndex]: imageUrl }));
-        setUploadFileMap((prev) => ({ ...prev, [itemIndex]: imageUrl }));
+        // setUploadMap((prev) => ({ ...prev, [itemIndex]: imageUrl }));
+        // setUploadFileMap((prev) => ({ ...prev, [itemIndex]: imageUrl }));
         navigateToCrop(itemIndex, imageUrl, specName);
       },
     });
