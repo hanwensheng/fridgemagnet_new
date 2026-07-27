@@ -77,6 +77,10 @@ export default function EditorCrop() {
 
         <View className='crop-box'>
           <View className='crop-area' style={{ width: `${cropW}px`, height: `${cropH}px` }}>
+            {/* 图片溢出层：不裁剪，半透明显示超出工作区的部分 */}
+            <View className='crop-image-overflow'>
+              {imageUrl && <Image src={imageUrl} mode='aspectFit' style={imageStyle} />}
+            </View>
             {/* 图片 clip 层（仅裁剪，不拦截触摸） */}
             <View className='crop-image-clip'>
               {imageUrl && (

@@ -24,7 +24,19 @@
   margin: 0 auto;
 }
 
-/* 图片裁剪层：仅裁剪图片，触摸穿透到父级 crop-area */
+/* 图片溢出层：不裁剪，半透明显示超出工作区的图片部分 */
+.crop-image-overflow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* 图片裁剪层：仅裁剪图片，全透明度显示工作区内部分，触摸穿透到父级 crop-area */
 .crop-image-clip {
   position: absolute;
   top: 0;
