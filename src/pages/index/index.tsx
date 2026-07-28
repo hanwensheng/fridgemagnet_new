@@ -136,7 +136,7 @@ export default function Index() {
   // 获取热门设计作品
   useEffect(() => {
     productApi
-      .getPopularDesignList({ pageNum: 1, pageSize: 20 })
+      .getPopularDesignList({ pageNum: 1, pageSize: 50 })
       .then((res) => setPopularDesigns(res.list))
       .catch(() => {});
   }, []);
@@ -442,18 +442,7 @@ export default function Index() {
     for (let copy = 0; copy < copies; copy++) {
       for (let i = 0; i < list.length; i++) {
         result.push(
-          renderCarouselItem(
-            list[i],
-            `col1-c${copy}`,
-            i,
-            HomeLaceAcross,
-            175,
-            115,
-            151,
-            91,
-            12,
-            12,
-          ),
+          renderCarouselItem(list[i], `col1-c${copy}`, i, HomeLaceAcross, 175, 83, 155, 63, 10, 10),
         );
       }
     }
@@ -475,7 +464,7 @@ export default function Index() {
             110,
             131,
             88,
-            110,
+            109,
             11,
             11,
           ),
