@@ -79,8 +79,8 @@ const MerchantPromoter = () => {
             disabled={isLoading}
           >
             <View className='btn-content'>
-              <Image className='btn-icon' src={iconWxLogo} mode='aspectFit' />
-              <Text>{isLoading ? '登录中...' : '微信登录'}</Text>
+              {/* <Image className='btn-icon' src={iconWxLogo} mode='aspectFit' /> */}
+              <Text>{isLoading ? '登录中...' : '手机号快捷登录'}</Text>
             </View>
           </Button>
         </View>
