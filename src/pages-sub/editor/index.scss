@@ -147,7 +147,7 @@
 /* 各规格上传区尺寸 */
 .upload-area--85x4 {
   width: 299px;
-  height: 202px;
+  height: 141px;
 }
 .upload-area--75x55 {
   width: 235px;
@@ -188,7 +188,7 @@
 /* 各规格尺寸（px 会被 Taro 自动转为 rpx，随屏缩放） */
 .preview-wrap--85x4 {
   width: 289px;
-  height: 195px;
+  height: 136px;
 }
 .preview-wrap--75x55 {
   width: 221px;
@@ -201,7 +201,7 @@
 
 .preview-bg--85x4 {
   width: 289px;
-  height: 195px;
+  height: 136px;
 }
 .preview-bg--75x55 {
   width: 221px;
@@ -214,19 +214,15 @@
 
 .preview-img--85x4 {
   width: 253px;
-  height: 159px;
-  margin-left: 1px;
-  margin-top: 3px;
+  height: 100px;
 }
 .preview-img--75x55 {
   width: 185px;
   height: 253px;
-  margin-left: 1px;
 }
 .preview-img--34x45 {
   width: 157px;
   height: 253px;
-  margin-left: 1px;
 }
 
 /* 花边背景图 */

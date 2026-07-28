@@ -96,26 +96,26 @@ export function getPreviewClass(name: string): string {
 
 /** 上传区尺寸（设计稿 px），用于传递给裁剪页 */
 const UPLOAD_AREA_SIZE: Record<string, { w: number; h: number }> = {
-  '85x4': { w: 299, h: 202 },
+  '85x4': { w: 299, h: 141 },
   '75x55': { w: 235, h: 299 },
   '34x45': { w: 200, h: 299 },
 };
 
-/** 预览图显示尺寸，用于生成花边框贴合用的预览图 */
+/** 预览图显示尺寸，用于生成花边框贴合用的预览图，数值与 CSS preview-img 一致 */
 const PREVIEW_IMG_SIZE: Record<string, { w: number; h: number }> = {
-  '85x4': { w: 250, h: 155 },
-  '75x55': { w: 182, h: 250 },
-  '34x45': { w: 154, h: 250 },
+  '85x4': { w: 253, h: 100 },
+  '75x55': { w: 185, h: 253 },
+  '34x45': { w: 157, h: 253 },
 };
 
 export function getUploadAreaSize(name: string) {
   const cls = getPreviewClass(name);
-  return UPLOAD_AREA_SIZE[cls] || { w: 299, h: 202 };
+  return UPLOAD_AREA_SIZE[cls] || { w: 299, h: 141 };
 }
 
 function getPreviewImgSize(name: string) {
   const cls = getPreviewClass(name);
-  return PREVIEW_IMG_SIZE[cls] || { w: 250, h: 155 };
+  return PREVIEW_IMG_SIZE[cls] || { w: 253, h: 100 };
 }
 
 export interface SpecItem {
