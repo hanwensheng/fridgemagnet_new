@@ -42,7 +42,7 @@ export function useEditorCropLogic() {
   const [cropH, setCropH] = useState<number>(141);
   /** 预览显示尺寸，Canvas 输出预览图时用此尺寸确保花边框贴合 */
   const [previewW, setPreviewW] = useState<number>(253);
-  const [previewH, setPreviewH] = useState<number>(100);
+  const [previewH, setPreviewH] = useState<number>(119);
 
   // 图片自然尺寸（经 onLoad 获取并 cap 到合理范围）
   const [imgW, setImgW] = useState<number>(0);

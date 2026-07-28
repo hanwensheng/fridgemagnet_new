@@ -185,44 +185,46 @@
   justify-content: center;
 }
 
-/* 各规格尺寸（px 会被 Taro 自动转为 rpx，随屏缩放） */
+/* 各规格尺寸（px 会被 Taro 自动转为 rpx，随屏缩放），花边框边距统一 18px */
 .preview-wrap--85x4 {
   width: 289px;
-  height: 136px;
+  height: 155px;
 }
 .preview-wrap--75x55 {
-  width: 221px;
+  width: 235px;
   height: 289px;
 }
 .preview-wrap--34x45 {
-  width: 193px;
+  width: 205px;
   height: 289px;
 }
 
 .preview-bg--85x4 {
   width: 289px;
-  height: 136px;
+  height: 155px;
 }
 .preview-bg--75x55 {
-  width: 221px;
+  width: 235px;
   height: 289px;
 }
 .preview-bg--34x45 {
-  width: 193px;
+  width: 205px;
   height: 289px;
 }
 
+/* 预览图：三个规格均按工作区等比（差距 < 0.3%，不裁切不留白） */
 .preview-img--85x4 {
   width: 253px;
-  height: 100px;
+  height: 119px; /* 299/141 ≈ 253/119 */
 }
 .preview-img--75x55 {
-  width: 185px;
-  height: 253px;
+  width: 199px;
+  height: 253px; /* 235/299 ≈ 199/253 */
 }
 .preview-img--34x45 {
-  width: 157px;
-  height: 253px;
+  width: 169px;
+  height: 253px; /* 200/299 ≈ 169/253 */
+  margin-top: 1px;
 }
 
 /* 花边背景图 */

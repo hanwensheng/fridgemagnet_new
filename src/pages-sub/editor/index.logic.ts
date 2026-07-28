@@ -101,11 +101,14 @@ const UPLOAD_AREA_SIZE: Record<string, { w: number; h: number }> = {
   '34x45': { w: 200, h: 299 },
 };
 
-/** 预览图显示尺寸，用于生成花边框贴合用的预览图，数值与 CSS preview-img 一致 */
+/**
+ * 预览图输出尺寸，用于 Canvas 渲染花边框贴合用的预览图。
+ * 三个规格均按工作区等比（差距 < 0.3%，不裁切不留白）。
+ */
 const PREVIEW_IMG_SIZE: Record<string, { w: number; h: number }> = {
-  '85x4': { w: 253, h: 100 },
-  '75x55': { w: 185, h: 253 },
-  '34x45': { w: 157, h: 253 },
+  '85x4': { w: 253, h: 119 }, // 299/141 ≈ 253/119
+  '75x55': { w: 199, h: 253 }, // 235/299 ≈ 199/253
+  '34x45': { w: 169, h: 253 }, // 200/299 ≈ 169/253
 };
 
 export function getUploadAreaSize(name: string) {
@@ -115,7 +118,7 @@ export function getUploadAreaSize(name: string) {
 
 function getPreviewImgSize(name: string) {
   const cls = getPreviewClass(name);
-  return PREVIEW_IMG_SIZE[cls] || { w: 253, h: 100 };
+  return PREVIEW_IMG_SIZE[cls] || { w: 253, h: 119 };
 }
 
 export interface SpecItem {
