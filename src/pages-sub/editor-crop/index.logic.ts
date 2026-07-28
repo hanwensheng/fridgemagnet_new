@@ -191,15 +191,13 @@ export function useEditorCropLogic() {
     [displayW, displayH, scale, translateX, translateY, rotate, flipH, flipV],
   );
 
-  /** crop-frame 包围盒（考虑 90° 旋转时宽高互换） */
+  /** crop-frame 包围盒：始终使用图片原始尺寸，旋转由 frameGroupStyle 的 rotate 统一处理 */
   const frameSize = useMemo(() => {
-    const absRot = ((rotate % 360) + 360) % 360;
-    const swapped = Math.abs(absRot - 90) < 1 || Math.abs(absRot - 270) < 1;
     return {
-      w: (swapped ? displayH : displayW) * scale,
-      h: (swapped ? displayW : displayH) * scale,
+      w: displayW * scale,
+      h: displayH * scale,
     };
-  }, [displayW, displayH, scale, rotate]);
+  }, [displayW, displayH, scale]);
 
   /** 边框 + 按钮组：跟随图片中心、偏移、旋转 */
   const frameGroupStyle = useMemo<React.CSSProperties>(
