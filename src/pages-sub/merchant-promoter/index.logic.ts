@@ -278,19 +278,19 @@ export const useMerchantPromoterLogic = () => {
       // ===== 4. 装饰图片（绝对定位，相对 .icon-box 顶部） =====
       // .SplashImg1: 135×140, top:115px, left:108px
       const sp1 = await loadImage(require('@/assets/images/splash_img1.png'));
-      ctx.drawImage(sp1, 108, iconBoxTop + 115, 135, 140);
+      ctx.drawImage(sp1, 105, iconBoxTop + 115, 130, 134);
 
       // .SplashImg2: 75×93, top:210px, left:95px
       const sp2 = await loadImage(require('@/assets/images/splash_img2.png'));
-      ctx.drawImage(sp2, 95, iconBoxTop + 210, 75, 93);
+      ctx.drawImage(sp2, 100, iconBoxTop + 205, 84, 96);
 
       // .SplashImg3: 130×100, top:250px, left:152px
       const sp3 = await loadImage(require('@/assets/images/splash_img3.png'));
-      ctx.drawImage(sp3, 142, iconBoxTop + 285, 130, 100);
+      ctx.drawImage(sp3, 142, iconBoxTop + 290, 132, 96);
 
       // ===== 5. 二维码（绝对定位，相对 .icon-box 顶部，top:375px） =====
       const qrImg = await loadImage(qrCodeUrl);
-      const qrSize = 205;
+      const qrSize = 235;
       const qrBorderWidth = 15;
       const qrBorderRadius = 24;
       const qrX = (designWidth - qrSize) / 2;

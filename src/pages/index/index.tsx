@@ -59,12 +59,12 @@ type LayoutPoint = { width: number; top: number; left: number };
 // 照片卡片在两种布局下的位置（设计稿 px，375 基准）
 // 状态 A：全屏散落；状态 B：在 325×321 厨房盒子内 2 列 3 行排列
 const ELEMENT_LAYOUTS: Record<string, { a: LayoutPoint; b: LayoutPoint }> = {
-  img1: { a: { width: 120, top: 275, left: 127.5 }, b: { width: 72, top: 100, left: 183 } },
-  img2: { a: { width: 82, top: 500, left: 146.5 }, b: { width: 54, top: 203, left: 98 } },
-  img3: { a: { width: 64, top: 450, left: 289 }, b: { width: 36, top: 182, left: 200 } },
-  img4: { a: { width: 150, top: 350, left: 112.5 }, b: { width: 80, top: 55, left: 81 } },
-  img5: { a: { width: 140, top: 475, left: 10 }, b: { width: 120, top: 150, left: 12 } },
-  img6: { a: { width: 116, top: 330, left: 244 }, b: { width: 92, top: 28, left: 166 } },
+  img1: { a: { width: 130, top: 275, left: 127 }, b: { width: 81, top: 95, left: 178 } },
+  img2: { a: { width: 71, top: 500, left: 160 }, b: { width: 45, top: 203, left: 98 } },
+  img3: { a: { width: 61, top: 450, left: 290 }, b: { width: 40, top: 182, left: 200 } },
+  img4: { a: { width: 150, top: 350, left: 120 }, b: { width: 80, top: 55, left: 85 } },
+  img5: { a: { width: 140, top: 475, left: 15 }, b: { width: 120, top: 150, left: 12 } },
+  img6: { a: { width: 116, top: 330, left: 250 }, b: { width: 92, top: 28, left: 166 } },
 };
 
 export default function Index() {
@@ -442,7 +442,7 @@ export default function Index() {
     for (let copy = 0; copy < copies; copy++) {
       for (let i = 0; i < list.length; i++) {
         result.push(
-          renderCarouselItem(list[i], `col1-c${copy}`, i, HomeLaceAcross, 175, 83, 155, 63, 10, 10),
+          renderCarouselItem(list[i], `col1-c${copy}`, i, HomeLaceAcross, 175, 93, 155, 73, 10, 10),
         );
       }
     }
@@ -461,9 +461,9 @@ export default function Index() {
             `col2-c${copy}`,
             i,
             HomeLaceVertical,
-            110,
+            108,
             131,
-            88,
+            86,
             109,
             11,
             11,

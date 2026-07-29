@@ -4,7 +4,7 @@ import BasePage from '@/components/base-page';
 import iconMerchantAdd from '@/assets/svgs/icon_promotion_logo.svg';
 import iconRadio from '@/assets/svgs/icon_radio.svg';
 import iconRadioActive from '@/assets/svgs/icon_radio_active.svg';
-import iconWxLogo from '@/assets/svgs/icon_wx_logo.svg';
+// import iconWxLogo from '@/assets/svgs/icon_wx_logo.svg';
 import iconSuccess from '@/assets/svgs/icon_success.svg';
 import iconCode from '@/assets/images/kf_code.png';
 import SplashBg from '@/assets/images/splash_bg.png';
