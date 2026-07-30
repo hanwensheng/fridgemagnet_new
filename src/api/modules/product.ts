@@ -135,6 +135,8 @@ export interface BizMerchantInfo {
   userPhone: string;
   gmtCreate: string;
   isDelete: number;
+  /** 定位展示图片列表（success 页三张装饰图） */
+  imgList?: string[];
 }
 
 /** 热门设计作品 */

@@ -2,6 +2,18 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import Taro, { ENV_TYPE } from '@tarojs/taro';
 import { useAppStore } from '@/store';
 import { userApi } from '@/api/modules/user';
+import { productApi } from '@/api/modules/product';
+import type { BizMerchantInfo } from '@/api/modules/product';
+import splashImg1Fallback from '@/assets/images/splash_img1.png';
+import splashImg2Fallback from '@/assets/images/splash_img2.png';
+import splashImg3Fallback from '@/assets/images/splash_img3.png';
+
+/** 本地兜底图片（接口失败或未返回 imgList 时使用） */
+const FALLBACK_SPLASH_IMAGES: string[] = [
+  splashImg1Fallback,
+  splashImg2Fallback,
+  splashImg3Fallback,
+];
 
 type ViewState = 'login' | 'already-promoter' | 'success' | 'merchant-bind-success';
 
@@ -14,6 +26,8 @@ export const useMerchantPromoterLogic = () => {
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [countdown, setCountdown] = useState<number>(5);
   const countdownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [merchantInfo, setMerchantInfo] = useState<BizMerchantInfo | null>(null);
+  const [splashImages, setSplashImages] = useState<string[]>(FALLBACK_SPLASH_IMAGES);
 
   const { isLoggedIn } = useAppStore();
 
@@ -43,6 +57,11 @@ export const useMerchantPromoterLogic = () => {
     const sceneFromQuery = params?.scene || '';
     // scene 参数赋值给 merchantId
     setMerchantId(sceneFromQuery);
+
+    // 通过 scene 参数（作为 pkId）查询商户信息，获取定位展示图片
+    if (sceneFromQuery) {
+      fetchMerchantInfo(sceneFromQuery);
+    }
 
     if (isLoggedIn()) {
       checkPromoterStatus();
@@ -99,6 +118,23 @@ export const useMerchantPromoterLogic = () => {
     // 这里假设可以通过 userInfo 判断，根据实际接口调整
     // 如果已经是推广员，显示已注册状态
     // 暂时先跳过这个检查，直接允许绑定
+  };
+
+  /** 通过 scene 参数（作为 pkId）查询商户信息，获取定位展示图片 */
+  const fetchMerchantInfo = async (pkId: string) => {
+    try {
+      const info = await productApi.getMerchantById(pkId);
+      setMerchantInfo(info);
+      // 接口返回 imgList 则按位置使用，缺失项用本地兜底
+      const list = info.imgList || [];
+      setSplashImages([
+        list[0] || FALLBACK_SPLASH_IMAGES[0],
+        list[1] || FALLBACK_SPLASH_IMAGES[1],
+        list[2] || FALLBACK_SPLASH_IMAGES[2],
+      ]);
+    } catch (error) {
+      console.error('获取商户信息失败:', error);
+    }
   };
 
   const handleGetPhoneNumber = async (e: any) => {
@@ -277,15 +313,15 @@ export const useMerchantPromoterLogic = () => {
 
       // ===== 4. 装饰图片（绝对定位，相对 .icon-box 顶部） =====
       // .SplashImg1: 135×140, top:115px, left:108px
-      const sp1 = await loadImage(require('@/assets/images/splash_img1.png'));
+      const sp1 = await loadImage(splashImages[0]);
       ctx.drawImage(sp1, 105, iconBoxTop + 115, 130, 134);
 
       // .SplashImg2: 75×93, top:210px, left:95px
-      const sp2 = await loadImage(require('@/assets/images/splash_img2.png'));
+      const sp2 = await loadImage(splashImages[1]);
       ctx.drawImage(sp2, 100, iconBoxTop + 205, 84, 96);
 
       // .SplashImg3: 130×100, top:250px, left:152px
-      const sp3 = await loadImage(require('@/assets/images/splash_img3.png'));
+      const sp3 = await loadImage(splashImages[2]);
       ctx.drawImage(sp3, 142, iconBoxTop + 290, 132, 96);
 
       // ===== 5. 二维码（绝对定位，相对 .icon-box 顶部，top:375px） =====
@@ -405,6 +441,8 @@ export const useMerchantPromoterLogic = () => {
     isLoggedIn: isLoggedIn(),
     navBarHeight,
     countdown,
+    merchantInfo,
+    splashImages,
     handleGetPhoneNumber,
     handleSaveQrCode,
     handleGoHome,

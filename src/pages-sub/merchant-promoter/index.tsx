@@ -8,9 +8,6 @@ import iconRadioActive from '@/assets/svgs/icon_radio_active.svg';
 import iconSuccess from '@/assets/svgs/icon_success.svg';
 import iconCode from '@/assets/images/kf_code.png';
 import SplashBg from '@/assets/images/splash_bg.png';
-import SplashImg1 from '@/assets/images/splash_img1.png';
-import SplashImg2 from '@/assets/images/splash_img2.png';
-import SplashImg3 from '@/assets/images/splash_img3.png';
 import { useMerchantPromoterLogic } from './index.logic';
 import './index.scss';
 
@@ -23,6 +20,7 @@ const MerchantPromoter = () => {
     isSaving,
     navBarHeight,
     countdown,
+    splashImages,
     handleGetPhoneNumber,
     handleSaveQrCode,
     handleGoHome,
@@ -115,9 +113,9 @@ const MerchantPromoter = () => {
             <View className='success-title'>传自己的照片</View>
             <View className='success-sub'>定制冰箱贴</View>
             <Image className='icon-qrcode' src={SplashBg} mode='aspectFit' />
-            <Image className='SplashImg1' src={SplashImg1} mode='aspectFit' />
-            <Image className='SplashImg2' src={SplashImg2} mode='aspectFit' />
-            <Image className='SplashImg3' src={SplashImg3} mode='aspectFit' />
+            <Image className='SplashImg1' src={splashImages[0]} mode='aspectFit' />
+            <Image className='SplashImg2' src={splashImages[1]} mode='aspectFit' />
+            <Image className='SplashImg3' src={splashImages[2]} mode='aspectFit' />
             <Image className='icon-qrcode2' src={qrCodeUrl} mode='aspectFit' />
           </View>
           <View className='save-tip' onClick={handleSaveQrCode}>
