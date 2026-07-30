@@ -421,9 +421,14 @@ export function useEditorLogic() {
       });
       setNextIndex(idx);
       setSpecList((prev) => [...prev, ...expanded]);
+      // 自动定位到新建的第一个分类
+      const firstNewIdx = specList.length;
+      setActiveIndex(firstNewIdx);
+      setScrollToTabId('');
+      setTimeout(() => setScrollToTabId(`tab-${firstNewIdx}`), 0);
       closeSpecPopup();
     },
-    [nextIndex],
+    [nextIndex, specList],
   );
 
   const handleSpecPopupClose = () => {
