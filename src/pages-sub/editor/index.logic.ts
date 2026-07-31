@@ -353,7 +353,10 @@ export function useEditorLogic() {
         const newList = [...specList];
         newList.splice(activeIndex + 1, 0, copyItem);
         setSpecList(newList);
-        setActiveIndex(activeIndex + 1);
+        const newActiveIdx = activeIndex + 1;
+        setActiveIndex(newActiveIdx);
+        setScrollToTabId('');
+        setTimeout(() => setScrollToTabId(`tab-${newActiveIdx}`), 0);
         if (resolvedUploadMap[activeItem.index]) {
           setUploadMap((prev) => ({ ...prev, [newIndex]: resolvedUploadMap[activeItem.index] }));
         }
