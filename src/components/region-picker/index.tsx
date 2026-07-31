@@ -241,6 +241,8 @@ export default function RegionPicker({
           )}
         </View>
       ))}
+      {/* 底部安全区，确保最后一项能滚动到可见区域 */}
+      <View className='h-[60px]' />
     </ScrollView>
   );
 
