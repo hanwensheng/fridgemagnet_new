@@ -1,6 +1,6 @@
 import { View, Text, Input, Image } from '@tarojs/components';
-import { Cascader } from '@nutui/nutui-react-taro';
 import BasePage from '@/components/base-page';
+import RegionPicker from '@/components/region-picker';
 import WxIcon from '@/assets/svgs/icon_wx.svg';
 import LocationIcon from '@/assets/svgs/icon_location.svg';
 import CloseIcon from '@/assets/svgs/icon_close.svg';
@@ -169,15 +169,11 @@ export default function AddAddressPage() {
         </View>
       </View>
 
-      <Cascader
+      <RegionPicker
         visible={cascaderVisible}
-        value={form.regionValue}
+        value={form.regionValue as string[]}
         title='选择地区'
         options={regionOptions}
-        closeable
-        popupProps={{
-          lockScroll: false,
-        }}
         onClose={handleCascaderClose}
         onChange={handleCascaderChange}
       />

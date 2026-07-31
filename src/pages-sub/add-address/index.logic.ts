@@ -87,8 +87,8 @@ export function useAddAddressLogic() {
     setCascaderVisible(false);
   }, []);
 
-  const handleCascaderChange = useCallback((value: CascaderValue) => {
-    const regionText = (value as string[]).join(' ');
+  const handleCascaderChange = useCallback((value: string[]) => {
+    const regionText = value.join(' ');
     setForm((prev) => ({ ...prev, region: regionText, regionValue: value }));
     setCascaderVisible(false);
   }, []);
