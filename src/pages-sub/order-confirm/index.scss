@@ -3,6 +3,20 @@
   box-sizing: border-box;
 }
 
+.order-hint {
+  border-radius: 16px;
+  background: #f9f1ea;
+  width: 100%;
+  height: 38px;
+  padding-left: 10px;
+  color: #945317;
+  font-size: 12px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
 .order-nav-back {
   width: 48px;
   height: 48px;
@@ -301,4 +315,8 @@
   color: #fff;
   line-height: 18px;
   font-weight: 500;
+}
+
+.order-summary-value-green {
+  color: #07c060;
 }

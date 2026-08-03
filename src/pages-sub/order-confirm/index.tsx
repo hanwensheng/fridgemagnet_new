@@ -20,6 +20,7 @@ export default function OrderConfirm() {
     finalTotal,
     isGroup,
     shippingFee,
+    deliveryInfo,
     payPopupVisible,
     couponPopupVisible,
     handleAddressClick,
@@ -59,6 +60,7 @@ export default function OrderConfirm() {
       }
     >
       <View className='order-page'>
+        <View className='order-hint'>定制商品无质量问题不支持退换，付款后30分钟内可退款。</View>
         {/* 地址卡片 */}
         <View className='order-address-card' onClick={handleAddressClick}>
           {address ? (
@@ -121,6 +123,13 @@ export default function OrderConfirm() {
           <View className='order-summary-row'>
             <Text className='order-summary-label'>优惠</Text>
             <Text className='order-summary-value'>¥ {totalDiscount.toFixed(2)}</Text>
+          </View>
+          <View className='order-summary-row'>
+            <Text className='order-summary-label'>配送服务</Text>
+            <Text className='order-summary-value'>
+              {deliveryInfo.prefix}
+              <Text className='order-summary-value-green'>{deliveryInfo.shipText}</Text>
+            </Text>
           </View>
         </View>
 

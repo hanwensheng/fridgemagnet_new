@@ -145,6 +145,20 @@ export function useOrderConfirmLogic() {
     [totalPrice, shippingFee],
   );
 
+  // 配送服务文案
+  const deliveryInfo = useMemo(() => {
+    const isFreeShipping = shippingFee === 0;
+    const now = new Date();
+    const hour = now.getHours();
+    const shipDay = hour >= 16 ? '明天' : '今天';
+
+    let prefix = '京东 ';
+    if (isFreeShipping) {
+      prefix += '包邮 ';
+    }
+    return { prefix, shipText: `预计${shipDay}发货` };
+  }, [shippingFee]);
+
   useDidShow(() => {
     if (!mounted.current) {
       mounted.current = true;
@@ -280,6 +294,7 @@ export function useOrderConfirmLogic() {
     finalTotal,
     isGroup,
     shippingFee,
+    deliveryInfo,
     payPopupVisible,
     couponPopupVisible,
     handleAddressClick,
