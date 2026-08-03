@@ -11,6 +11,7 @@ import IconSubDisable from '@/assets/svgs/icon_sub_disable.svg';
 import Img85 from '@/assets/images/8.5_4cm.png';
 import Img75 from '@/assets/images/7_5.5cm.png';
 import Img45 from '@/assets/images/4.5_3cm.png';
+import IconWarn from '@/assets/svgs/icon_warning.svg';
 import { productApi } from '@/api/modules/product';
 import { orderApi, type PriceInfo } from '@/api/modules/order';
 import { useAppStore } from '@/store';
@@ -230,7 +231,17 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
         style={{ backgroundColor: '#f6f6f6' }}
         zIndex={1002}
       >
-        <View className='px-[12px] pt-[56px]'>
+        <View className='px-[12px]'>
+          <View
+            className='warning-box'
+            onClick={() => {
+              onClose();
+              Taro.navigateTo({ url: '/pages-sub/product-details/index' });
+            }}
+          >
+            <Image src={IconWarn} mode='aspectFit' className='h-[16px] w-[16px]' />
+            查看详情(材质说明、3D效果、实物展示)
+          </View>
           <View className='flex flex-col gap-[12px]'>
             {items.map((item, index) => (
               <View
