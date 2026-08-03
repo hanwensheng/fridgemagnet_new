@@ -25,6 +25,7 @@ import IconSave from '@/assets/svgs/icon_save.svg';
 import HomeLoading from '@/assets/svgs/home_loading.svg';
 import HomeLaceAcross from '@/assets/svgs/home_lace_across.svg';
 import HomeLaceVertical from '@/assets/svgs/home_lace_vertical.svg';
+import IconDetails from '@/assets/svgs/icon_details.svg';
 import './index.scss';
 
 // 二楼下拉动画配置
@@ -600,6 +601,14 @@ export default function Index() {
           </View>
         </View>
       )}
+      <View
+        className='home-details'
+        style={{ bottom: 'max(calc(env(safe-area-inset-bottom) + 11px), 45px)' }}
+        onClick={() => Taro.navigateTo({ url: '/pages-sub/product-details/index' })}
+      >
+        <Image src={IconDetails} className='home-details-img' mode='widthFix' />
+        <View className='home-details-text'>详情</View>
+      </View>
       <SpecSelectPopup
         visible={popupVisible}
         onClose={handlePopupClose}

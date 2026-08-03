@@ -181,7 +181,6 @@
   width: 54px;
   height: 46px;
   position: fixed;
-  bottom: 100px;
   right: 0;
   background-color: white;
   border-radius: 100px 0 0 100px;
@@ -254,4 +253,30 @@
   100% {
     transform: translateX(-33.333%);
   }
+}
+
+.home-details {
+  width: 54px;
+  height: 46px;
+  position: fixed;
+  left: 0;
+  background-color: white;
+  border-radius: 0 100px 100px 0;
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.home-details-img {
+  width: 14px;
+  height: 14px;
+}
+.home-details-text {
+  color: #000;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  margin-top: 4px;
 }
