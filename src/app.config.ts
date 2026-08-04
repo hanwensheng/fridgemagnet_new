@@ -16,6 +16,7 @@ export default {
         'add-address/index',
         'edit-profile/index',
         'draft/index',
+        'product-details/index',
         'merchant-promoter/index',
         'promoter-agreement/index',
       ],

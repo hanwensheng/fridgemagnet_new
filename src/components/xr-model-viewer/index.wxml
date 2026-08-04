@@ -1,0 +1,36 @@
+<xr-scene
+  id="xr-scene"
+  bind:ready="handleSceneReady"
+  bind:touchstart="handleTouchStart"
+>
+  <xr-env env-data="xr-frame-team-workspace-day" />
+
+  <xr-light
+    type="ambient"
+    color="1 1 1"
+    intensity="3"
+  />
+
+  <xr-light
+    type="directional"
+    rotation="40 70 0"
+    color="1 1 1"
+    intensity="2"
+  />
+
+  <xr-gltf
+    node-id="model-node"
+    model="{{currentModelId}}"
+    scale="{{scale}}"
+    position="{{position}}"
+    bind:gltf-loaded="handleGLTFLoaded"
+  />
+
+  <xr-camera
+    id="camera"
+    position="{{cameraPos}}"
+    target="model-node"
+    clear-color="1 1 1 1"
+    camera-orbit-control
+  />
+</xr-scene>
