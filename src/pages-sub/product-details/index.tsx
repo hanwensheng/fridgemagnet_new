@@ -3,6 +3,10 @@ import BasePage from '@/components/base-page';
 import { useState, useEffect } from 'react';
 import Taro from '@tarojs/taro';
 import Icon360 from '@/assets/svgs/icon_360.svg';
+import IconImg1 from '@/assets/images/details_img1.png';
+import IconImg2 from '@/assets/images/details_img2.png';
+import IconImg3 from '@/assets/images/details_img3.png';
+import IconImg4 from '@/assets/images/details_img4.png';
 import './index.scss';
 
 interface ModelConfig {
@@ -78,6 +82,9 @@ export default function ProductDetailsPage() {
             </View>
           ))}
         </View>
+        {[IconImg1, IconImg2, IconImg3, IconImg4].map((img, i) => (
+          <Image key={i} src={img} className='details_img' mode='widthFix' />
+        ))}
       </View>
     </BasePage>
   );
