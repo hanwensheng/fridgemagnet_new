@@ -45,6 +45,9 @@ export default defineConfig<'webpack5'>(async (merge) => {
       '@styles': path.resolve(__dirname, '..', 'src/styles'),
     },
     mini: {
+      optimizeMainPackage: {
+        enable: true,
+      },
       postcss: {
         pxtransform: {
           enable: true,
