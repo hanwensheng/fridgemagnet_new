@@ -76,7 +76,7 @@ export default function CouponDetailPopup({
               <Text className='coupon-detail-total-count'>共 {totalCount} 件</Text>
               <View className='coupon-detail-entry' onClick={onClose}>
                 <Text className='coupon-detail-entry-text'>
-                  优惠 ¥{totalDiscount.toFixed(2)} 明细
+                  优惠 -¥{totalDiscount.toFixed(2)} 明细
                 </Text>
                 <Image className='coupon-detail-entry-arrow' src={IconRedUp} />
               </View>
