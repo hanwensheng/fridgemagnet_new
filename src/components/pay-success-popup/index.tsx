@@ -1,7 +1,7 @@
 import { View, Text, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { Popup } from '@nutui/nutui-react-taro';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import IconLocation from '@/assets/svgs/icon_car.svg';
 import type { AddressItem } from '@/api/modules/address';
 
@@ -58,6 +58,11 @@ export default function PaySuccessPopup({
     Taro.reLaunch({ url: '/pages-sub/my-orders/index?from=cancel-pay' });
   };
 
+  const deliveryText = useMemo(() => {
+    const hour = new Date().getHours();
+    return hour < 16 ? '预计今天发货' : '预计明天发货';
+  }, []);
+
   const addressText = address
     ? `${address.province}${address.city}${address.district}${address.detailAddress}`
     : '';
@@ -83,7 +88,7 @@ export default function PaySuccessPopup({
         <View className='pay-success-card'>
           <Image className='pay-success-image' src={productImage} mode='aspectFill' />
           <View className='pay-success-info'>
-            <Text className='pay-success-delivery'>预计明早发货</Text>
+            <Text className='pay-success-delivery'>{deliveryText}</Text>
             {addressText && (
               <View className='pay-success-address'>
                 <Image className='pay-success-address-icon' src={IconLocation} />
