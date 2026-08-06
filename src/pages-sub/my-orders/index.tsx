@@ -21,6 +21,7 @@ export default function MyOrders() {
     handleTabChange,
     handleGoMake,
     handleCancel,
+    handleRefund,
     handleDelete,
     handleViewLogistics,
     handlePayOrder,
@@ -28,6 +29,7 @@ export default function MyOrders() {
     isGroupOrder,
     getDisplayPrice,
     getOrderCountdown,
+    getRefundCountdown,
   } = useMyOrdersLogic();
 
   /** 计算导航栏高度，用于 tab 固定定位 */
@@ -92,6 +94,26 @@ export default function MyOrders() {
     }
 
     switch (status) {
+      case OrderStatus.TO_BE_SHIPPED: {
+        const refundCountdown = getRefundCountdown(order);
+        return (
+          <View className='order-card-footer-actions'>
+            {!refundCountdown.isExpired && (
+              <View
+                className='order-action-btn order-action-btn--default'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRefund(order.pkId);
+                }}
+              >
+                <Text className='order-action-text order-action-text--default'>
+                  申请退款 <Text className='order-time'>{refundCountdown.text}</Text>
+                </Text>
+              </View>
+            )}
+          </View>
+        );
+      }
       case OrderStatus.TO_BE_RECEIVED:
         return (
           <View className='order-card-footer-actions'>

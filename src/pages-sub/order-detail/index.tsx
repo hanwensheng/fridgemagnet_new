@@ -20,6 +20,8 @@ export default function OrderDetail() {
     latestTrace,
     handleCopyOrderNo,
     handleCancel,
+    handleRefund,
+    refundCountdown,
     handleDelete,
     handleViewLogistics,
     handlePay,
@@ -51,6 +53,22 @@ export default function OrderDetail() {
               <View className='order-detail-btn order-detail-btn--primary' onClick={handlePay}>
                 <Text className='order-detail-btn-text'>
                   立即支付 <Text className='order-time'>{countdown.text}</Text>
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+      );
+    }
+    // 待发货
+    if (status === OrderStatus.TO_BE_SHIPPED) {
+      return (
+        <View className='order-detail-bottom-bar'>
+          <View className='order-detail-bottom-actions'>
+            {!refundCountdown.isExpired && (
+              <View className='order-detail-btn order-detail-btn--default' onClick={handleRefund}>
+                <Text className='order-detail-btn-text order-detail-btn-text--default'>
+                  申请退款 <Text className='order-time'>{refundCountdown.text}</Text>
                 </Text>
               </View>
             )}

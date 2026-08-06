@@ -338,6 +338,14 @@ export const orderApi = {
     });
   },
 
+  /** 申请退款 */
+  refundOnline(pkId: string | number) {
+    return request({
+      url: `/v1/bizOrder/refund/${pkId}`,
+      method: 'POST',
+    });
+  },
+
   /** 查询物流轨迹 */
   getOrderTrace(jdWayBillCode: string) {
     return request<TraceItem[]>({

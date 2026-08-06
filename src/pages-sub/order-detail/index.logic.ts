@@ -8,6 +8,9 @@ import { setLogisticsOrder } from '@/pages-sub/logistics-detail/index.logic';
 /** 支付倒计时（分钟） */
 const PAY_DEADLINE_MINUTES = 15;
 
+/** 退款倒计时（分钟） */
+const REFUND_DEADLINE_MINUTES = 30;
+
 /** 状态码 → 展示文案 */
 export const STATUS_TEXT_MAP: Record<number, string> = {
   [OrderStatus.NOT_PAY]: '待支付',
@@ -96,6 +99,19 @@ export function useOrderDetailLogic() {
     };
   }, [order, now]);
 
+  /** 退款倒计时文案及是否过期 */
+  const refundCountdown = useMemo(() => {
+    if (!order?.payTime) return { text: '', isExpired: true };
+    const status = Number(order.orderStatus);
+    if (status !== OrderStatus.TO_BE_SHIPPED) return { text: '', isExpired: true };
+    const deadline = new Date(order.payTime).getTime() + REFUND_DEADLINE_MINUTES * 60 * 1000;
+    const remaining = Math.max(0, Math.floor((deadline - now) / 1000));
+    return {
+      text: formatCountdown(remaining),
+      isExpired: remaining <= 0,
+    };
+  }, [order, now]);
+
   const handleCopyOrderNo = useCallback(() => {
     if (!order?.orderNo) return;
     Taro.setClipboardData({
@@ -118,6 +134,20 @@ export function useOrderDetailLogic() {
     }
   }, [order]);
 
+  const handleRefund = useCallback(async () => {
+    if (!order) return;
+    const res = await Taro.showModal({ title: '提示', content: '确定申请退款吗？' });
+    if (!res.confirm) return;
+    try {
+      await orderApi.refundOnline(order.pkId);
+      Taro.showToast({ title: '退款申请已提交', icon: 'success' });
+      Taro.eventCenter.trigger('orders:refresh');
+      Taro.navigateBack().catch(() => {});
+    } catch {
+      // 接口内部已展示错误
+    }
+  }, [order]);
+
   const handleDelete = useCallback(async () => {
     if (!order) return;
     const res = await Taro.showModal({ title: '提示', content: '确定删除该订单吗？' });
@@ -130,6 +160,13 @@ export function useOrderDetailLogic() {
     } catch {
       // 接口内部已展示错误
     }
+  }, [order]);
+
+  const handleEditAddress = useCallback(() => {
+    if (!order) return;
+    Taro.navigateTo({
+      url: `/pages-sub/address/index?from=order-detail&orderId=${order.pkId}&selectable=1`,
+    });
   }, [order]);
 
   const handleViewLogistics = useCallback(() => {
@@ -188,7 +225,10 @@ export function useOrderDetailLogic() {
     latestTrace,
     handleCopyOrderNo,
     handleCancel,
+    handleRefund,
+    refundCountdown,
     handleDelete,
+    handleEditAddress,
     handleViewLogistics,
     handlePay,
   };

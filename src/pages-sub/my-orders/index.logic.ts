@@ -7,6 +7,9 @@ import { setLogisticsOrder } from '@/pages-sub/logistics-detail/index.logic';
 /** 支付倒计时（分钟） */
 export const PAY_DEADLINE_MINUTES = 15;
 
+/** 退款倒计时（分钟） */
+export const REFUND_DEADLINE_MINUTES = 30;
+
 /** MM:SS 格式化 */
 export function formatCountdown(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -122,6 +125,18 @@ export function useMyOrdersLogic() {
     }
   };
 
+  const handleRefund = async (pkId: number) => {
+    const res = await Taro.showModal({ title: '提示', content: '确定申请退款吗？' });
+    if (!res.confirm) return;
+    try {
+      await orderApi.refundOnline(pkId);
+      Taro.showToast({ title: '退款申请已提交', icon: 'success' });
+      fetchOrders();
+    } catch {
+      // 接口内部已展示错误
+    }
+  };
+
   const handleDelete = async (pkId: number) => {
     const res = await Taro.showModal({ title: '提示', content: '确定删除该订单吗？' });
     if (!res.confirm) return;
@@ -158,6 +173,21 @@ export function useMyOrdersLogic() {
     (order: MerchantOrder) => {
       if (!order.gmtCreate) return { remaining: 0, isExpired: true, text: '' };
       const deadline = new Date(order.gmtCreate).getTime() + PAY_DEADLINE_MINUTES * 60 * 1000;
+      const remaining = Math.max(0, Math.floor((deadline - now) / 1000));
+      return {
+        remaining,
+        isExpired: remaining <= 0,
+        text: formatCountdown(remaining),
+      };
+    },
+    [now],
+  );
+
+  /** 退款倒计时：基于 payTime + 30分钟 */
+  const getRefundCountdown = useCallback(
+    (order: MerchantOrder) => {
+      if (!order.payTime) return { remaining: 0, isExpired: true, text: '' };
+      const deadline = new Date(order.payTime).getTime() + REFUND_DEADLINE_MINUTES * 60 * 1000;
       const remaining = Math.max(0, Math.floor((deadline - now) / 1000));
       return {
         remaining,
@@ -228,6 +258,7 @@ export function useMyOrdersLogic() {
     handleTabChange,
     handleGoMake,
     handleCancel,
+    handleRefund,
     handleDelete,
     handleViewLogistics,
     handlePayOrder,
@@ -235,5 +266,6 @@ export function useMyOrdersLogic() {
     isGroupOrder,
     getDisplayPrice,
     getOrderCountdown,
+    getRefundCountdown,
   };
 }
