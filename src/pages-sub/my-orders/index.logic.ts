@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import Taro from '@tarojs/taro';
-import { useAppStore } from '@/store';
 import { orderApi, OrderStatus } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
 import { setLogisticsOrder } from '@/pages-sub/logistics-detail/index.logic';
@@ -189,8 +188,7 @@ export function useMyOrdersLogic() {
     async (order: MerchantOrder) => {
       Taro.showLoading({ title: '发起支付...', mask: true });
       try {
-        const { merchantId } = useAppStore.getState();
-        const payResult = merchantId
+        const payResult = order.merchantId
           ? await orderApi.payOrder(order.pkId)
           : await orderApi.payOrderOnline(order.pkId);
 

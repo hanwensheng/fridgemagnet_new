@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import Taro from '@tarojs/taro';
-import { useAppStore } from '@/store';
 import { orderApi, OrderStatus, TraceItem } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
 import { formatSizeLabel } from '@/utils/format';
@@ -143,8 +142,7 @@ export function useOrderDetailLogic() {
     if (!order) return;
     Taro.showLoading({ title: '发起支付...', mask: true });
     try {
-      const { merchantId } = useAppStore.getState();
-      const payResult = merchantId
+      const payResult = order.merchantId
         ? await orderApi.payOrder(order.pkId)
         : await orderApi.payOrderOnline(order.pkId);
       if (!payResult?.payParams) {
