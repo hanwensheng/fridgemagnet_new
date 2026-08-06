@@ -205,6 +205,15 @@ export function useOrderDetailLogic() {
     }
   }, [order]);
 
+  /** 预计发货文案：付款时间16点前今天，16点后明天（仅待发货） */
+  const estimatedShipText = useMemo(() => {
+    if (!order?.payTime) return '';
+    const status = Number(order.orderStatus);
+    if (status !== OrderStatus.TO_BE_SHIPPED) return '';
+    const payHour = new Date(order.payTime).getHours();
+    return payHour < 16 ? '预计今天发货' : '预计明天发货';
+  }, [order]);
+
   /** 单品尺寸文本 */
   const specText = useMemo(() => {
     if (!order?.imgList?.[0]?.width || !order?.imgList?.[0]?.height) return '';
@@ -221,6 +230,7 @@ export function useOrderDetailLogic() {
     displayPrice,
     countdown,
     specText,
+    estimatedShipText,
     latestTrace,
     handleCopyOrderNo,
     handleCancel,

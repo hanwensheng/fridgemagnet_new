@@ -5,6 +5,7 @@ import IconSingle from '@/assets/svgs/icon_single.svg';
 import IconGroup from '@/assets/svgs/icon_group.svg';
 import IconCar from '@/assets/svgs/icon_car_black.svg';
 import IconRight from '@/assets/svgs/icon_right2.svg';
+import IconLightning from '@/assets/svgs/icon_lightning.svg';
 import { OrderStatus } from '@/api/modules/order';
 import { useOrderDetailLogic } from './index.logic';
 import './index.scss';
@@ -17,6 +18,7 @@ export default function OrderDetail() {
     displayPrice,
     countdown,
     specText,
+    estimatedShipText,
     latestTrace,
     handleCopyOrderNo,
     handleCancel,
@@ -133,6 +135,17 @@ export default function OrderDetail() {
               <Image className='order-detail-logistics-arrow' src={IconRight} />
             </View>
           )}
+          {/* 待发货物流提示 */}
+          {status === OrderStatus.TO_BE_SHIPPED && (
+            <View className='order-detail-logistics-entry'>
+              <Image className='order-detail-logistics-icon' src={IconLightning} />
+              <Text className='order-detail-logistics-status'>承诺明天18:00前发货</Text>
+              <Text className='order-detail-logistics-text' numberOfLines={1}>
+                {estimatedShipText}
+              </Text>
+            </View>
+          )}
+
           <Text className='order-detail-address-text'>{order.address}</Text>
           <View className='order-detail-address-user'>
             <View className='order-detail-address-user-left'>
