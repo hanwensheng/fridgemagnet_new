@@ -23,6 +23,7 @@ export default function OrderDetail() {
     handleRefund,
     refundCountdown,
     handleDelete,
+    handleEditAddress,
     handleViewLogistics,
     handlePay,
   } = useOrderDetailLogic();
@@ -134,8 +135,15 @@ export default function OrderDetail() {
           )}
           <Text className='order-detail-address-text'>{order.address}</Text>
           <View className='order-detail-address-user'>
-            <Text className='order-detail-address-name'>{order.recipient}</Text>
-            <Text className='order-detail-address-phone'>{order.recipientPhone}</Text>
+            <View className='order-detail-address-user-left'>
+              <Text className='order-detail-address-name'>{order.recipient}</Text>
+              <Text className='order-detail-address-phone'>{order.recipientPhone}</Text>
+            </View>
+            {(status === OrderStatus.NOT_PAY || status === OrderStatus.TO_BE_SHIPPED) && (
+              <View className='order-detail-address-edit-btn' onClick={handleEditAddress}>
+                <Text className='order-detail-address-edit-text'>修改</Text>
+              </View>
+            )}
           </View>
         </View>
 

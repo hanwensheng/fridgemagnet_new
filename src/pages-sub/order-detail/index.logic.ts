@@ -47,7 +47,6 @@ function getCurrentOrder(): MerchantOrder | null {
 export function useOrderDetailLogic() {
   const [now, setNow] = useState(() => Date.now());
   const [traceList, setTraceList] = useState<TraceItem[]>([]);
-
   const order = useMemo(() => getCurrentOrder(), []);
 
   useEffect(() => {

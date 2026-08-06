@@ -77,6 +77,13 @@ export interface SaveAppendParams {
   recipientPhone?: string;
 }
 
+export interface UpdateDeliveryInfoParams {
+  address: string;
+  pkId: number;
+  recipient: string;
+  recipientPhone: string;
+}
+
 export interface SaveSingleParams {
   imgList: {
     goodsId: string;
@@ -343,6 +350,15 @@ export const orderApi = {
     return request({
       url: `/v1/bizOrder/refund/${pkId}`,
       method: 'POST',
+    });
+  },
+
+  /** 更新收货信息 */
+  updateDeliveryInfo(data: UpdateDeliveryInfoParams) {
+    return request({
+      url: '/v1/bizOrder/updateDeliveryInfo',
+      method: 'POST',
+      data,
     });
   },
 

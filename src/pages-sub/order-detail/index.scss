@@ -22,8 +22,15 @@
 .order-detail-address-user {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   margin-top: 10px;
+}
+
+.order-detail-address-user-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .order-detail-address-name {
@@ -39,6 +46,24 @@
 }
 
 /* 物流入口 */
+.order-detail-address-edit-btn {
+  width: 44px;
+  height: 20px;
+  border-radius: 4px;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.order-detail-address-edit-text {
+  font-size: 12px;
+  color: #fff;
+  font-weight: 400;
+  line-height: 1;
+}
+
 .order-detail-logistics-entry {
   display: flex;
   align-items: center;

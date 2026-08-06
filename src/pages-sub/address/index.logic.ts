@@ -1,6 +1,7 @@
 import Taro, { useDidShow, useRouter } from '@tarojs/taro';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { addressApi } from '@/api/modules/address';
+import { orderApi } from '@/api/modules/order';
 import type { AddressItem } from '@/api/modules/address';
 
 function getStoredSelectedAddress(): AddressItem | null {
@@ -21,7 +22,15 @@ export function useAddressLogic() {
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const isSelectable = useMemo(() => {
-    return router.params.from === 'order-confirm' || router.params.selectable === '1';
+    return (
+      router.params.from === 'order-confirm' ||
+      router.params.from === 'order-detail' ||
+      router.params.selectable === '1'
+    );
+  }, [router.params]);
+
+  const orderId = useMemo(() => {
+    return router.params.orderId || '';
   }, [router.params]);
 
   const fetchAddresses = useCallback(async (showLoading = true) => {
@@ -38,16 +47,38 @@ export function useAddressLogic() {
   }, []);
 
   const handleSelectAddress = useCallback(
-    (address: AddressItem) => {
+    async (address: AddressItem) => {
       if (!isSelectable) return;
+
+      // 订单详情场景：直接调接口更新收货信息
+      if (router.params.from === 'order-detail' && orderId) {
+        const fullAddress = `${address.province}${address.city}${address.district}${address.detailAddress}`;
+        try {
+          await orderApi.updateDeliveryInfo({
+            address: fullAddress,
+            pkId: Number(orderId),
+            recipient: address.recipient,
+            recipientPhone: address.recipientPhone,
+          });
+          Taro.showToast({ title: '地址修改成功', icon: 'success' });
+          Taro.eventCenter.trigger('orders:refresh');
+          timerRef.current = setTimeout(() => {
+            Taro.navigateBack({ delta: 2 });
+          }, 150);
+        } catch {
+          // 接口内部已展示错误
+        }
+        return;
+      }
+
+      // 订单确认页场景：存 storage 回传
       Taro.setStorageSync('selectedAddress', address);
       setSelectedAddress(address);
-      // 延迟返回，留一帧让 React 渲染红对号后再跳走
       timerRef.current = setTimeout(() => {
         Taro.navigateBack();
       }, 150);
     },
-    [isSelectable],
+    [isSelectable, orderId, router.params.from],
   );
 
   // 卸载时清除定时器，防止在已离开的页面触发 navigateBack
