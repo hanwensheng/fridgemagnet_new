@@ -23,13 +23,7 @@ export default defineConfig<'webpack5'>(async (merge) => {
     plugins: ['@tarojs/plugin-generator'],
     defineConstants: {},
     copy: {
-      patterns: [
-        {
-          from: 'src/pages-sub/product-details/assets/models/',
-          to: 'dist/weapp/pages-sub/product-details/assets/models/',
-          ignore: ['.*'],
-        },
-      ],
+      patterns: [],
       options: {},
     },
     framework: 'react',

@@ -2,43 +2,22 @@ import { View, Image } from '@tarojs/components';
 import BasePage from '@/components/base-page';
 import { useState, useEffect } from 'react';
 import Taro from '@tarojs/taro';
+import { productApi } from '@/api';
+import { formatSizeLabel } from '@/utils/format';
 import Icon360 from '@/assets/svgs/icon_360.svg';
-import IconImg1 from '@/assets/images/details_img1.png';
-import IconImg2 from '@/assets/images/details_img2.png';
-import IconImg3 from '@/assets/images/details_img3.png';
-import IconImg4 from '@/assets/images/details_img4.png';
 import './index.scss';
 
-interface ModelConfig {
-  name: string;
-  path: string;
-  scale: string;
-  position: string;
+interface GoodsItem {
+  pkId: string;
+  modelLink3d: string;
+  imgLinks: string[];
+  width: string;
+  height: string;
 }
-
-const MODELS: ModelConfig[] = [
-  {
-    name: '8.5*4cm',
-    path: '/pages-sub/product-details/assets/models/BXT_Tao.glb',
-    scale: '60 60 60',
-    position: '0 0 0',
-  },
-  {
-    name: '5.5*7cm',
-    path: '/pages-sub/product-details/assets/models/BingxXangTie1.glb',
-    scale: '60 60 60',
-    position: '0 0 0',
-  },
-  {
-    name: '3*4.5cm',
-    path: '/pages-sub/product-details/assets/models/BXT_HeZaoglb.glb',
-    scale: '60 60 60',
-    position: '0 0 0',
-  },
-];
 
 export default function ProductDetailsPage() {
   const [activeTab, setActiveTab] = useState(0);
+  const [goodsList, setGoodsList] = useState<GoodsItem[]>([]);
   const [size, setSize] = useState({ width: 0, height: 0, renderWidth: 0, renderHeight: 0 });
 
   useEffect(() => {
@@ -47,20 +26,32 @@ export default function ProductDetailsPage() {
     const width = info.windowWidth - 24;
     const height = 230;
     setSize({ width, height, renderWidth: width * dpr, renderHeight: height * dpr });
+
+    // 获取商品列表
+    productApi
+      .getGoodsList()
+      .then((res) => {
+        if (res) {
+          setGoodsList(res);
+        }
+      })
+      .catch((err) => {
+        console.error('获取商品列表失败:', err);
+      });
   }, []);
 
-  const currentModel = MODELS[activeTab];
+  const current = goodsList[activeTab];
 
   return (
     <BasePage navTitle='产品详情'>
       <View className='details_box'>
         <View className='details_3D'>
-          {size.renderWidth > 0 && (
+          {size.renderWidth > 0 && current && (
             // @ts-ignore xr-model-viewer 是小程序原生组件
             <xr-model-viewer
-              modelSrc={currentModel.path}
-              scale={currentModel.scale}
-              position={currentModel.position}
+              modelSrc={current.modelLink3d}
+              scale='60 60 60'
+              position='0 0 0'
               width={size.renderWidth}
               height={size.renderHeight}
               style={`width:${size.width}px;height:${size.height}px;display:block;`}
@@ -71,20 +62,24 @@ export default function ProductDetailsPage() {
             360°View
           </View>
         </View>
-        <View className='details_tab'>
-          {MODELS.map((model, index) => (
-            <View
-              key={model.name}
-              className={`details_tab_item ${index === activeTab ? 'active' : ''}`}
-              onClick={() => setActiveTab(index)}
-            >
-              {model.name}
-            </View>
+        {goodsList.length > 0 && (
+          <View className='details_tab'>
+            {goodsList.map((item, index) => (
+              <View
+                key={item.pkId}
+                className={`details_tab_item ${index === activeTab ? 'active' : ''}`}
+                onClick={() => setActiveTab(index)}
+              >
+                {formatSizeLabel(item.width, item.height)}
+              </View>
+            ))}
+          </View>
+        )}
+        {current &&
+          current.imgLinks.length > 0 &&
+          current.imgLinks.map((img, i) => (
+            <Image key={i} src={img} className='details_img' mode='widthFix' />
           ))}
-        </View>
-        {[IconImg1, IconImg2, IconImg3, IconImg4].map((img, i) => (
-          <Image key={i} src={img} className='details_img' mode='widthFix' />
-        ))}
       </View>
     </BasePage>
   );

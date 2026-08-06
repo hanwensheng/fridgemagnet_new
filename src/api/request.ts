@@ -4,7 +4,7 @@ import { ApiResponse, RequestConfig, ErrorCode, HTTP_MESSAGES } from './common';
 /** API 基础地址 — 根据环境切换 */
 const BASE_URL =
   process.env.NODE_ENV === 'production'
-    ? 'http://8.141.81.252:7098'
+    ? 'https://api.zhongjiatong.vip/api'
     : // : 'http://8.141.81.252:7098';
       'https://api.zhongjiatong.vip/api';
 // : 'http://192.168.110.85:8080/fridgemagnet_app_bg';

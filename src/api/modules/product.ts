@@ -55,6 +55,8 @@ export interface BizGoods {
   gmtCreate: string;
   gmtModified: string;
   goodsImg: string;
+  modelLink3d: string;
+  imgLinks: string[];
 }
 
 /** 热门套餐 */
