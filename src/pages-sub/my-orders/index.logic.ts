@@ -44,6 +44,7 @@ export const TABS = [
   { key: 'pending_shipment', label: '待发货', orderStatus: OrderStatus.TO_BE_SHIPPED },
   { key: 'pending_receipt', label: '待收货', orderStatus: OrderStatus.TO_BE_RECEIVED },
   { key: 'completed', label: '已完成', orderStatus: OrderStatus.COMPLETED },
+  { key: 'refunded', label: '已退款', orderStatus: OrderStatus.REFUNDED },
   { key: 'cancelled', label: '已取消', orderStatus: OrderStatus.CANCELED },
   { key: 'closed', label: '已关闭', orderStatus: OrderStatus.CLOSED },
 ];
