@@ -23,8 +23,8 @@ export default function ProductDetailsPage() {
   useEffect(() => {
     const info = Taro.getSystemInfoSync();
     const dpr = info.pixelRatio;
-    const width = info.windowWidth - 24;
-    const height = 230;
+    const width = info.windowWidth - 25;
+    const height = 240;
     setSize({ width, height, renderWidth: width * dpr, renderHeight: height * dpr });
 
     // 获取商品列表
@@ -50,7 +50,7 @@ export default function ProductDetailsPage() {
             // @ts-ignore xr-model-viewer 是小程序原生组件
             <xr-model-viewer
               modelSrc={current.modelLink3d}
-              scale='60 60 60'
+              scale='55 55 55'
               position='0 0 0'
               width={size.renderWidth}
               height={size.renderHeight}
