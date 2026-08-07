@@ -1,34 +1,4 @@
 import { request, uploadImage, uploadImages } from '../request';
-import type { PaginatedData } from '../common';
-
-export interface OrderItem {
-  productId: string;
-  productName: string;
-  image: string;
-  price: number;
-  quantity: number;
-  size: string;
-}
-
-export interface Order {
-  id: string;
-  orderNo: string;
-  status: 'pending' | 'paid' | 'shipped' | 'completed' | 'cancelled';
-  items: OrderItem[];
-  totalPrice: number;
-  createTime: string;
-}
-
-export interface CreateOrderParams {
-  items: {
-    productId: string;
-    quantity: number;
-    size: string;
-    designData: any;
-  }[];
-  addressId: string;
-  remark?: string;
-}
 
 export interface SaveOrderParams {
   merchantId: string;
@@ -199,36 +169,12 @@ export const orderApi = {
     });
   },
 
-  /** 创建订单 */
-  create(data: CreateOrderParams) {
-    return request<Order>({
-      url: '/order/create',
-      method: 'POST',
-      data,
-    });
-  },
-
   /** 创建套餐订单 */
   saveBease(data: SaveOrderParams) {
     return request<SaveOrderResult>({
       url: '/v1/bizMerchantOrder/saveBease',
       method: 'POST',
       data,
-    });
-  },
-
-  /** 订单列表 */
-  getList(params: { page?: number; pageSize?: number; status?: string }) {
-    return request<PaginatedData<Order>>({
-      url: '/order/list',
-      data: params,
-    });
-  },
-
-  /** 订单详情 */
-  getDetail(id: string) {
-    return request<Order>({
-      url: `/order/detail/${id}`,
     });
   },
 
@@ -359,6 +305,13 @@ export const orderApi = {
       url: '/v1/bizOrder/updateDeliveryInfo',
       method: 'POST',
       data,
+    });
+  },
+
+  /** 订单详情（线上） */
+  findById(pkId: string | number) {
+    return request<MerchantOrder>({
+      url: `/v1/bizOrder/findById/${pkId}`,
     });
   },
 

@@ -1,44 +1,4 @@
 import { request } from '../request';
-import type { PaginatedData } from '../common';
-
-export interface Product {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  description: string;
-  category: string;
-}
-
-export interface ProductDetail extends Product {
-  images: string[];
-  specs: { label: string; value: string }[];
-  stock: number;
-}
-
-/** 套餐订单信息（付款成功后获取） */
-export interface BundleOrderInfo {
-  orderId: string;
-  bundleName: string;
-  totalPrice: number;
-  items: {
-    slotId: string;
-    size: string;
-    widthCm: number;
-    heightCm: number;
-    description: string;
-  }[];
-}
-
-/** 可选尺寸（用于额外购买） */
-export interface AvailableSize {
-  id: number;
-  size: string;
-  widthCm: number;
-  heightCm: number;
-  price: number;
-  description: string;
-}
 
 /** 商品（BizGoodsBeanVO） */
 export interface BizGoods {
@@ -162,14 +122,6 @@ export interface BizPopularDesignListData {
 }
 
 export const productApi = {
-  /** 商品列表 */
-  getList(params: { page?: number; pageSize?: number; category?: string }) {
-    return request<PaginatedData<Product>>({
-      url: '/product/list',
-      data: params,
-    });
-  },
-
   /** 获取话语列表 */
   getWordList() {
     return request<BizWordListData>({
@@ -185,27 +137,6 @@ export const productApi = {
       url: '/v1/bizTimeFont/findAllBySearch',
       method: 'POST',
       data: { isShow: 1, pageNum: 1, pageSize: 999 },
-    });
-  },
-
-  /** 商品详情 */
-  getDetail(id: string) {
-    return request<ProductDetail>({
-      url: `/product/detail/${id}`,
-    });
-  },
-
-  /** 获取套餐订单详情（付款成功后） */
-  getBundleOrder(orderId: string) {
-    return request<BundleOrderInfo>({
-      url: `/product/bundle/${orderId}`,
-    });
-  },
-
-  /** 获取可选尺寸列表（用于额外购买） */
-  getAvailableSizes() {
-    return request<AvailableSize[]>({
-      url: '/product/sizes',
     });
   },
 

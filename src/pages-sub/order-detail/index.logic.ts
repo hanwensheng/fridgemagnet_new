@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import Taro from '@tarojs/taro';
+import Taro, { useRouter } from '@tarojs/taro';
 import { orderApi, OrderStatus, TraceItem } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
 import { formatSizeLabel } from '@/utils/format';
@@ -31,23 +31,35 @@ function formatCountdown(seconds: number): string {
   return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
-/** 模块级订单数据传递 */
-let currentOrder: MerchantOrder | null = null;
-
-export function setCurrentOrder(order: MerchantOrder) {
-  currentOrder = order;
-}
-
-function getCurrentOrder(): MerchantOrder | null {
-  const o = currentOrder;
-  currentOrder = null;
-  return o;
-}
-
 export function useOrderDetailLogic() {
+  const router = useRouter();
+  const pkId = router.params.pkId;
+
+  const [order, setOrder] = useState<MerchantOrder | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [traceList, setTraceList] = useState<TraceItem[]>([]);
-  const order = useMemo(() => getCurrentOrder(), []);
+
+  const fetchOrder = useCallback(() => {
+    if (!pkId) return;
+    orderApi
+      .findById(pkId)
+      .then(setOrder)
+      .catch(() => {});
+  }, [pkId]);
+
+  // 通过接口获取订单详情
+  useEffect(() => {
+    fetchOrder();
+  }, [fetchOrder]);
+
+  // 监听地址修改成功后刷新数据
+  useEffect(() => {
+    const handler = () => fetchOrder();
+    Taro.eventCenter.on('order-detail:refresh', handler);
+    return () => {
+      Taro.eventCenter.off('order-detail:refresh', handler);
+    };
+  }, [fetchOrder]);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);

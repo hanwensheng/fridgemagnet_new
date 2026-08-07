@@ -61,9 +61,9 @@ export function useAddressLogic() {
             recipientPhone: address.recipientPhone,
           });
           Taro.showToast({ title: '地址修改成功', icon: 'success' });
-          Taro.eventCenter.trigger('orders:refresh');
+          Taro.eventCenter.trigger('order-detail:refresh');
           timerRef.current = setTimeout(() => {
-            Taro.navigateBack({ delta: 2 });
+            Taro.navigateBack();
           }, 150);
         } catch {
           // 接口内部已展示错误
