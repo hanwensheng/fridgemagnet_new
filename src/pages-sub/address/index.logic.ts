@@ -123,9 +123,8 @@ export function useAddressLogic() {
   const handleSetDefault = useCallback(
     async (pkId: string) => {
       const address = addresses.find((addr) => addr.pkId === pkId);
-      if (!address) return;
+      if (!address || address.isDefault === '1') return;
 
-      const newIsDefault = address.isDefault === '1' ? '0' : '1';
       try {
         await addressApi.update(
           {
@@ -137,16 +136,13 @@ export function useAddressLogic() {
             city: address.city,
             district: address.district,
             detailAddress: address.detailAddress,
-            isDefault: newIsDefault,
+            isDefault: '1',
             addressType: address.addressType,
           },
           false,
         );
         await fetchAddresses(false);
-        Taro.showToast({
-          title: newIsDefault === '1' ? '设置成功' : '取消成功',
-          icon: 'success',
-        });
+        Taro.showToast({ title: '设置成功', icon: 'success' });
       } catch {
         Taro.showToast({ title: '设置失败', icon: 'none' });
       }
