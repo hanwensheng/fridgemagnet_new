@@ -304,7 +304,7 @@ export function useEditorLogic() {
     Taro.chooseMedia({
       count: 1,
       mediaType: ['image'],
-      sizeType: ['compressed'],
+      sizeType: ['original'],
       sourceType: ['album', 'camera'],
       success: (res) => {
         const imageUrl = res.tempFiles[0].tempFilePath;

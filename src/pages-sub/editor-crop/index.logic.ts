@@ -307,6 +307,8 @@ export function useEditorCropLogic() {
 
                   Taro.canvasToTempFilePath({
                     canvas,
+                    destWidth: canvasW * dpr,
+                    destHeight: canvasH * dpr,
                     success: (result) => resolve(result.tempFilePath),
                     fail: (err) => {
                       console.error('[renderToCanvas] canvasToTempFilePath failed:', err);
