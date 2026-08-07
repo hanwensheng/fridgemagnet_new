@@ -56,7 +56,7 @@ export function useAddressLogic() {
         try {
           await orderApi.updateDeliveryInfo({
             address: fullAddress,
-            pkId: Number(orderId),
+            pkId: orderId,
             recipient: address.recipient,
             recipientPhone: address.recipientPhone,
           });

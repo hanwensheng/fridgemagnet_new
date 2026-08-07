@@ -79,7 +79,7 @@ export interface SaveAppendParams {
 
 export interface UpdateDeliveryInfoParams {
   address: string;
-  pkId: number;
+  pkId: string;
   recipient: string;
   recipientPhone: string;
 }
