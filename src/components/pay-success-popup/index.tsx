@@ -88,7 +88,7 @@ export default function PaySuccessPopup({
         <View className='pay-success-card'>
           <Image className='pay-success-image' src={productImage} mode='aspectFill' />
           <View className='pay-success-info'>
-            <Text className='pay-success-delivery'>预计2个工作日发货</Text>
+            <Text className='pay-success-delivery'>承诺2个工作日内发货</Text>
             {addressText && (
               <View className='pay-success-address'>
                 <Image className='pay-success-address-icon' src={IconLocation} />

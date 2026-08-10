@@ -139,7 +139,7 @@ export default function OrderDetail() {
           {status === OrderStatus.TO_BE_SHIPPED && (
             <View className='order-detail-logistics-entry'>
               <Image className='order-detail-logistics-icon' src={IconLightning} />
-              <Text className='order-detail-logistics-status'>承诺2个工作日发货</Text>
+              <Text className='order-detail-logistics-status'>承诺2个工作日内发货</Text>
               {/* <Text className='order-detail-logistics-text' numberOfLines={1}>
                 {estimatedShipText}
               </Text> */}
