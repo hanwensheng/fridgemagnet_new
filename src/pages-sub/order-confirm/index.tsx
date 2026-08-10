@@ -128,7 +128,8 @@ export default function OrderConfirm() {
             <Text className='order-summary-label'>配送服务</Text>
             <Text className='order-summary-value'>
               {deliveryInfo.prefix}
-              <Text className='order-summary-value-green'>{deliveryInfo.shipText}</Text>
+              {/* <Text className='order-summary-value-green'>{deliveryInfo.shipText}</Text> */}
+              <Text className='order-summary-value-green'>承诺2个工作日发货</Text>
             </Text>
           </View>
         </View>
