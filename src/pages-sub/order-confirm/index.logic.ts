@@ -98,6 +98,7 @@ export function useOrderConfirmLogic() {
   const [couponPopupVisible, setCouponPopupVisible] = useState(false);
   const [priceInfo, setPriceInfo] = useState<PriceInfo | null>(null);
   const mounted = useRef(false);
+  const paying = useRef(false);
 
   const orderData = useMemo(() => parseOrderData(), []);
 
@@ -196,12 +197,14 @@ export function useOrderConfirmLogic() {
   };
 
   const handlePay = useCallback(async () => {
+    if (paying.current) return;
     if (!address) {
       Taro.showToast({ title: '请先添加地址', icon: 'none' });
       return;
     }
     if (!orderData) return;
 
+    paying.current = true;
     const { specs, uploadFileMap: fileMap } = orderData;
 
     // 收集已上传图片的文件路径和对应商品ID
@@ -269,8 +272,10 @@ export function useOrderConfirmLogic() {
 
       Taro.hideLoading();
       setPayPopupVisible(true);
+      paying.current = false;
     } catch (err: any) {
       Taro.hideLoading();
+      paying.current = false;
       const msg = err?.errMsg?.includes('cancel') ? '支付已取消' : err?.message || '支付失败';
       Taro.showToast({ title: msg, icon: 'none', duration: 1000 });
       setTimeout(() => {
