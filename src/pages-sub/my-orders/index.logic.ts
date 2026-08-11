@@ -173,7 +173,11 @@ export function useMyOrdersLogic() {
   const getOrderCountdown = useCallback(
     (order: MerchantOrder) => {
       if (!order.gmtCreate) return { remaining: 0, isExpired: true, text: '' };
-      const deadline = new Date(order.gmtCreate).getTime() + PAY_DEADLINE_MINUTES * 60 * 1000;
+      const maxSeconds = PAY_DEADLINE_MINUTES * 60;
+      let deadline = new Date(order.gmtCreate).getTime() + maxSeconds * 1000;
+      if (deadline > now + maxSeconds * 1000) {
+        deadline = now + maxSeconds * 1000;
+      }
       const remaining = Math.max(0, Math.floor((deadline - now) / 1000));
       return {
         remaining,
@@ -184,19 +188,38 @@ export function useMyOrdersLogic() {
     [now],
   );
 
-  /** 退款倒计时：基于 payTime + 30分钟 */
+  /** 退款倒计时：用 deadlineRef 自减，避免 payTime 偏差和跨平台差异 */
+  const refundDeadlineRef = useRef<Record<number, number>>({});
+
+  const [refundTick, setRefundTick] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setRefundTick((t) => t + 1), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const getRefundCountdown = useCallback(
     (order: MerchantOrder) => {
       if (!order.payTime) return { remaining: 0, isExpired: true, text: '' };
-      const deadline = new Date(order.payTime).getTime() + REFUND_DEADLINE_MINUTES * 60 * 1000;
-      const remaining = Math.max(0, Math.floor((deadline - now) / 1000));
+      const maxSeconds = REFUND_DEADLINE_MINUTES * 60;
+      if (!refundDeadlineRef.current[order.pkId]) {
+        let deadline = new Date(order.payTime).getTime() + maxSeconds * 1000;
+        if (deadline > Date.now() + maxSeconds * 1000) {
+          deadline = Date.now() + maxSeconds * 1000;
+        }
+        refundDeadlineRef.current[order.pkId] = deadline;
+      }
+      const remaining = Math.max(
+        0,
+        Math.floor((refundDeadlineRef.current[order.pkId] - Date.now()) / 1000),
+      );
       return {
         remaining,
         isExpired: remaining <= 0,
         text: formatCountdown(remaining),
       };
     },
-    [now],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [refundTick],
   );
 
   // 倒计时到期时刷新列表（仅触发一次）

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import Taro, { useRouter } from '@tarojs/taro';
 import { orderApi, OrderStatus, TraceItem } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
@@ -102,7 +102,11 @@ export function useOrderDetailLogic() {
     if (!order?.gmtCreate) return { text: '', isExpired: true };
     const status = Number(order.orderStatus);
     if (status !== OrderStatus.NOT_PAY) return { text: '', isExpired: true };
-    const deadline = new Date(order.gmtCreate).getTime() + PAY_DEADLINE_MINUTES * 60 * 1000;
+    const maxSeconds = PAY_DEADLINE_MINUTES * 60;
+    let deadline = new Date(order.gmtCreate).getTime() + maxSeconds * 1000;
+    if (deadline > now + maxSeconds * 1000) {
+      deadline = now + maxSeconds * 1000;
+    }
     const remaining = Math.max(0, Math.floor((deadline - now) / 1000));
     return {
       text: formatCountdown(remaining),
@@ -110,18 +114,45 @@ export function useOrderDetailLogic() {
     };
   }, [order, now]);
 
-  /** 退款倒计时文案及是否过期 */
-  const refundCountdown = useMemo(() => {
-    if (!order?.payTime) return { text: '', isExpired: true };
+  /** 退款倒计时：用 useRef 自减，避免 payTime 偏差和跨平台差异 */
+  const refundRemainingRef = useRef(0);
+  const [refundRemaining, setRefundRemaining] = useState(0);
+  const refundTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (!order?.payTime) return;
     const status = Number(order.orderStatus);
-    if (status !== OrderStatus.TO_BE_SHIPPED) return { text: '', isExpired: true };
-    const deadline = new Date(order.payTime).getTime() + REFUND_DEADLINE_MINUTES * 60 * 1000;
-    const remaining = Math.max(0, Math.floor((deadline - now) / 1000));
-    return {
-      text: formatCountdown(remaining),
-      isExpired: remaining <= 0,
+    if (status !== OrderStatus.TO_BE_SHIPPED) return;
+    const maxSeconds = REFUND_DEADLINE_MINUTES * 60;
+    let deadline = new Date(order.payTime).getTime() + maxSeconds * 1000;
+    if (deadline > Date.now() + maxSeconds * 1000) {
+      deadline = Date.now() + maxSeconds * 1000;
+    }
+    const initial = Math.max(0, Math.floor((deadline - Date.now()) / 1000));
+    refundRemainingRef.current = initial;
+    setRefundRemaining(initial);
+
+    if (refundTimerRef.current) clearInterval(refundTimerRef.current);
+    refundTimerRef.current = setInterval(() => {
+      refundRemainingRef.current = Math.max(0, refundRemainingRef.current - 1);
+      setRefundRemaining(refundRemainingRef.current);
+    }, 1000);
+
+    return () => {
+      if (refundTimerRef.current) {
+        clearInterval(refundTimerRef.current);
+        refundTimerRef.current = null;
+      }
     };
-  }, [order, now]);
+  }, [order]);
+
+  const refundCountdown = useMemo(
+    () => ({
+      text: formatCountdown(refundRemaining),
+      isExpired: refundRemaining <= 0,
+    }),
+    [refundRemaining],
+  );
 
   const handleCopyOrderNo = useCallback(() => {
     if (!order?.orderNo) return;
