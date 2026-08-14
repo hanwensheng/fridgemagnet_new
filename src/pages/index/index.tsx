@@ -148,9 +148,6 @@ export default function Index() {
     if (popupVisibleRef.current) {
       hideTabBar();
     }
-    // 离开时 transitionReady 被设为 false、progress 被设为 0。
-    // 返回时 progress 已是 0，直接恢复 transition 不会有 1→0 的动画。
-    setTransitionReady(true);
   });
 
   // 监听其它页面发起的"打开首页抽屉"事件
@@ -187,15 +184,6 @@ export default function Index() {
     setPopupVisible(false);
   };
 
-  // 离开页面时重置二楼为关闭状态（无动画）。
-  // 在 useDidHide（页面不可见）中调用，用户看不到 1→0 的跳变。
-  // 返回时 progress 已是 0，直接显示一楼，无需任何处理。
-  const resetFloorImmediately = useCallback(() => {
-    setTransitionReady(false);
-    setProgress(0);
-    setIsAnimating(false);
-  }, []);
-
   // 组件卸载时恢复 TabBar（防止弹窗打开时页面被切走导致 TabBar 一直隐藏）
   useEffect(() => {
     return () => {
@@ -206,8 +194,9 @@ export default function Index() {
 
   useDidHide(() => {
     showTabBar();
-    // 页面不可见时重置二楼（transition 已禁用，1→0 瞬间完成，用户看不到）
-    resetFloorImmediately();
+    // 页面隐藏时重置二楼下拉状态，回来时已是初始态
+    setProgress(0);
+    setIsAnimating(false);
   });
 
   // 分享给朋友
@@ -248,8 +237,6 @@ export default function Index() {
     );
     showTabBar();
     setPopupVisible(false);
-    // 跳转前立即重置二楼状态（无动画），确保离开时已是关闭状态
-    resetFloorImmediately();
 
     Taro.navigateTo({
       url: `/pages-sub/editor/index?specs=${specsJson}`,
@@ -606,10 +593,7 @@ export default function Index() {
         <View
           className='home-draft'
           style={{ bottom: 'max(calc(env(safe-area-inset-bottom) + 11px), 45px)' }}
-          onClick={() => {
-            resetFloorImmediately();
-            Taro.navigateTo({ url: '/pages-sub/draft/index' });
-          }}
+          onClick={() => Taro.navigateTo({ url: '/pages-sub/draft/index' })}
         >
           <View className='home-draft-box'>
             <Image src={IconSave} className='home-save-img' mode='widthFix' />
@@ -620,10 +604,7 @@ export default function Index() {
       <View
         className='home-details'
         style={{ bottom: 'max(calc(env(safe-area-inset-bottom) + 11px), 45px)' }}
-        onClick={() => {
-          resetFloorImmediately();
-          Taro.navigateTo({ url: '/pages-sub/product-details/index' });
-        }}
+        onClick={() => Taro.navigateTo({ url: '/pages-sub/product-details/index' })}
       >
         <Image src={IconDetails} className='home-details-img' mode='widthFix' />
         <View className='home-details-text'>详情</View>
