@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
-import { View, Text } from '@tarojs/components';
+import { View, Text, Image } from '@tarojs/components';
 import Taro, { ENV_TYPE, useReady } from '@tarojs/taro';
 import BasePage from '@/components/base-page';
+import EmptyIcon from '@/assets/svgs/icon_default.svg';
 import { useMyPromotionLogic } from './index.logic';
 import './index.scss';
 
@@ -71,6 +72,11 @@ export default function MyPromotion() {
         {loading && list.length === 0 ? (
           <View className='loading-wrap'>
             <Text className='loading-text'>加载中...</Text>
+          </View>
+        ) : !loading && list.length === 0 ? (
+          <View className='detail-empty'>
+            <Image className='detail-empty-icon' src={EmptyIcon} mode='aspectFit' />
+            <Text className='detail-empty-text'>暂无数据</Text>
           </View>
         ) : (
           <View className='detail-list'>
