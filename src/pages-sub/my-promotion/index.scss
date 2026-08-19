@@ -1,0 +1,162 @@
+.my-promotion-page {
+  padding: 20px 12px;
+}
+
+/* 统计卡片 */
+.stats-card {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 10px;
+}
+
+.stats-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.stats-label {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+  margin-bottom: 10px;
+}
+
+.stats-value {
+  font-size: 28px;
+  color: #000;
+  line-height: 40px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-symbol {
+  font-size: 13px;
+  line-height: 18px;
+  margin-right: 2px;
+}
+
+.stats-divider {
+  width: 1px;
+  height: 60px;
+  background: #ebebf0;
+  margin: 0 40px;
+}
+
+/* 佣金明细 */
+.detail-title {
+  font-size: 14px;
+  color: #000;
+  line-height: 44px;
+  font-weight: 500;
+}
+
+.detail-list {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background-color: #fff;
+}
+
+.detail-card {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.detail-card:last-child {
+  border-bottom: 0;
+}
+
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.detail-order {
+  font-size: 12px;
+  color: #000;
+  line-height: 18px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.detail-amount {
+  font-size: 16px;
+  color: #f2330d;
+  line-height: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail-source {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+}
+
+.detail-tags {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detail-tag {
+  font-size: 10px;
+  line-height: 18px;
+  padding: 0 4px;
+  border-radius: 4px;
+  font-weight: 600;
+
+  &--merchant {
+    color: #945317;
+    background: #f9f1ea;
+  }
+
+  &--promoter {
+    color: #07c060;
+    background: #e9fff4;
+  }
+}
+
+.detail-time {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+}
+
+.loading-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 80px;
+}
+
+.loading-text {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 20px;
+}
+
+.list-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0 20px;
+}
+
+.list-footer-text {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.4);
+  line-height: 18px;
+}

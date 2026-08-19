@@ -160,6 +160,16 @@ export interface PriceInfo {
   deliveryPrice: string;
 }
 
+/** 佣金明细项 */
+export interface ShareDetailItem {
+  gmtCreate: string;
+  orderNo: string;
+  phone: string;
+  shareAmount: number;
+  /** 1=商户佣金 2=推广员佣金 3=两者都有 */
+  type: string;
+}
+
 export const orderApi = {
   /** 获取阶梯价格信息 */
   getPrice() {
@@ -319,6 +329,25 @@ export const orderApi = {
   getOrderTrace(jdWayBillCode: string) {
     return request<TraceItem[]>({
       url: `/v1/bizOrder/getOrderTrace/${jdWayBillCode}`,
+    });
+  },
+
+  /** 查询累计佣金统计 */
+  findShareTotal() {
+    return request<{ shareAmount: string; shareCount: string }>({
+      url: '/v1/bizMerchantOrderShare/findShareTotal',
+      method: 'POST',
+      showLoading: false,
+    });
+  },
+
+  /** 查询佣金明细 */
+  findShareDetail(data: { pageNum: number; pageSize: number }) {
+    return request<{ list: ShareDetailItem[]; total: string }>({
+      url: '/v1/bizMerchantOrderShare/findShareDetail',
+      method: 'POST',
+      data,
+      showLoading: false,
     });
   },
 

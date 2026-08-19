@@ -5,6 +5,7 @@ import AddressIcon from '@/assets/svgs/icon_addres.svg';
 import OrderIcon from '@/assets/svgs/icon_order.svg';
 import ServiceIcon from '@/assets/svgs/icon_customer_service.svg';
 import AvatarIcon from '@/assets/svgs/icon_avatar.svg';
+import HornIcon from '@/assets/svgs/icon_horn.svg';
 // import EditIcon from '@/assets/svgs/icon_edit.svg';
 import { useMineLogic } from './index.logic';
 
@@ -14,10 +15,19 @@ const ACTIONS = [
   { key: 'service', label: '联系客服', icon: ServiceIcon },
 ];
 
+const PROMOTION_ACTION = { key: 'horn', label: '我的推广', icon: HornIcon };
+
 export default function MinePage() {
   useTabBar(1);
-  const { isLoggedIn, displayName, userInfo, handleMenuClick, handleLogin, handleLogout } =
-    useMineLogic();
+  const {
+    isLoggedIn,
+    isPromoter,
+    displayName,
+    userInfo,
+    handleMenuClick,
+    handleLogin,
+    handleLogout,
+  } = useMineLogic();
 
   return (
     <BasePage navShowBack={false}>
@@ -55,11 +65,11 @@ export default function MinePage() {
 
       <View className='mx-[10px] h-px bg-black/10 mt-16' />
 
-      <View className='mt-10 flex flex-row justify-between px-10'>
-        {ACTIONS.map((action) => (
+      <View className='mt-10 flex flex-row justify-between px-10 flex-wrap'>
+        {[...ACTIONS, ...(isLoggedIn && isPromoter ? [PROMOTION_ACTION] : [])].map((action) => (
           <View
             key={action.key}
-            className='flex w-[78px] flex-col items-center'
+            className='flex w-[78px] flex-col items-center mb-[30px]'
             onClick={() => handleMenuClick(action.key)}
           >
             <View className='flex h-[70px] w-[70px] items-center justify-center rounded-full bg-[#ededed]'>

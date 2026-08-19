@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Taro from '@tarojs/taro';
 import { useAppStore } from '@/store';
 import { userApi } from '@/api/modules/user';
@@ -10,6 +10,26 @@ export function useMineLogic() {
   const token = useAppStore((s) => s.token);
   const userInfo = useAppStore((s) => s.userInfo);
   const isLoggedIn = !!token;
+
+  const [isPromoter, setIsPromoter] = useState(false);
+
+  /** 登录后判断是否为推广员，决定是否展示"我的推广"入口 */
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setIsPromoter(false);
+      return;
+    }
+    userApi
+      .isPromoter()
+      .then((res) => {
+        console.log('isPromoter 接口返回：', res);
+        setIsPromoter(!!res);
+      })
+      .catch((err) => {
+        console.log('isPromoter 接口请求失败：', err);
+        setIsPromoter(false);
+      });
+  }, [isLoggedIn]);
 
   const displayName = userInfo?.userName || '游客';
 
@@ -23,6 +43,9 @@ export function useMineLogic() {
         break;
       case 'service':
         Taro.navigateTo({ url: '/pages-sub/customer-service/index' });
+        break;
+      case 'horn':
+        Taro.navigateTo({ url: '/pages-sub/my-promotion/index' });
         break;
     }
   }, []);
@@ -95,6 +118,7 @@ export function useMineLogic() {
 
   return {
     isLoggedIn,
+    isPromoter,
     displayName,
     userInfo,
     handleMenuClick,

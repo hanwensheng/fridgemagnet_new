@@ -19,6 +19,7 @@ export default {
         'product-details/index',
         'merchant-promoter/index',
         'promoter-agreement/index',
+        'my-promotion/index',
       ],
     },
   ],

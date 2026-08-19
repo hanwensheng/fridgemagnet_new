@@ -45,4 +45,12 @@ export const userApi = {
       header: { 'content-type': 'application/x-www-form-urlencoded' },
     });
   },
+
+  /** 是否为推广员 */
+  isPromoter() {
+    return request<boolean>({
+      url: '/isPromoter',
+      method: 'POST',
+    });
+  },
 };
