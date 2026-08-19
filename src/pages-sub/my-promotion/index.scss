@@ -1,5 +1,26 @@
 .my-promotion-page {
-  padding: 20px 12px;
+  /* 顶部间距由固定头部内部 stats-card 的 margin-top 提供，此处顶部不留 padding，保证占位与 fixed header 起点一致 */
+  padding: 0 12px 20px;
+  box-sizing: border-box;
+}
+
+/* 顶部固定区：统计卡片 + 佣金明细标题 固定定位 */
+.promotion-header {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #f6f6f6;
+  padding: 0 12px;
+  box-sizing: border-box;
+
+  /* 阻断 stats-card margin-top 外边距折叠，确保测量高度包含顶部间距 */
+  overflow: hidden;
+}
+
+/* 固定头部占位 */
+.promotion-placeholder {
+  width: 100%;
 }
 
 /* 统计卡片 */
@@ -9,6 +30,7 @@
   background: #fff;
   border-radius: 16px;
   padding: 20px;
+  margin-top: 20px;
   margin-bottom: 10px;
 }
 
@@ -20,7 +42,7 @@
 
 .stats-label {
   font-size: 13px;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgb(0 0 0 / 50%);
   line-height: 18px;
   margin-bottom: 10px;
 }
@@ -52,6 +74,7 @@
   color: #000;
   line-height: 44px;
   font-weight: 500;
+  padding-left: 10px;
 }
 
 .detail-list {
@@ -63,7 +86,7 @@
 
 .detail-card {
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgb(0 0 0 / 10%);
 }
 
 .detail-card:last-child {
@@ -101,7 +124,7 @@
 
 .detail-source {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgb(0 0 0 / 50%);
   line-height: 18px;
 }
 
@@ -131,7 +154,7 @@
 
 .detail-time {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgb(0 0 0 / 50%);
   line-height: 18px;
 }
 
@@ -144,7 +167,7 @@
 
 .loading-text {
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.5);
+  color: rgb(0 0 0 / 50%);
   line-height: 20px;
 }
 
@@ -157,6 +180,6 @@
 
 .list-footer-text {
   font-size: 12px;
-  color: rgba(0, 0, 0, 0.4);
+  color: rgb(0 0 0 / 40%);
   line-height: 18px;
 }
