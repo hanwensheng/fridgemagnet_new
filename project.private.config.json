@@ -22,11 +22,25 @@
     "miniprogram": {
       "list": [
         {
+          "name": "推广绑定",
+          "pathName": "pages-sub/merchant-promoter/index.html",
+          "query": "scene=347541907810553857",
+          "scene": null,
+          "launchMode": "default"
+        },
+        {
+          "name": "pages-sub/my-promotion/index",
+          "pathName": "pages-sub/my-promotion/index",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
           "name": "pages/my-orders/index",
           "pathName": "pages/my-orders/index",
           "query": "",
-          "scene": null,
-          "launchMode": "default"
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/order-confirm/index",
