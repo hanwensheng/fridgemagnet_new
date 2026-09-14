@@ -1,4 +1,4 @@
-import { View, Text, Image, Button } from '@tarojs/components';
+import { View, Text, Image, Button, ScrollView } from '@tarojs/components';
 import { Popup } from '@nutui/nutui-react-taro';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import Taro from '@tarojs/taro';
@@ -231,95 +231,95 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
         style={{ backgroundColor: '#f6f6f6' }}
         zIndex={1002}
       >
-        <View className='px-[12px]'>
-          <View
-            className='warning-box'
-            onClick={() => {
-              onClose();
-              Taro.navigateTo({ url: '/pages-sub/product-details/index' });
-            }}
-          >
-            <Image src={IconWarn} mode='aspectFit' className='h-[16px] w-[16px]' />
-            查看详情(材质说明、3D效果、实物展示)
-          </View>
-          <View className='flex flex-col gap-[12px]'>
-            {items.map((item, index) => (
-              <View
-                key={item.id}
-                className={`flex flex-row items-center rounded-[24px] bg-white px-[16px] py-[20px] border-[4px] border-solid box-border w-[351px] h-[143px] ${item.selected ? 'border-[rgba(0,0,0,0.10)]' : 'border-transparent'}`}
-                onClick={() => toggleSelected(index)}
-              >
-                <View className='flex flex-col items-center'>
-                  <Image src={item.image} mode='aspectFit' className='h-[88px] w-[88px]' />
-                  <Text className='text-sm text-black leading-[15px]'>
-                    {item.name.replace('cm', ' cm')}
-                  </Text>
-                </View>
-                <View className='ml-[16px] flex flex-1 flex-col justify-center w-[183px]'>
-                  <Text className='text-sm text-black leading-[15px] font-[500]'>{item.desc}</Text>
-                  <View className='flex items-center justify-between mt-[16px]'>
-                    <Text className='text-sm text-black/40 leading-[18px]'>
-                      ¥{parseFloat(priceInfo?.firstPrice || '0').toFixed(2)}
+        <ScrollView className='spec-popup-scroll' scrollY>
+          <View className='pb-[110px] px-[12px]'>
+            <View
+              className='warning-box'
+              onClick={() => {
+                onClose();
+                Taro.navigateTo({ url: '/pages-sub/product-details/index' });
+              }}
+            >
+              <Image src={IconWarn} mode='aspectFit' className='h-[16px] w-[16px]' />
+              查看详情(材质说明、3D效果、实物展示)
+            </View>
+            <View className='home-shade-hint'>{buildPriceText(priceInfo)}</View>
+            <View className='flex flex-col gap-[12px] px-[12px]'>
+              {items.map((item, index) => (
+                <View
+                  key={item.id}
+                  className={`flex flex-row items-center rounded-[24px] bg-white px-[16px] py-[20px] border-[4px] border-solid box-border w-[351px] h-[143px] ${item.selected ? 'border-[rgba(0,0,0,0.10)]' : 'border-transparent'}`}
+                  onClick={() => toggleSelected(index)}
+                >
+                  <View className='flex flex-col items-center'>
+                    <Image src={item.image} mode='aspectFit' className='h-[88px] w-[88px]' />
+                    <Text className='text-sm text-black leading-[15px]'>
+                      {item.name.replace('cm', ' cm')}
                     </Text>
-                    <View
-                      className='flex flex-row items-center rounded-full bg-[#F4F4F5] w-[74px] h-[24px]'
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <View
-                        className='flex h-[24px] w-[29px] items-center justify-center'
-                        onClick={() => changeQuantity(index, -1)}
-                      >
-                        <Image
-                          src={item.quantity <= 1 ? IconSubDisable : IconSub}
-                          className='h-[22px] w-[13px]'
-                        />
-                      </View>
-                      <Text className='w-[16px] text-center text-xs text-black font-[500]'>
-                        {item.quantity}
+                  </View>
+                  <View className='ml-[16px] flex flex-1 flex-col justify-center w-[183px]'>
+                    <Text className='text-sm text-black leading-[18px] font-[500]'>
+                      {item.desc}
+                    </Text>
+                    <View className='flex items-center justify-between mt-[16px]'>
+                      <Text className='text-sm text-black/40 leading-[18px]'>
+                        ¥{parseFloat(priceInfo?.firstPrice || '0').toFixed(2)}
                       </Text>
                       <View
-                        className='flex h-[24px] w-[29px] items-center justify-center'
-                        onClick={() => changeQuantity(index, 1)}
+                        className='flex flex-row items-center rounded-full bg-[#F4F4F5] w-[74px] h-[24px]'
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        <Image src={IconAdd} className='h-[22px] w-[13px]' />
+                        <View
+                          className='flex h-[24px] w-[29px] items-center justify-center'
+                          onClick={() => changeQuantity(index, -1)}
+                        >
+                          <Image
+                            src={item.quantity <= 1 ? IconSubDisable : IconSub}
+                            className='h-[22px] w-[13px]'
+                          />
+                        </View>
+                        <Text className='w-[16px] text-center text-xs text-black font-[500]'>
+                          {item.quantity}
+                        </Text>
+                        <View
+                          className='flex h-[24px] w-[29px] items-center justify-center'
+                          onClick={() => changeQuantity(index, 1)}
+                        >
+                          <Image src={IconAdd} className='h-[22px] w-[13px]' />
+                        </View>
                       </View>
                     </View>
                   </View>
+                  <View className='ml-[16px]'>
+                    <Image
+                      src={item.selected ? RadioActiveIcon : RadioIcon}
+                      className='h-[16px] w-[16px]'
+                    />
+                  </View>
                 </View>
-                <View className='ml-[16px]'>
-                  <Image
-                    src={item.selected ? RadioActiveIcon : RadioIcon}
-                    className='h-[16px] w-[16px]'
-                  />
-                </View>
-              </View>
-            ))}
+              ))}
+            </View>
           </View>
+        </ScrollView>
 
-          <View className='mb-[48px] mt-[20px] text-center text-xs text-[#945317]'>
-            {buildPriceText(priceInfo)}
-          </View>
-
+        {/* 去制作按钮：悬浮在弹层底部，水平居中 */}
+        <View className='spec-popup-footer'>
           {isLoggedIn ? (
             <View
-              className='flex h-[56px] items-center justify-center rounded-full bg-[#1c1c1e]'
-              style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
+              className='flex h-[56px] w-[310px] items-center justify-center rounded-full bg-[#1c1c1e]'
               onClick={handleConfirm}
             >
               <Text className='text-base font-bold text-white'>共 {totalCount} 件 去制作</Text>
             </View>
           ) : (
             <Button
-              className='flex h-[56px] w-full items-center justify-center rounded-full bg-[#1c1c1e] !border-none !p-0'
-              style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
+              className='flex h-[56px] w-[310px] items-center justify-center rounded-full bg-[#1c1c1e] !border-none !p-0'
               openType='getPhoneNumber'
               onGetPhoneNumber={handleLogin}
             >
               <Text className='text-base font-bold text-white'>共 {totalCount} 件 去制作</Text>
             </Button>
           )}
-
-          {/* {safeAreaBottom > 0 && <View style={{ height: `${safeAreaBottom}px` }} />} */}
         </View>
       </Popup>
     </>
