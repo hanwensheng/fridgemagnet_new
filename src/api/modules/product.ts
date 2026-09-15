@@ -140,12 +140,20 @@ export const productApi = {
     });
   },
 
-  /** 查询所有上架商品 */
-  getGoodsList(params?: { isShow?: number; pageNum?: number; pageSize?: number }) {
+  /**
+   * 查询所有上架商品
+   * @param params 查询条件
+   * @param options 请求行为（用于取最新价时静默调用：不显示 loading、失败不弹窗）
+   */
+  getGoodsList(
+    params?: { isShow?: number; pageNum?: number; pageSize?: number },
+    options?: { showLoading?: boolean; showError?: boolean },
+  ) {
     return request<BizGoods[]>({
       url: '/v1/bizGoods/findAllBySearch',
       method: 'POST',
       data: { isShow: 1, pageNum: 1, pageSize: 999, ...params },
+      ...options,
     });
   },
 

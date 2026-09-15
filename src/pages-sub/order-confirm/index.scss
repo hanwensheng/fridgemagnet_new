@@ -1,20 +1,19 @@
 .order-page {
-  padding: 20px 12px 0;
+  padding: 10px 12px 0;
   box-sizing: border-box;
 }
 
 .order-hint {
-  border-radius: 16px;
-  background: #f9f1ea;
+  background: #f9f2ea;
   width: 100%;
-  height: 38px;
-  padding-left: 10px;
+  height: 26px;
   color: #945317;
   font-size: 12px;
   line-height: 18px;
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  justify-content: center;
+  margin-top: 10px;
 }
 
 .order-nav-back {
@@ -220,6 +219,46 @@
   color: rgba(0, 0, 0, 0.5);
   line-height: 18px;
   font-weight: 300;
+}
+
+/* 汇总行的说明标签：运费「满40元包邮」/ 优惠「≥2件第2件起8折」 */
+.order-summary-label-group {
+  display: flex;
+  align-items: center;
+}
+
+.order-summary-tag {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  height: 14px;
+  margin-left: 4px;
+  border-radius: 2px;
+}
+
+.order-summary-tag--free {
+  width: 60px;
+  background: rgba(7, 192, 96, 0.05);
+}
+
+.order-summary-tag--discount {
+  padding: 0 4px;
+  background: rgba(242, 51, 13, 0.05);
+}
+
+.order-summary-tag-text {
+  font-size: 10px;
+  line-height: 14px;
+  white-space: nowrap;
+}
+
+.order-summary-tag--free .order-summary-tag-text {
+  color: #07c060;
+}
+
+.order-summary-tag--discount .order-summary-tag-text {
+  color: #f2330d;
 }
 
 .order-summary-value {

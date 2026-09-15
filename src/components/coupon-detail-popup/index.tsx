@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import { Popup } from '@nutui/nutui-react-taro';
 import IconClose from '@/assets/svgs/icon_popup_close.svg';
@@ -5,6 +6,9 @@ import IconRedUp from '@/assets/svgs/icon_red_up.svg';
 import type { OrderItem } from '@/pages-sub/order-confirm/index.logic';
 
 import './index.scss';
+
+/** 折扣说明文案（固定展示，不再逐件展示打折计算过程） */
+const DISCOUNT_TIP = '订单≥2件商品第2件起享受8折优惠';
 
 interface CouponDetailPopupProps {
   visible: boolean;
@@ -25,6 +29,12 @@ export default function CouponDetailPopup({
   onClose,
   onPay,
 }: CouponDetailPopupProps) {
+  // 原价商品排在第一个，其余打折商品按原顺序依次展示
+  const sortedItems = useMemo(
+    () => [...items].sort((a, b) => Number(!!a.discountTag) - Number(!!b.discountTag)),
+    [items],
+  );
+
   return (
     <Popup
       visible={visible}
@@ -42,13 +52,13 @@ export default function CouponDetailPopup({
         </View>
 
         <ScrollView className='coupon-detail-list' scrollY>
-          {items.map((item) => (
+          {sortedItems.map((item) => (
             <View key={item.id} className='coupon-detail-item'>
               <Image className='coupon-detail-image' src={item.image} mode='aspectFill' />
               <View className='coupon-detail-info'>
                 {item.discountTag ? (
                   <View className='coupon-detail-tag-row'>
-                    <Text className='coupon-detail-tag'>{item.discountTag}</Text>
+                    <Text className='coupon-detail-tag'>{DISCOUNT_TIP}</Text>
                   </View>
                 ) : (
                   <Text className='coupon-detail-subtotal'>小计 ¥{item.price.toFixed(2)}</Text>
@@ -69,7 +79,7 @@ export default function CouponDetailPopup({
         >
           <View className='coupon-detail-total'>
             <View className='coupon-detail-total-row'>
-              <Text className='coupon-detail-total-label'>总计</Text>
+              <Text className='coupon-detail-total-label'>合计</Text>
               <Text className='coupon-detail-total-price'>¥ {totalPrice.toFixed(2)}</Text>
             </View>
             <View className='coupon-detail-total-row'>

@@ -14,7 +14,6 @@ import Img45 from '@/assets/images/4.5_3cm.png';
 import Img155 from '@/assets/images/15.5_11.62cm.png';
 import IconWarn from '@/assets/svgs/icon_warning.svg';
 import { productApi } from '@/api/modules/product';
-import { orderApi, type PriceInfo } from '@/api/modules/order';
 import { useAppStore } from '@/store';
 import { userApi } from '@/api/modules/user';
 import { formatSizeLabel } from '@/utils/format';
@@ -67,16 +66,14 @@ function getLocalImage(width: string, height: string): string {
   return LOCAL_IMAGE_MAP[buildSizeKey(width, height)] || Img85;
 }
 
-function buildPriceText(priceInfo: PriceInfo | null): string {
-  if (!priceInfo) return '';
-  const second = priceInfo.secondPrice || '--';
-  const other = priceInfo.otherPrice || '--';
-  return `第2件${second}元，第3件起均${other}元（2件包邮）`;
-}
+/**
+ * 底部促销文案（写死，不再依赖 getPrice 接口）
+ * 规则：满 40 元包邮；订单 ≥2 件时第 2 件起 8 折（最低价那件保持原价）
+ */
+const PRICE_TIP = '满40元包邮，第2件起享8折优惠';
 
 export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSelectPopupProps) {
   const [items, setItems] = useState<SpecItemState[]>([]);
-  const [priceInfo, setPriceInfo] = useState<PriceInfo | null>(null);
 
   const token = useAppStore((s) => s.token);
   const setToken = useAppStore((s) => s.setToken);
@@ -105,13 +102,6 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
     });
   }, []);
 
-  useEffect(() => {
-    orderApi
-      .getPrice()
-      .then(setPriceInfo)
-      .catch(() => {});
-  }, []);
-
   const totalCount = useMemo(
     () => items.reduce((sum, item) => (item.selected ? sum + item.quantity : sum), 0),
     [items],
@@ -121,14 +111,14 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
     () =>
       items
         .filter((item) => item.selected)
-        .map(({ id, name, quantity, desc: intro }) => ({
+        .map(({ id, name, quantity, price, desc: intro }) => ({
           id,
           name,
-          price: Number(priceInfo?.firstPrice || 0),
+          price,
           quantity,
           intro,
         })),
-    [items, priceInfo],
+    [items],
   );
 
   // const safeAreaBottom = useMemo(() => {
@@ -251,7 +241,8 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
               <Image src={IconWarn} mode='aspectFit' className='h-[16px] w-[16px]' />
               查看详情(材质说明、3D效果、实物展示)
             </View>
-            <View className='home-shade-hint'>{buildPriceText(priceInfo)}</View>
+            {/* 促销文案（写死，规则见 PRICE_TIP） */}
+            <View className='home-shade-hint'>{PRICE_TIP}</View>
             <View className='flex flex-col gap-[12px] px-[12px]'>
               {items.map((item, index) => (
                 <View
@@ -271,7 +262,7 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
                     </Text>
                     <View className='flex items-center justify-between mt-[16px]'>
                       <Text className='text-sm text-black/40 leading-[18px]'>
-                        ¥{parseFloat(priceInfo?.firstPrice || '0').toFixed(2)}
+                        ¥{Number(item.price || 0).toFixed(2)}
                       </Text>
                       <View
                         className='flex flex-row items-center rounded-full bg-[#F4F4F5] w-[74px] h-[24px]'

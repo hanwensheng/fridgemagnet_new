@@ -56,23 +56,25 @@
 }
 
 .coupon-detail-tag {
+  width: 164px;
+  height: 18px;
+  text-align: center;
   display: inline-block;
-  padding: 0 3px;
   border-radius: 2px;
-  font-size: 8px;
+  font-size: 10px;
   color: #f2330d;
-  line-height: 14px;
+  line-height: 18px;
   border: 0.5px solid rgba(242, 51, 13, 0.5);
 }
 
 .coupon-detail-subtotal {
-  font-size: 8px;
+  font-size: 12px;
   color: #000;
   line-height: 14px;
 }
 
 .coupon-detail-discount {
-  font-size: 8px;
+  font-size: 12px;
   color: #000;
   line-height: 14px;
   margin-left: 10px;

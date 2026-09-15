@@ -37,7 +37,7 @@ export default function OrderConfirm() {
         <View className='order-bottom-bar'>
           <View className='order-total'>
             <View className='order-total-row'>
-              <Text className='order-total-label'>总计</Text>
+              <Text className='order-total-label'>合计</Text>
               <Text className='order-total-price'>¥ {finalTotal.toFixed(2)}</Text>
             </View>
             <View className='order-total-row'>
@@ -59,8 +59,8 @@ export default function OrderConfirm() {
         </View>
       }
     >
+      <View className='order-hint'>定制商品无质量问题不支持退换，付款后30分钟内可退款。</View>
       <View className='order-page'>
-        <View className='order-hint'>定制商品无质量问题不支持退换，付款后30分钟内可退款。</View>
         {/* 地址卡片 */}
         <View className='order-address-card' onClick={handleAddressClick}>
           {address ? (
@@ -117,11 +117,21 @@ export default function OrderConfirm() {
             <Text className='order-summary-value'>¥ {originalTotal.toFixed(2)}</Text>
           </View>
           <View className='order-summary-row'>
-            <Text className='order-summary-label'>运费</Text>
+            <View className='order-summary-label-group'>
+              <Text className='order-summary-label'>运费</Text>
+              <View className='order-summary-tag order-summary-tag--free'>
+                <Text className='order-summary-tag-text'>满40元包邮</Text>
+              </View>
+            </View>
             <Text className='order-summary-value'>¥ {shippingFee.toFixed(2)}</Text>
           </View>
           <View className='order-summary-row'>
-            <Text className='order-summary-label'>优惠</Text>
+            <View className='order-summary-label-group'>
+              <Text className='order-summary-label'>优惠</Text>
+              <View className='order-summary-tag order-summary-tag--discount'>
+                <Text className='order-summary-tag-text'>订单≥2件商品第2件起享受8折优惠</Text>
+              </View>
+            </View>
             <Text className='order-summary-value'>-¥ {totalDiscount.toFixed(2)}</Text>
           </View>
           <View className='order-summary-row'>
