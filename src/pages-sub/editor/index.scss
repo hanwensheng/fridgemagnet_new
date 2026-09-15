@@ -157,6 +157,10 @@
   width: 200px;
   height: 299px;
 }
+.upload-area--155x1162 {
+  width: 299px;
+  height: 224px;
+}
 
 .upload-placeholder {
   display: flex;
@@ -185,7 +189,8 @@
   justify-content: center;
 }
 
-/* 各规格尺寸（px 会被 Taro 自动转为 rpx，随屏缩放），花边框边距统一 18px */
+/* 各规格尺寸（px 会被 Taro 自动转为 rpx，随屏缩放）
+   花边框边距：85x4 / 75x55 / 155x1162 为统一 18px；34x45 为单独设计（见 .upload-preview.preview-img--34x45） */
 .preview-wrap--85x4 {
   width: 289px;
   height: 155px;
@@ -195,8 +200,12 @@
   height: 289px;
 }
 .preview-wrap--34x45 {
-  width: 205px;
+  width: 188px;
   height: 289px;
+}
+.preview-wrap--155x1162 {
+  width: 289px;
+  height: 226px;
 }
 
 .preview-bg--85x4 {
@@ -208,11 +217,15 @@
   height: 289px;
 }
 .preview-bg--34x45 {
-  width: 205px;
+  width: 188px;
   height: 289px;
 }
+.preview-bg--155x1162 {
+  width: 289px;
+  height: 226px;
+}
 
-/* 预览图：三个规格均按工作区等比（差距 < 0.3%，不裁切不留白） */
+/* 预览图：均按工作区等比（差距 < 0.3%，不裁切不留白） */
 .preview-img--85x4 {
   width: 253px;
   height: 119px; /* 299/141 ≈ 253/119 */
@@ -222,9 +235,20 @@
   height: 253px; /* 235/299 ≈ 199/253 */
 }
 .preview-img--34x45 {
-  width: 169px;
-  height: 253px; /* 200/299 ≈ 169/253 */
-  margin-top: 1px;
+  width: 152px;
+  height: 228px; /* 200/299 ≈ 152.3/228 */
+}
+/* 3*4.5 单独处理：内边图左右居中（两侧各 17.85px）、上下不居中（top 43px，下边距 18px），
+   需用双 class 覆盖 .upload-preview 的 position: relative */
+.upload-preview.preview-img--34x45 {
+  position: absolute;
+  top: 44px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.preview-img--155x1162 {
+  width: 253px;
+  height: 190px; /* 299/224 ≈ 253/190 */
 }
 
 /* 花边背景图 */

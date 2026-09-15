@@ -11,6 +11,7 @@ import IconSubDisable from '@/assets/svgs/icon_sub_disable.svg';
 import Img85 from '@/assets/images/8.5_4cm.png';
 import Img75 from '@/assets/images/7_5.5cm.png';
 import Img45 from '@/assets/images/4.5_3cm.png';
+import Img155 from '@/assets/images/15.5_11.62cm.png';
 import IconWarn from '@/assets/svgs/icon_warning.svg';
 import { productApi } from '@/api/modules/product';
 import { orderApi, type PriceInfo } from '@/api/modules/order';
@@ -52,11 +53,18 @@ const LOCAL_IMAGE_MAP: Record<string, string> = {
   '85x40': Img85,
   '55x70': Img75,
   '30x45': Img45,
+  '155x116.2': Img155, // 15.5*11.62cm 巨大号
 };
 
+/** 尺寸 key：保留 2 位小数，避免后台返回 116.2000001 这类浮点噪声导致匹配不上 */
+function buildSizeKey(width: string, height: string): string {
+  const round = (value: string) => Number(parseFloat(value).toFixed(2));
+  return `${round(width)}x${round(height)}`;
+}
+
+/** 后台未配置 goodsImg 时的本地兜底图 */
 function getLocalImage(width: string, height: string): string {
-  const key = `${parseFloat(width)}x${parseFloat(height)}`;
-  return LOCAL_IMAGE_MAP[key] || Img85;
+  return LOCAL_IMAGE_MAP[buildSizeKey(width, height)] || Img85;
 }
 
 function buildPriceText(priceInfo: PriceInfo | null): string {
@@ -232,7 +240,7 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
         zIndex={1002}
       >
         <ScrollView className='spec-popup-scroll' scrollY>
-          <View className='pb-[110px] px-[12px]'>
+          <View className='pb-[110px]'>
             <View
               className='warning-box'
               onClick={() => {

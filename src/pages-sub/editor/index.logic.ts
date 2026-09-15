@@ -1,17 +1,20 @@
 import Taro, { useDidShow } from '@tarojs/taro';
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import Tab7Img from '@/assets/images/tab_7_5.5.png';
-import Tab8Img from '@/assets/images/tab_8.5_4.png';
-import Tab4Img from '@/assets/images/tab_4.5_3.png';
-import Tab7ImgA from '@/assets/images/tab_7_5.5_active.png';
-import Tab8ImgA from '@/assets/images/tab_8.5_4_active.png';
-import Tab4ImgA from '@/assets/images/tab_4.5_3_active.png';
+import Tab7Img from '@/assets/svgs/tab_7_5.5.svg';
+import Tab8Img from '@/assets/svgs/tab_8.5_4.svg';
+import Tab4Img from '@/assets/svgs/tab_4.5_3.svg';
+import Tab155Img from '@/assets/svgs/tab_15.5_11.62.svg';
+import Tab7ImgA from '@/assets/svgs/tab_7_5.5_active.svg';
+import Tab8ImgA from '@/assets/svgs/tab_8.5_4_active.svg';
+import Tab4ImgA from '@/assets/svgs/tab_4.5_3_active.svg';
+import Tab155ImgA from '@/assets/svgs/tab_15.5_11.62_active.svg';
 import IconCopy from '@/assets/svgs/icon_copy.svg';
 import IconNew from '@/assets/svgs/icon_new.svg';
 import IconDel from '@/assets/svgs/icon_del.svg';
 import PreviewBg85 from '@/assets/svgs/icon_preview_bg_8.5_4.svg';
 import PreviewBg75 from '@/assets/svgs/icon_preview_bg_7_5.5.svg';
 import PreviewBg34 from '@/assets/svgs/icon_preview_bg_3_4.5.svg';
+import PreviewBg155 from '@/assets/svgs/icon_preview_bg_15.5_11.62.svg';
 import type { SelectedSpec } from '@/components/spec-select-popup';
 import {
   getCropResult,
@@ -36,7 +39,7 @@ export const SIZE_OPTIONS: SizeOption[] = [
     label: '7*5.5cm',
     image: Tab7Img,
     activeImage: Tab7ImgA,
-    displayWidth: 36,
+    displayWidth: 27,
     displayHeight: 34,
   },
   {
@@ -44,7 +47,7 @@ export const SIZE_OPTIONS: SizeOption[] = [
     label: '8.5*4cm',
     image: Tab8Img,
     activeImage: Tab8ImgA,
-    displayWidth: 59,
+    displayWidth: 63,
     displayHeight: 34,
   },
   {
@@ -52,7 +55,15 @@ export const SIZE_OPTIONS: SizeOption[] = [
     label: '3*4.5cm',
     image: Tab4Img,
     activeImage: Tab4ImgA,
-    displayWidth: 23,
+    displayWidth: 22,
+    displayHeight: 34,
+  },
+  {
+    id: '15.5x11.62',
+    label: '15.5*11.62cm',
+    image: Tab155Img,
+    activeImage: Tab155ImgA,
+    displayWidth: 43,
     displayHeight: 34,
   },
 ];
@@ -77,6 +88,7 @@ const PREVIEW_BG_MAP: Record<string, string> = {
   '8.5*4cm': PreviewBg85,
   '7*5.5cm': PreviewBg75,
   '3*4.5cm': PreviewBg34,
+  '15.5*11.62cm': PreviewBg155,
 };
 
 export function getPreviewBg(name: string): string {
@@ -88,6 +100,7 @@ const PREVIEW_CLASS_MAP: Record<string, string> = {
   '8.5*4cm': '85x4',
   '7*5.5cm': '75x55',
   '3*4.5cm': '34x45',
+  '15.5*11.62cm': '155x1162',
 };
 
 export function getPreviewClass(name: string): string {
@@ -99,16 +112,18 @@ const UPLOAD_AREA_SIZE: Record<string, { w: number; h: number }> = {
   '85x4': { w: 299, h: 141 },
   '75x55': { w: 235, h: 299 },
   '34x45': { w: 200, h: 299 },
+  '155x1162': { w: 299, h: 224 },
 };
 
 /**
  * 预览图输出尺寸，用于 Canvas 渲染花边框贴合用的预览图。
- * 三个规格均按工作区等比（差距 < 0.3%，不裁切不留白）。
+ * 各规格均按工作区等比（差距 < 0.3%，不裁切不留白）。
  */
 const PREVIEW_IMG_SIZE: Record<string, { w: number; h: number }> = {
   '85x4': { w: 253, h: 119 }, // 299/141 ≈ 253/119
   '75x55': { w: 199, h: 253 }, // 235/299 ≈ 199/253
-  '34x45': { w: 169, h: 253 }, // 200/299 ≈ 169/253
+  '34x45': { w: 152, h: 228 }, // 200/299 ≈ 153/229，需与 SCSS 的 .preview-img--34x45 保持一致
+  '155x1162': { w: 253, h: 190 }, // 299/224 ≈ 253/190
 };
 
 export function getUploadAreaSize(name: string) {
