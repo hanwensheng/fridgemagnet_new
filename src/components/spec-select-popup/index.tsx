@@ -17,6 +17,7 @@ import { productApi } from '@/api/modules/product';
 import { useAppStore } from '@/store';
 import { userApi } from '@/api/modules/user';
 import { formatSizeLabel } from '@/utils/format';
+import { calcDiscountedPrices } from '@/utils/discount';
 
 import './index.scss';
 
@@ -106,6 +107,20 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
     () => items.reduce((sum, item) => (item.selected ? sum + item.quantity : sum), 0),
     [items],
   );
+
+  /**
+   * 优惠后金额：与确认订单页共用同一套规则（按件展开后，最低价那件原价、其余 8 折）。
+   * 步进器选择的数量同样计入。
+   */
+  const totalAmount = useMemo(() => {
+    const prices: number[] = [];
+    items.forEach((item) => {
+      if (!item.selected) return;
+      for (let i = 0; i < item.quantity; i++) prices.push(Number(item.price) || 0);
+    });
+    const total = calcDiscountedPrices(prices).reduce((sum, price) => sum + price.price, 0);
+    return Number(total.toFixed(2));
+  }, [items]);
 
   const selectedItems = useMemo(
     () =>
@@ -202,6 +217,18 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
     }
     onConfirm?.(selectedItems);
   };
+
+  /** 去制作按钮文案：共 N 件 ¥ 优惠后金额 去制作（件数、金额都含步进器数量） */
+  const confirmButtonText = (
+    <Text className='text-base text-white'>
+      <Text>共 </Text>
+      <Text className='font-bold'>{totalCount}</Text>
+      <Text> 件 </Text>
+      <Text className='text-xs font-normal'>¥</Text>
+      <Text className='font-bold'> {totalAmount.toFixed(2)}</Text>
+      <Text className='font-bold'> 去制作</Text>
+    </Text>
+  );
 
   return (
     <>
@@ -308,7 +335,7 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
               className='flex h-[56px] w-[310px] items-center justify-center rounded-full bg-[#1c1c1e]'
               onClick={handleConfirm}
             >
-              <Text className='text-base font-bold text-white'>共 {totalCount} 件 去制作</Text>
+              {confirmButtonText}
             </View>
           ) : (
             <Button
@@ -316,7 +343,7 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
               openType='getPhoneNumber'
               onGetPhoneNumber={handleLogin}
             >
-              <Text className='text-base font-bold text-white'>共 {totalCount} 件 去制作</Text>
+              {confirmButtonText}
             </Button>
           )}
         </View>
