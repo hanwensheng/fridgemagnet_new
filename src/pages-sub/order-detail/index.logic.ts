@@ -3,6 +3,8 @@ import Taro, { useRouter } from '@tarojs/taro';
 import { orderApi, OrderStatus, TraceItem } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
 import { formatSizeLabel } from '@/utils/format';
+import { calcDiscountedPrices } from '@/utils/discount';
+import type { OrderItem } from '@/pages-sub/order-confirm/index.logic';
 import { setLogisticsOrder } from '@/pages-sub/logistics-detail/index.logic';
 
 /** 支付倒计时（分钟） */
@@ -38,6 +40,7 @@ export function useOrderDetailLogic() {
   const [order, setOrder] = useState<MerchantOrder | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [traceList, setTraceList] = useState<TraceItem[]>([]);
+  const [discountPopupVisible, setDiscountPopupVisible] = useState(false);
 
   const fetchOrder = useCallback(() => {
     if (!pkId) return;
@@ -96,6 +99,74 @@ export function useOrderDetailLogic() {
     if (pp) return pp;
     return Number(order.orderPrice) + Number(order.deliveryPrice);
   }, [order]);
+
+  /** 优惠金额 = 商品金额 - 订单金额（无优惠 / 数据异常时为 0） */
+  const discountAmount = useMemo(() => {
+    if (!order) return 0;
+    const diff = Number(order.goodsPrice) - Number(order.orderPrice);
+    return Number.isFinite(diff) && diff > 0 ? Number(diff.toFixed(2)) : 0;
+  }, [order]);
+
+  /**
+   * 优惠明细弹层的商品列表：图片、宽高、价格都取订单 imgList（price 为下单时的原价），
+   * 促销计算与确认订单页共用 calcDiscountedPrices（最低价那件原价、其余 8 折）。
+   */
+  const discountPopupItems = useMemo<OrderItem[]>(() => {
+    if (!order) return [];
+
+    const imgs =
+      order.imgList && order.imgList.length > 0
+        ? order.imgList.map((img, i) => ({
+            key: String(img.goodsId || img.pkId || i),
+            goodsId: String(img.goodsId || ''),
+            image: img.imgLink,
+            width: img.width,
+            height: img.height,
+            price: img.price,
+          }))
+        : [
+            {
+              key: 'order',
+              goodsId: '',
+              image: order.orderImg || '',
+              width: undefined,
+              height: undefined,
+              price: undefined as number | undefined,
+            },
+          ];
+
+    // 价格取订单 imgList 自带的 price；缺失时退回商品均价，避免展示成 ¥0.00
+    const count = Math.max(Number(order.goodsNum) || imgs.length || 1, 1);
+    const avgPrice = Number((Number(order.goodsPrice || 0) / count).toFixed(2));
+    const prices = imgs.map((img) => Number(img.price) || avgPrice);
+
+    // 自检：imgList 的 price 是「原价」时，合计应等于订单的商品金额 goodsPrice
+    const priceSum = Number(prices.reduce((sum, price) => sum + price, 0).toFixed(2));
+    const goodsPrice = Number(order.goodsPrice || 0);
+    if (goodsPrice > 0 && Math.abs(priceSum - goodsPrice) > 0.01) {
+      console.warn('[order-detail] imgList 价格合计与商品金额不一致:', { priceSum, goodsPrice });
+    }
+
+    const discountedPrices = calcDiscountedPrices(prices);
+
+    return imgs.map((img, i) => {
+      const { originalPrice, price, discountAmount: amount, discounted } = discountedPrices[i];
+      return {
+        id: img.key,
+        name: order.orderTitle || '',
+        spec: img.width && img.height ? formatSizeLabel(img.width, img.height) : '',
+        quantity: 1,
+        price,
+        originalPrice,
+        discountAmount: amount,
+        discountTag: discounted ? '8折' : undefined,
+        image: img.image,
+      };
+    });
+  }, [order]);
+
+  const openDiscountPopup = useCallback(() => setDiscountPopupVisible(true), []);
+  const closeDiscountPopup = useCallback(() => setDiscountPopupVisible(false), []);
 
   /** 倒计时文案及是否过期 */
   const countdown = useMemo(() => {
@@ -271,6 +342,11 @@ export function useOrderDetailLogic() {
     navTitle,
     isGroup,
     displayPrice,
+    discountAmount,
+    discountPopupItems,
+    discountPopupVisible,
+    openDiscountPopup,
+    closeDiscountPopup,
     countdown,
     specText,
     estimatedShipText,

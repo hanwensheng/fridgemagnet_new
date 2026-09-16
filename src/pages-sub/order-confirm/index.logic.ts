@@ -6,6 +6,7 @@ import { productApi } from '@/api/modules/product';
 import { useAppStore } from '@/store';
 import type { AddressItem } from '@/api/modules/address';
 import type { SpecItem } from '@/pages-sub/editor/index.logic';
+import { calcDiscountedPrices } from '@/utils/discount';
 import ProductImg from '@/assets/images/8.5_4cm.png';
 
 export interface OrderItem {
@@ -42,8 +43,6 @@ function parseOrderData(): OrderData | null {
   }
 }
 
-/** 促销规则：订单 ≥2 件时，最低价那件保持原价，其余按 8 折 */
-const DISCOUNT_RATE = 0.8;
 /** 满多少元包邮 */
 const FREE_SHIPPING_AMOUNT = 40;
 /** 运费兜底：接口废弃 / 取不到值时按 10 元 */
@@ -95,17 +94,11 @@ function buildOrderItems(data: OrderData, freshPrices: FreshPriceMap | null): Or
   const specs = data.specs || [];
   // 先算出每条规格的实际单价（线上最新价优先），折扣与合计都基于它
   const basePrices = specs.map((spec) => resolveEffectivePrice(spec, freshPrices));
-
-  // 最低价下标（单件时即 0，等于不参与折扣）
-  const cheapestIndex = basePrices.reduce(
-    (minIdx, price, i) => (price < basePrices[minIdx] ? i : minIdx),
-    0,
-  );
+  // 与订单详情页「优惠明细」共用的促销计算：最低价那件原价，其余 8 折
+  const discountedPrices = calcDiscountedPrices(basePrices);
 
   const items = specs.map((spec, i) => {
-    const originalPrice = basePrices[i];
-    const discounted = i !== cheapestIndex;
-    const price = discounted ? Number((originalPrice * DISCOUNT_RATE).toFixed(2)) : originalPrice;
+    const { originalPrice, price, discountAmount, discounted } = discountedPrices[i];
 
     return {
       id: spec.id,
@@ -114,7 +107,7 @@ function buildOrderItems(data: OrderData, freshPrices: FreshPriceMap | null): Or
       quantity: 1,
       price,
       originalPrice,
-      discountAmount: Number((originalPrice - price).toFixed(2)),
+      discountAmount,
       discountTag: discounted ? '8折' : undefined,
       image: data.uploadFileMap[spec.index] || ProductImg,
     };

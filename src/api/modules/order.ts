@@ -92,6 +92,8 @@ export interface OrderImgItem {
   height?: string;
   imgLink: string;
   pkId: number;
+  /** 下单时的商品原价（用于优惠明细展示） */
+  price?: number;
   width?: string;
 }
 

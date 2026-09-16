@@ -1,10 +1,12 @@
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import BasePage from '@/components/base-page';
+import CouponDetailPopup from '@/components/coupon-detail-popup';
 import IconSingle from '@/assets/svgs/icon_single.svg';
 import IconGroup from '@/assets/svgs/icon_group.svg';
 import IconCar from '@/assets/svgs/icon_car_black.svg';
 import IconRight from '@/assets/svgs/icon_right2.svg';
+import IconRedRight from '@/assets/svgs/icon_red_right.svg';
 import IconLightning from '@/assets/svgs/icon_lightning.svg';
 import { OrderStatus } from '@/api/modules/order';
 import { useOrderDetailLogic } from './index.logic';
@@ -16,6 +18,11 @@ export default function OrderDetail() {
     navTitle,
     isGroup,
     displayPrice,
+    discountAmount,
+    discountPopupItems,
+    discountPopupVisible,
+    openDiscountPopup,
+    closeDiscountPopup,
     countdown,
     specText,
     estimatedShipText,
@@ -225,6 +232,18 @@ export default function OrderDetail() {
               <Text className='order-detail-info-value'>¥{displayPrice.toFixed(2)}</Text>
             </View>
             <View className='order-detail-info-row'>
+              <Text className='order-detail-info-label'>优惠</Text>
+              <View
+                className='order-detail-discount-wrap'
+                onClick={discountAmount > 0 ? openDiscountPopup : undefined}
+              >
+                <Text className='order-detail-discount'>-¥ {discountAmount.toFixed(2)}</Text>
+                {discountAmount > 0 && (
+                  <Image className='order-detail-discount-arrow' src={IconRedRight} />
+                )}
+              </View>
+            </View>
+            <View className='order-detail-info-row'>
               <Text className='order-detail-info-label'>运费</Text>
               <Text className='order-detail-info-value'>
                 ¥{Number(order.deliveryPrice).toFixed(2)}
@@ -251,6 +270,14 @@ export default function OrderDetail() {
 
         <View className='order-detail-safe-bottom' />
       </ScrollView>
+
+      {/* 优惠明细弹层：展示与确认订单页一致，底部换成确认按钮 */}
+      <CouponDetailPopup
+        visible={discountPopupVisible}
+        items={discountPopupItems}
+        footerType='confirm'
+        onClose={closeDiscountPopup}
+      />
     </BasePage>
   );
 }

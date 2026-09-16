@@ -159,3 +159,28 @@
   line-height: 18px;
   font-weight: 500;
 }
+
+/* 订单详情页：底部只有一个确认按钮 */
+.coupon-detail-footer--confirm {
+  justify-content: center;
+}
+
+.coupon-detail-confirm-btn {
+  width: 301px;
+  height: 56px;
+  border-radius: 100px;
+  background: #1c1c1e;
+  box-shadow:
+    0 8px 10px -6px rgba(0, 0, 0, 0.1),
+    0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coupon-detail-confirm-text {
+  color: #fff;
+  font-size: 16px;
+  line-height: 18px;
+  font-weight: 700;
+}
