@@ -252,24 +252,27 @@ export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSel
         closeable
         overlay={false}
         closeIcon={<Image src={CloseIcon} className='h-[16px] w-[16px]' />}
-        className='spec-select-popup'
+        className={`spec-select-popup${visible ? ' spec-select-popup-visible' : ''}`}
         style={{ backgroundColor: '#f6f6f6' }}
         zIndex={1002}
       >
+        {/* 固定区：查看详情入口 + 促销文案，不跟随列表滚动 */}
+        <View
+          className='warning-box'
+          onClick={() => {
+            onClose();
+            Taro.navigateTo({ url: '/pages-sub/product-details/index' });
+          }}
+        >
+          <Image src={IconWarn} mode='aspectFit' className='h-[16px] w-[16px]' />
+          查看详情(材质说明、3D效果、实物展示)
+        </View>
+        {/* 促销文案（写死，规则见 PRICE_TIP） */}
+        <View className='home-shade-hint'>{PRICE_TIP}</View>
+
+        {/* 只滚动商品列表 */}
         <ScrollView className='spec-popup-scroll' scrollY>
           <View className='pb-[110px]'>
-            <View
-              className='warning-box'
-              onClick={() => {
-                onClose();
-                Taro.navigateTo({ url: '/pages-sub/product-details/index' });
-              }}
-            >
-              <Image src={IconWarn} mode='aspectFit' className='h-[16px] w-[16px]' />
-              查看详情(材质说明、3D效果、实物展示)
-            </View>
-            {/* 促销文案（写死，规则见 PRICE_TIP） */}
-            <View className='home-shade-hint'>{PRICE_TIP}</View>
             <View className='flex flex-col gap-[12px] px-[12px]'>
               {items.map((item, index) => (
                 <View

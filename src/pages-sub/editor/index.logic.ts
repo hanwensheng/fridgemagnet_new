@@ -1,20 +1,20 @@
 import Taro, { useDidShow } from '@tarojs/taro';
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import Tab7Img from '@/assets/svgs/tab_7_5.5.svg';
-import Tab8Img from '@/assets/svgs/tab_8.5_4.svg';
-import Tab4Img from '@/assets/svgs/tab_4.5_3.svg';
-import Tab155Img from '@/assets/svgs/tab_15.5_11.62.svg';
-import Tab7ImgA from '@/assets/svgs/tab_7_5.5_active.svg';
-import Tab8ImgA from '@/assets/svgs/tab_8.5_4_active.svg';
-import Tab4ImgA from '@/assets/svgs/tab_4.5_3_active.svg';
-import Tab155ImgA from '@/assets/svgs/tab_15.5_11.62_active.svg';
+import Tab7Img from '@/assets/images/tab_7_5.5.png';
+import Tab8Img from '@/assets/images/tab_8.5_4.png';
+import Tab4Img from '@/assets/images/tab_4.5_3.png';
+import Tab155Img from '@/assets/images/tab_15.5_11.62.png';
+import Tab7ImgA from '@/assets/images/tab_7_5.5_active.png';
+import Tab8ImgA from '@/assets/images/tab_8.5_4_active.png';
+import Tab4ImgA from '@/assets/images/tab_4.5_3_active.png';
+import Tab155ImgA from '@/assets/images/tab_15.5_11.62_active.png';
 import IconCopy from '@/assets/svgs/icon_copy.svg';
 import IconNew from '@/assets/svgs/icon_new.svg';
 import IconDel from '@/assets/svgs/icon_del.svg';
-import PreviewBg85 from '@/assets/svgs/icon_preview_bg_8.5_4.svg';
-import PreviewBg75 from '@/assets/svgs/icon_preview_bg_7_5.5.svg';
-import PreviewBg34 from '@/assets/svgs/icon_preview_bg_3_4.5.svg';
-import PreviewBg155 from '@/assets/svgs/icon_preview_bg_15.5_11.62.svg';
+import PreviewBg85 from '@/assets/images/icon_preview_bg_8.5_4.png';
+import PreviewBg75 from '@/assets/images/icon_preview_bg_7_5.5.png';
+import PreviewBg34 from '@/assets/images/icon_preview_bg_3_4.5.png';
+import PreviewBg155 from '@/assets/images/icon_preview_bg_15.5_11.62.png';
 import type { SelectedSpec } from '@/components/spec-select-popup';
 import {
   getCropResult,

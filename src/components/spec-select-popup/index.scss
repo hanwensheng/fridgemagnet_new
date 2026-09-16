@@ -1,3 +1,6 @@
+/* 纵向布局：固定区（查看详情 + 促销文案）+ 可滚动的商品列表。
+   注意：NutUI 隐藏弹层时写的是内联 display:none，所以 display:flex 不能无条件加 !important，
+   只在显示态（.spec-select-popup-visible）生效，否则关闭后内容会残留。 */
 .spec-select-popup {
   height: 713px;
   overflow: hidden;
@@ -19,9 +22,19 @@
   border-radius: 24px 24px 0 0 !important;
 }
 
-/* 弹层内容滚动区 */
+/* 显示态才启用纵向 flex（NutUI 给根节点内联了 display:block，需 !important 才能覆盖） */
+.spec-select-popup-visible {
+  display: flex !important;
+  flex-direction: column;
+}
+
+/* 商品列表滚动区（只有它滚动，其余区域固定） */
 .spec-popup-scroll {
-  height: 100%;
+  /* 固定高度兜底：非 flex 态（关闭动画期间）也保持同样的可视区域与滚动位置
+     609 = 713 弹层高 -（查看详情 54 + 促销文案 38 + 12 间距）；flex 态下该高度会被 flex-basis 覆盖 */
+  height: 609px;
+  flex: 1;
+  min-height: 0;
 }
 
 /* 去制作按钮：悬浮在弹层底部，宽 310px，水平居中 */
@@ -38,6 +51,7 @@
 
 .warning-box {
   display: flex;
+  flex-shrink: 0;
   font-size: 13px;
   font-weight: 500;
   line-height: 18px;
@@ -50,6 +64,7 @@
 .home-shade-hint {
   width: 100%;
   height: 38px;
+  flex-shrink: 0;
   background: #f9f1ea;
   color: #945317;
   text-align: center;
