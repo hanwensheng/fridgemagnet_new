@@ -19,6 +19,36 @@ export interface BizGoods {
   imgLinks: string[];
 }
 
+/** 产品详情（bizGoodsShow）图片详情项 */
+export interface BizGoodsShowImg {
+  pkId: string;
+  /** 图片地址 */
+  imgLink: string;
+  /** 排序，值越小越靠前 */
+  sort: string;
+  gmtCreate: string;
+  gmtModified: string;
+}
+
+/** 产品详情（bizGoodsShow）3D 模型项 */
+export interface BizGoodsShowModel {
+  pkId: string;
+  /** 模型（glb）地址 */
+  imgLink: string;
+  /** 规格名，如 5.5*7cm */
+  modelName: string;
+  /** 排序，值越小越靠前 */
+  sort: string;
+  gmtCreate: string;
+  gmtModified: string;
+}
+
+/** 产品详情数据：图片详情（固定展示） + 3D 模型（按 tab 切换） */
+export interface BizGoodsShowData {
+  imgList: BizGoodsShowImg[];
+  modelList: BizGoodsShowModel[];
+}
+
 /** 热门套餐 */
 export interface PackageItem {
   currentPrice: number;
@@ -153,6 +183,23 @@ export const productApi = {
       url: '/v1/bizGoods/findAllBySearch',
       method: 'POST',
       data: { isShow: 1, pageNum: 1, pageSize: 999, ...params },
+      ...options,
+    });
+  },
+
+  /**
+   * 查询产品详情（图片详情 + 3D 模型）
+   * @param params 查询条件
+   * @param options 请求行为（不显示 loading 等）
+   */
+  getGoodsShow(
+    params?: { pageNum?: number; pageSize?: number },
+    options?: { showLoading?: boolean; showError?: boolean },
+  ) {
+    return request<BizGoodsShowData>({
+      url: '/v1/bizGoodsShow/findAllBySearch',
+      method: 'POST',
+      data: { pageNum: 1, pageSize: 999, ...params },
       ...options,
     });
   },

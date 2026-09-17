@@ -3,23 +3,19 @@ import BasePage from '@/components/base-page';
 import { useState, useEffect, useMemo } from 'react';
 import Taro from '@tarojs/taro';
 import { productApi } from '@/api';
-import { formatSizeLabel } from '@/utils/format';
+import type { BizGoodsShowImg, BizGoodsShowModel } from '@/api';
 import Icon360 from '@/assets/svgs/icon_360.svg';
 import './index.scss';
 
-interface GoodsItem {
-  pkId: string;
-  /** 3D 模型链接，后台可能未配置（空字符串 / null） */
-  modelLink3d?: string | null;
-  /** 详情图列表，后台可能未配置（null） */
-  imgLinks?: string[] | null;
-  width: string;
-  height: string;
+/** 按 sort 升序（sort 是字符串数字，缺失时保持原顺序） */
+function sortBySort<T extends { sort?: string }>(list: T[]): T[] {
+  return [...list].sort((a, b) => Number(a.sort ?? 0) - Number(b.sort ?? 0));
 }
 
 export default function ProductDetailsPage() {
   const [activeTab, setActiveTab] = useState(0);
-  const [goodsList, setGoodsList] = useState<GoodsItem[]>([]);
+  const [modelList, setModelList] = useState<BizGoodsShowModel[]>([]);
+  const [imgList, setImgList] = useState<BizGoodsShowImg[]>([]);
   const [size, setSize] = useState({ width: 0, height: 0, renderWidth: 0, renderHeight: 0 });
 
   useEffect(() => {
@@ -29,36 +25,39 @@ export default function ProductDetailsPage() {
     const height = 240;
     setSize({ width, height, renderWidth: width * dpr, renderHeight: height * dpr });
 
-    // 获取商品列表
+    // 获取产品详情（图片详情 + 3D 模型）
     productApi
-      .getGoodsList()
+      .getGoodsShow()
       .then((res) => {
         if (res) {
-          setGoodsList(res);
+          setModelList(sortBySort(res.modelList || []));
+          setImgList(sortBySort(res.imgList || []));
         }
       })
       .catch((err) => {
-        console.error('获取商品列表失败:', err);
+        console.error('获取产品详情失败:', err);
       });
   }, []);
 
-  // 既没有 3D 模型也没有详情图的规格，tab 里也不展示
-  const visibleGoods = useMemo(
-    () => goodsList.filter((item) => !!item.modelLink3d || (item.imgLinks?.length ?? 0) > 0),
-    [goodsList],
-  );
+  // 未配置模型链接的规格，tab 里也不展示
+  const visibleModels = useMemo(() => modelList.filter((item) => !!item.imgLink), [modelList]);
 
-  const current = visibleGoods[activeTab];
-  // 后台未配置时 imgLinks 会返回 null，直接取 length/map 会抛错
-  const imgLinks = current?.imgLinks || [];
-  // 后台未配置 3D 模型时 modelLink3d 为空字符串，需跳过渲染，避免 xr-frame 收到空 model 报错
-  const modelSrc = current?.modelLink3d || '';
+  const current = visibleModels[activeTab];
+  // 后台未配置 3D 模型时跳过渲染，避免 xr-frame 收到空 model 报错
+  const modelSrc = current?.imgLink || '';
+  // 图片详情固定展示全部，不跟随模型 tab 联动
+  const detailImages = useMemo(
+    () => imgList.map((item) => item.imgLink).filter((url) => !!url),
+    [imgList],
+  );
 
   return (
     <BasePage navTitle='产品详情'>
       <View className='details_box'>
         <View className='details_3D'>
           {size.renderWidth > 0 && !!modelSrc && (
+            // 注意：这里**不能**加 key={modelSrc}，否则切 tab 会卸载重建整个原生组件，
+            // 中间会闪一下白色空白；不加 key 时是同一实例原地换 modelSrc，切换更丝滑
             // @ts-ignore xr-model-viewer 是小程序原生组件
             <xr-model-viewer
               modelSrc={modelSrc}
@@ -74,22 +73,24 @@ export default function ProductDetailsPage() {
             360°View
           </View>
         </View>
-        {visibleGoods.length > 0 && (
+        {visibleModels.length > 0 && (
           <View className='details_tab'>
-            {visibleGoods.map((item, index) => (
+            {visibleModels.map((item, index) => (
               <View
                 key={item.pkId}
                 className={`details_tab_item ${index === activeTab ? 'active' : ''}`}
                 onClick={() => setActiveTab(index)}
               >
-                {formatSizeLabel(item.width, item.height)}
+                {item.modelName}
               </View>
             ))}
           </View>
         )}
-        {imgLinks.map((img, i) => (
-          <Image key={i} src={img} className='details_img' mode='widthFix' />
-        ))}
+        <View className='details_img_list'>
+          {detailImages.map((img, i) => (
+            <Image key={i} src={img} className='details_img' mode='widthFix' />
+          ))}
+        </View>
       </View>
     </BasePage>
   );
