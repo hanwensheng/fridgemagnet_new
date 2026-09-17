@@ -92,12 +92,12 @@ export function useOrderDetailLogic() {
     return Number(order.goodsNum) > 1;
   }, [order]);
 
-  /** 显示价格 */
+  /** 显示价格：优先 payPrice，为空时回退 orderPrice（实付已含运费，不再单独加 deliveryPrice） */
   const displayPrice = useMemo(() => {
     if (!order) return 0;
     const pp = Number(order.payPrice);
     if (pp) return pp;
-    return Number(order.orderPrice) + Number(order.deliveryPrice);
+    return Number(order.orderPrice) || 0;
   }, [order]);
 
   /** 优惠金额 = 商品金额 - 订单金额（无优惠 / 数据异常时为 0） */

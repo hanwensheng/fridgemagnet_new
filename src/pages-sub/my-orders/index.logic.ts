@@ -163,11 +163,11 @@ export function useMyOrdersLogic() {
 
   const isGroupOrder = (order: MerchantOrder) => order.goodsNum > 1;
 
-  /** 默认用 payPrice，为空时用 orderPrice + deliveryPrice */
+  /** 默认用 payPrice，为空时回退 orderPrice（实付已含运费，不再单独加 deliveryPrice） */
   const getDisplayPrice = (order: MerchantOrder) => {
     const pp = Number(order.payPrice);
     if (pp) return pp;
-    return order.orderPrice + order.deliveryPrice;
+    return Number(order.orderPrice) || 0;
   };
 
   const getOrderCountdown = useCallback(

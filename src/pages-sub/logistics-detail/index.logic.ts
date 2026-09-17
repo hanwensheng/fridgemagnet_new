@@ -64,7 +64,8 @@ function mapTraceToTimeline(traceList: TraceItem[]): LogisticsTimelineItem[] {
 /** 从 order 构建展示数据 */
 function buildDisplayData(order: MerchantOrder, traceList: TraceItem[]): LogisticsDisplayData {
   const pp = Number(order.payPrice);
-  const displayPrice = pp || Number(order.orderPrice) + Number(order.deliveryPrice);
+  // 实付优先用 payPrice，为空时回退 orderPrice（实付已含运费，不再单独加 deliveryPrice）
+  const displayPrice = pp || Number(order.orderPrice) || 0;
 
   return {
     courierName: order.courier || '京东快递',
