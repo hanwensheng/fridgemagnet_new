@@ -1,0 +1,87 @@
+/* 底部合计栏：确认订单页底栏 与 优惠明细弹层底部 共用 */
+.order-total-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 0;
+  box-sizing: border-box;
+  background: #f6f6f6;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.order-total-bar-info {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.order-total-bar-row {
+  display: flex;
+  align-items: center;
+}
+
+.order-total-bar-label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+  font-weight: 400;
+}
+
+.order-total-bar-price {
+  font-size: 14px;
+  color: #000;
+  line-height: 18px;
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+.order-total-bar-count {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
+  line-height: 18px;
+  font-weight: 400;
+}
+
+.order-total-bar-count-num {
+  color: #000;
+}
+
+.order-total-bar-detail {
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+}
+
+.order-total-bar-detail-text {
+  font-size: 12px;
+  color: #f2330d;
+  line-height: 18px;
+  font-weight: 400;
+}
+
+.order-total-bar-detail-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+
+  &--up {
+    transform: rotate(180deg);
+  }
+}
+
+.order-total-bar-pay-btn {
+  height: 50px;
+  padding: 0 36px;
+  border-radius: 100px;
+  background: #1c1c1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.order-total-bar-pay-text {
+  font-size: 16px;
+  color: #fff;
+  line-height: 18px;
+  font-weight: 500;
+}

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import { Popup } from '@nutui/nutui-react-taro';
 import IconClose from '@/assets/svgs/icon_popup_close.svg';
-import IconRedUp from '@/assets/svgs/icon_red_up.svg';
+import OrderTotalBar from '@/components/order-total-bar';
 import type { OrderItem } from '@/pages-sub/order-confirm/index.logic';
 
 import './index.scss';
@@ -16,8 +16,8 @@ interface CouponDetailPopupProps {
   onClose: () => void;
   /** 底部区域：pay = 合计 + 微信支付（确认订单页，默认）；confirm = 单个确认按钮（订单详情页） */
   footerType?: 'pay' | 'confirm';
-  /** footerType='pay' 时使用 */
-  totalPrice?: number;
+  /** footerType='pay' 时使用：底部「合计」金额，须与页面底栏一致（含运费） */
+  totalAmount?: number;
   totalDiscount?: number;
   totalCount?: number;
   onPay?: () => void;
@@ -30,7 +30,7 @@ export default function CouponDetailPopup({
   items,
   onClose,
   footerType = 'pay',
-  totalPrice = 0,
+  totalAmount = 0,
   totalDiscount = 0,
   totalCount = 0,
   onPay,
@@ -81,11 +81,11 @@ export default function CouponDetailPopup({
           ))}
         </ScrollView>
 
-        <View
-          className={`coupon-detail-footer${footerType === 'confirm' ? ' coupon-detail-footer--confirm' : ''}`}
-          style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
-        >
-          {footerType === 'confirm' ? (
+        {footerType === 'confirm' ? (
+          <View
+            className='coupon-detail-footer--confirm'
+            style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
+          >
             <View
               className='coupon-detail-confirm-btn'
               onClick={() => {
@@ -95,37 +95,23 @@ export default function CouponDetailPopup({
             >
               <Text className='coupon-detail-confirm-text'>确认</Text>
             </View>
-          ) : (
-            <>
-              <View className='coupon-detail-total'>
-                <View className='coupon-detail-total-row'>
-                  <Text className='coupon-detail-total-label'>合计</Text>
-                  <Text className='coupon-detail-total-price'>¥ {totalPrice.toFixed(2)}</Text>
-                </View>
-                <View className='coupon-detail-total-row'>
-                  <Text className='coupon-detail-total-count'>
-                    共 <Text className='coupon-detail-total-count-num'>{totalCount}</Text> 件
-                  </Text>
-                  <View className='coupon-detail-entry' onClick={onClose}>
-                    <Text className='coupon-detail-entry-text'>
-                      优惠 -¥{totalDiscount.toFixed(2)} 明细
-                    </Text>
-                    <Image className='coupon-detail-entry-arrow' src={IconRedUp} />
-                  </View>
-                </View>
-              </View>
-              <View
-                className='coupon-detail-pay-btn'
-                onClick={() => {
-                  onClose();
-                  onPay?.();
-                }}
-              >
-                <Text className='coupon-detail-pay-text'>微信支付</Text>
-              </View>
-            </>
-          )}
-        </View>
+          </View>
+        ) : (
+          // 与确认订单页底栏共用同一份实现，合计金额直接透传，保证两处一致
+          <OrderTotalBar
+            className='coupon-detail-footer'
+            style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
+            totalAmount={totalAmount}
+            totalDiscount={totalDiscount}
+            totalCount={totalCount}
+            detailExpanded
+            onDetailClick={onClose}
+            onPay={() => {
+              onClose();
+              onPay?.();
+            }}
+          />
+        )}
       </View>
     </Popup>
   );

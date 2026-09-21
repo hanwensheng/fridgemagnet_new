@@ -80,93 +80,21 @@
   margin-left: 10px;
 }
 
+/* 底部合计栏本体由 @/components/order-total-bar 提供，这里只补弹层内的布局差异 */
 .coupon-detail-footer {
+  flex-shrink: 0;
+}
+
+/* 订单详情页：底部只有一个确认按钮 */
+.coupon-detail-footer--confirm {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   flex-shrink: 0;
   padding: 20px 20px 0;
   box-sizing: border-box;
   background: #f6f6f6;
   border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.coupon-detail-total {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.coupon-detail-total-row {
-  display: flex;
-  align-items: center;
-}
-
-.coupon-detail-total-label {
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.5);
-  line-height: 18px;
-  font-weight: 400;
-}
-
-.coupon-detail-total-price {
-  font-size: 14px;
-  color: #000;
-  line-height: 18px;
-  font-weight: 600;
-  margin-left: 5px;
-}
-
-.coupon-detail-total-count {
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.5);
-  line-height: 18px;
-  font-weight: 400;
-}
-
-.coupon-detail-total-count-num {
-  color: #000;
-}
-
-.coupon-detail-entry {
-  display: flex;
-  align-items: center;
-  margin-left: 8px;
-}
-
-.coupon-detail-entry-text {
-  font-size: 12px;
-  color: #f2330d;
-  line-height: 18px;
-  font-weight: 400;
-}
-
-.coupon-detail-entry-arrow {
-  width: 16px;
-  height: 16px;
-  transform: rotate(180deg);
-}
-
-.coupon-detail-pay-btn {
-  height: 50px;
-  padding: 0 36px;
-  border-radius: 100px;
-  background: #1c1c1e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.coupon-detail-pay-text {
-  font-size: 16px;
-  color: #fff;
-  line-height: 18px;
-  font-weight: 500;
-}
-
-/* 订单详情页：底部只有一个确认按钮 */
-.coupon-detail-footer--confirm {
-  justify-content: center;
 }
 
 .coupon-detail-confirm-btn {

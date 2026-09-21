@@ -2,8 +2,8 @@ import { View, Text, Image } from '@tarojs/components';
 import BasePage from '@/components/base-page';
 import PaySuccessPopup from '@/components/pay-success-popup';
 import CouponDetailPopup from '@/components/coupon-detail-popup';
+import OrderTotalBar from '@/components/order-total-bar';
 import IconRight from '@/assets/svgs/icon_right2.svg';
-import IconRedUp from '@/assets/svgs/icon_red_up.svg';
 import IconAddAddress from '@/assets/svgs/icon_add_addres.svg';
 import IconSingle from '@/assets/svgs/icon_single.svg';
 import { useOrderConfirmLogic } from './index.logic';
@@ -14,7 +14,6 @@ export default function OrderConfirm() {
     address,
     orderItems,
     totalCount,
-    totalPrice,
     totalDiscount,
     originalTotal,
     finalTotal,
@@ -34,31 +33,15 @@ export default function OrderConfirm() {
     <BasePage
       navTitle='确认订单'
       bottomBarComponent={
-        <View className='order-bottom-bar'>
-          <View className='order-total'>
-            <View className='order-total-row'>
-              <Text className='order-total-label'>合计</Text>
-              <Text className='order-total-price'>¥ {finalTotal.toFixed(2)}</Text>
-            </View>
-            <View className='order-total-row'>
-              <Text className='order-total-count'>
-                共 <Text className='order-total-count-num'>{totalCount}</Text> 件
-              </Text>
-              {isGroup && (
-                <View className='order-coupon-entry' onClick={toggleCouponPopup}>
-                  <Text className='order-coupon-text'>优惠 -¥{totalDiscount.toFixed(2)} 明细</Text>
-                  <Image
-                    className={`order-coupon-arrow ${couponPopupVisible ? 'order-coupon-arrow--up' : ''}`}
-                    src={IconRedUp}
-                  />
-                </View>
-              )}
-            </View>
-          </View>
-          <View className='order-pay-btn' onClick={handlePay}>
-            <Text className='order-pay-text'>微信支付</Text>
-          </View>
-        </View>
+        <OrderTotalBar
+          totalAmount={finalTotal}
+          totalDiscount={totalDiscount}
+          totalCount={totalCount}
+          showDetail={isGroup}
+          detailExpanded={couponPopupVisible}
+          onDetailClick={toggleCouponPopup}
+          onPay={handlePay}
+        />
       }
     >
       <View className='order-hint'>定制商品无质量问题不支持退换，付款后30分钟内可退款。</View>
@@ -158,7 +141,7 @@ export default function OrderConfirm() {
       <CouponDetailPopup
         visible={couponPopupVisible}
         items={orderItems}
-        totalPrice={totalPrice}
+        totalAmount={finalTotal}
         totalDiscount={totalDiscount}
         totalCount={totalCount}
         onClose={closeCouponPopup}
