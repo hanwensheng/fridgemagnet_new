@@ -100,70 +100,93 @@ export function useOrderDetailLogic() {
     return Number(order.orderPrice) || 0;
   }, [order]);
 
-  /** 优惠金额 = 商品金额 - 订单金额（无优惠 / 数据异常时为 0） */
-  const discountAmount = useMemo(() => {
-    if (!order) return 0;
-    const diff = Number(order.goodsPrice) - Number(order.orderPrice);
-    return Number.isFinite(diff) && diff > 0 ? Number(diff.toFixed(2)) : 0;
-  }, [order]);
-
   /**
-   * 优惠明细弹层的商品列表：图片、宽高、价格都取订单 imgList（price 为下单时的原价），
-   * 促销计算与确认订单页共用 calcDiscountedPrices（最低价那件原价、其余 8 折）。
+   * 优惠计算：口径与确认订单页完全一致 ——
+   * 每件商品用 calcDiscountedPrices 算「最低价那件原价、其余 8 折」，
+   * 优惠金额 = 原价合计 − 折后合计。
+   *
+   * 不能用 goodsPrice − orderPrice 算：orderPrice 是含运费的订单金额，
+   * 运费会把优惠抵消掉，且与明细弹层逐件算出的金额对不上。
+   *
+   * 商品单价取下单时快照在 imgList 里的原价；imgList 缺 price（或整单没有 imgList 的老订单）
+   * 时用商品均价兜底，并按件数补出商品项，保证多件订单仍能算出优惠。
    */
-  const discountPopupItems = useMemo<OrderItem[]>(() => {
-    if (!order) return [];
-
-    const imgs =
-      order.imgList && order.imgList.length > 0
-        ? order.imgList.map((img, i) => ({
-            key: String(img.goodsId || img.pkId || i),
-            goodsId: String(img.goodsId || ''),
-            image: img.imgLink,
-            width: img.width,
-            height: img.height,
-            price: img.price,
-          }))
-        : [
-            {
-              key: 'order',
-              goodsId: '',
-              image: order.orderImg || '',
-              width: undefined,
-              height: undefined,
-              price: undefined as number | undefined,
-            },
-          ];
-
-    // 价格取订单 imgList 自带的 price；缺失时退回商品均价，避免展示成 ¥0.00
-    const count = Math.max(Number(order.goodsNum) || imgs.length || 1, 1);
-    const avgPrice = Number((Number(order.goodsPrice || 0) / count).toFixed(2));
-    const prices = imgs.map((img) => Number(img.price) || avgPrice);
-
-    // 自检：imgList 的 price 是「原价」时，合计应等于订单的商品金额 goodsPrice
-    const priceSum = Number(prices.reduce((sum, price) => sum + price, 0).toFixed(2));
-    const goodsPrice = Number(order.goodsPrice || 0);
-    if (goodsPrice > 0 && Math.abs(priceSum - goodsPrice) > 0.01) {
-      console.warn('[order-detail] imgList 价格合计与商品金额不一致:', { priceSum, goodsPrice });
+  const discountInfo = useMemo(() => {
+    if (!order) {
+      return { items: [] as OrderItem[], discountAmount: 0 };
     }
 
-    const discountedPrices = calcDiscountedPrices(prices);
+    const goodsNum = Math.max(Number(order.goodsNum) || 0, 1);
+    const rawImgs = order.imgList?.length ? order.imgList : [];
+    // 均价兜底：仅在 imgList 没带 price（或整单没有 imgList）时使用，避免展示成 ¥0.00
+    const avgPrice = Number(
+      (Number(order.goodsPrice || 0) / Math.max(goodsNum, rawImgs.length)).toFixed(2),
+    );
 
-    return imgs.map((img, i) => {
-      const { originalPrice, price, discountAmount: amount, discounted } = discountedPrices[i];
+    const goods = rawImgs.length
+      ? rawImgs.map((img, i) => ({
+          key: String(img.goodsId || img.pkId || i),
+          image: img.imgLink,
+          width: img.width,
+          height: img.height,
+          price: Number(img.price) || avgPrice,
+        }))
+      : Array.from({ length: goodsNum }, (_, i) => ({
+          key: `order-${i}`,
+          image: order.orderImg || '',
+          width: undefined as string | undefined,
+          height: undefined as string | undefined,
+          price: avgPrice,
+        }));
+
+    // 自检：imgList 的 price 是「原价」时，合计应等于订单的商品金额 goodsPrice
+    if (rawImgs.length && Number(order.goodsPrice) > 0) {
+      const priceSum = Number(goods.reduce((sum, g) => sum + g.price, 0).toFixed(2));
+      if (Math.abs(priceSum - Number(order.goodsPrice)) > 0.01) {
+        console.warn('[order-detail] imgList 价格合计与商品金额不一致:', {
+          priceSum,
+          goodsPrice: Number(order.goodsPrice),
+        });
+      }
+    }
+
+    const discountedPrices = calcDiscountedPrices(goods.map((g) => g.price));
+
+    const items = goods.map((g, i): OrderItem => {
+      const { originalPrice, price, discountAmount, discounted } = discountedPrices[i];
       return {
-        id: img.key,
+        id: g.key,
         name: order.orderTitle || '',
-        spec: img.width && img.height ? formatSizeLabel(img.width, img.height) : '',
+        spec: g.width && g.height ? formatSizeLabel(g.width, g.height) : '',
         quantity: 1,
         price,
         originalPrice,
-        discountAmount: amount,
+        discountAmount,
         discountTag: discounted ? '8折' : undefined,
-        image: img.image,
+        image: g.image,
       };
     });
+
+    const originalTotal = Number(
+      items.reduce((sum, item) => sum + item.originalPrice, 0).toFixed(2),
+    );
+    const discountedTotal = Number(items.reduce((sum, item) => sum + item.price, 0).toFixed(2));
+    const discountAmount = Number((originalTotal - discountedTotal).toFixed(2));
+
+    console.log('[order-detail] 优惠计算:', {
+      goodsNum,
+      prices: goods.map((g) => g.price),
+      originalTotal,
+      discountedTotal,
+      discountAmount,
+    });
+
+    return { items, discountAmount };
   }, [order]);
+
+  /** 优惠明细弹层的商品列表（与上方优惠金额同源，保证两者永远对得上） */
+  const discountPopupItems = discountInfo.items;
+  const discountAmount = discountInfo.discountAmount;
 
   const openDiscountPopup = useCallback(() => setDiscountPopupVisible(true), []);
   const closeDiscountPopup = useCallback(() => setDiscountPopupVisible(false), []);
