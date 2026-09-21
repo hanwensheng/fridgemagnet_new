@@ -41,7 +41,9 @@ export default function OrderConfirm() {
               <Text className='order-total-price'>¥ {finalTotal.toFixed(2)}</Text>
             </View>
             <View className='order-total-row'>
-              <Text className='order-total-count'>共 {totalCount} 件</Text>
+              <Text className='order-total-count'>
+                共 <Text className='order-total-count-num'>{totalCount}</Text> 件
+              </Text>
               {isGroup && (
                 <View className='order-coupon-entry' onClick={toggleCouponPopup}>
                   <Text className='order-coupon-text'>优惠 -¥{totalDiscount.toFixed(2)} 明细</Text>

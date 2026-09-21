@@ -103,7 +103,9 @@ export default function CouponDetailPopup({
                   <Text className='coupon-detail-total-price'>¥ {totalPrice.toFixed(2)}</Text>
                 </View>
                 <View className='coupon-detail-total-row'>
-                  <Text className='coupon-detail-total-count'>共 {totalCount} 件</Text>
+                  <Text className='coupon-detail-total-count'>
+                    共 <Text className='coupon-detail-total-count-num'>{totalCount}</Text> 件
+                  </Text>
                   <View className='coupon-detail-entry' onClick={onClose}>
                     <Text className='coupon-detail-entry-text'>
                       优惠 -¥{totalDiscount.toFixed(2)} 明细
