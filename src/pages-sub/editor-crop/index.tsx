@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { View, Text, Image, Canvas } from '@tarojs/components';
 import BasePage from '@/components/base-page';
 import IconClose from '@/assets/svgs/icon_close2.svg';
@@ -9,6 +10,22 @@ import { useEditorCropLogic, TABS, ROTATE_ACTIONS } from './index.logic';
 import './index.scss';
 
 export default function EditorCrop() {
+  // 刻度线是静态的：缓存成同一批 element，拖动时 React 直接跳过这 201 个节点的 diff
+  const rulerMarks = useMemo(
+    () =>
+      Array.from({ length: 201 }).map((_, i) => {
+        const isMajor = (i - 100) % 10 === 0;
+        const isCenter = i === 100;
+        return (
+          <View
+            key={i}
+            className={`ruler-mark ${isCenter ? 'ruler-mark--center' : ''} ${isMajor ? 'ruler-mark--major' : ''}`}
+          />
+        );
+      }),
+    [],
+  );
+
   const {
     activeTab,
     setActiveTab,
@@ -125,9 +142,10 @@ export default function EditorCrop() {
           </View>
         </View>
 
-        {/* 刻度尺 — 滑动控制缩放/旋转 */}
+        {/* 刻度尺 — 滑动控制缩放/旋转（catchMove 避免拖动时冒泡给页面手势导致图片跟着移动） */}
         <View
           className={`ruler${rulerOffset !== 0 ? ' ruler--active' : ''}`}
+          catchMove
           onTouchStart={handleRulerTouchStart}
           onTouchMove={handleRulerTouchMove}
           onTouchEnd={handleRulerTouchEnd}
@@ -139,16 +157,7 @@ export default function EditorCrop() {
               className='ruler-marks'
               style={{ transform: `translateX(calc(-50% + ${rulerOffset}px))` }}
             >
-              {Array.from({ length: 201 }).map((_, i) => {
-                const isMajor = (i - 100) % 10 === 0;
-                const isCenter = i === 100;
-                return (
-                  <View
-                    key={i}
-                    className={`ruler-mark ${isCenter ? 'ruler-mark--center' : ''} ${isMajor ? 'ruler-mark--major' : ''}`}
-                  />
-                );
-              })}
+              {rulerMarks}
             </View>
           </View>
           <Text className='ruler-value'>{rulerValue}</Text>
@@ -156,7 +165,7 @@ export default function EditorCrop() {
 
         {/* 旋转快捷操作 */}
         {activeTab === 'rotate' && (
-          <View className='rotate-actions'>
+          <View className='rotate-actions' catchMove>
             {ROTATE_ACTIONS.map((action) => (
               <View
                 key={action.id}

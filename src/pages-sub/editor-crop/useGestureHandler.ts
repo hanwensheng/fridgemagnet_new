@@ -14,7 +14,13 @@ interface GestureOptions {
   snapThreshold?: number;
   onScaleBtnStart?: () => void;
   onRotateBtnStart?: () => void;
+  /** 旋转轴心（页面坐标）。返回 null 时退化为水平位移驱动 */
+  getRotateCenter?: () => { x: number; y: number } | null;
 }
+
+/** 触点相对轴心的角度（度，屏幕坐标系：顺时针为正） */
+const angleToCenter = (cx: number, cy: number, center: { x: number; y: number }) =>
+  (Math.atan2(cy - center.y, cx - center.x) * 180) / Math.PI;
 
 /**
  * 通用手势处理 Hook
@@ -34,6 +40,7 @@ export function useGestureHandler(state: TransformState, options: GestureOptions
     lastScale: 1,
     startAngle: 0,
     lastRotate: 0,
+    rotateCenter: null as { x: number; y: number } | null,
     isPinching: false,
     startPinchAngle: 0,
     isSnapped: false,
@@ -206,24 +213,37 @@ export function useGestureHandler(state: TransformState, options: GestureOptions
       options.onRotateBtnStart?.();
       const cx = e.touches[0].clientX || e.touches[0].x;
       const cy = e.touches[0].clientY || e.touches[0].y;
-      // 记录触摸起始角度（以触点自身为参考点）
-      touchRef.current.startAngle = (Math.atan2(cy, cx) * 180) / Math.PI;
-      // 同时记录第一次触点位置用于后续的旋转中心计算
       touchRef.current.startX = cx;
       touchRef.current.startY = cy;
       touchRef.current.lastRotate = state.rotate;
+      // 以图片中心为轴心：手指绕轴心划圈即可无限旋转（不再受屏幕宽度限制）
+      const center = options.getRotateCenter?.() ?? null;
+      touchRef.current.rotateCenter = center;
+      touchRef.current.startAngle = center ? angleToCenter(cx, cy, center) : 0;
     },
-    [state.rotate, options.onRotateBtnStart],
+    [state.rotate, options.onRotateBtnStart, options.getRotateCenter],
   );
 
   const onRotateBtnTouchMove = useCallback(
     (e: any) => {
       e.stopPropagation();
       const cx = e.touches[0].clientX || e.touches[0].x;
-      // 水平位移驱动旋转
-      const dx = cx - touchRef.current.startX;
-      const newRotate = touchRef.current.lastRotate - dx * 0.5;
-      onUpdate({ rotate: newRotate });
+      const cy = e.touches[0].clientY || e.touches[0].y;
+      const center = touchRef.current.rotateCenter;
+      if (center) {
+        // 环形手势：累加两次移动之间的角度增量，跨 ±180° 时折算，方向始终与手指一致
+        const angle = angleToCenter(cx, cy, center);
+        let delta = angle - touchRef.current.startAngle;
+        if (delta > 180) delta -= 360;
+        else if (delta < -180) delta += 360;
+        touchRef.current.startAngle = angle;
+        touchRef.current.lastRotate += delta;
+        onUpdate({ rotate: touchRef.current.lastRotate });
+      } else {
+        // 兜底：拿不到轴心时退回水平位移驱动
+        const dx = cx - touchRef.current.startX;
+        onUpdate({ rotate: touchRef.current.lastRotate - dx * 0.5 });
+      }
     },
     [onUpdate],
   );

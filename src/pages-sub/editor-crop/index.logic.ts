@@ -34,6 +34,12 @@ const MARK_COUNT = 201;
 const MARK_GAP = 4;
 const HALF_WIDTH = ((MARK_COUNT - 1) * MARK_GAP) / 2; // 400px
 
+/** 角度归一化到 (-180, 180]，避免连续旋转后数值无限增长导致刻度尺失灵 */
+const normalizeRotate = (deg: number) => {
+  const r = ((deg % 360) + 360) % 360; // [0, 360)
+  return r > 180 ? r - 360 : r;
+};
+
 export function useEditorCropLogic() {
   const [activeTab, setActiveTab] = useState<TabType>('zoom');
   const [imageUrl, setImageUrl] = useState<string>('');
@@ -61,8 +67,29 @@ export function useEditorCropLogic() {
   const [canvasVisible, setCanvasVisible] = useState(false);
   const [originalImageUrl, setOriginalImageUrl] = useState<string>('');
 
+  /** 旋转按钮手势轴心（裁剪区中心，页面坐标），由选择器查询得到 */
+  const rotateCenterRef = useRef<{ x: number; y: number } | null>(null);
+
+  const refreshRotateCenter = useCallback(() => {
+    Taro.createSelectorQuery()
+      .select('.crop-area')
+      .boundingClientRect()
+      .exec((res: any) => {
+        const rect = res?.[0];
+        if (!rect || !rect.width || !rect.height) return;
+        rotateCenterRef.current = {
+          x: rect.left + rect.width / 2,
+          y: rect.top + rect.height / 2,
+        };
+      });
+  }, []);
+
   const handleGestureUpdate = useCallback((partial: Partial<TransformState>) => {
-    setTransform((prev) => ({ ...prev, ...partial }));
+    setTransform((prev) => {
+      const next = { ...prev, ...partial };
+      if (partial.rotate !== undefined) next.rotate = normalizeRotate(partial.rotate);
+      return next;
+    });
   }, []);
 
   const handleGestureEnd = useCallback((_state: TransformState) => {}, []);
@@ -78,7 +105,19 @@ export function useEditorCropLogic() {
       onUpdate: handleGestureUpdate,
       onEnd: handleGestureEnd,
       onScaleBtnStart: () => setActiveTab('zoom'),
-      onRotateBtnStart: () => setActiveTab('rotate'),
+      onRotateBtnStart: () => {
+        setActiveTab('rotate');
+        refreshRotateCenter();
+      },
+      // 图片中心 = 裁剪区中心 + 平移量（与 frameGroupStyle 的坐标系一致）
+      getRotateCenter: () => {
+        const center = rotateCenterRef.current;
+        if (!center) return null;
+        return {
+          x: center.x + transform.translateX,
+          y: center.y + transform.translateY,
+        };
+      },
     },
   );
 
@@ -141,6 +180,12 @@ export function useEditorCropLogic() {
       });
     }
   }, []);
+
+  // 首次进入先量一次裁剪区中心，保证第一次拖旋转按钮就有正确轴心（之后每次按下会重新测量）
+  useEffect(() => {
+    const timer = setTimeout(refreshRotateCenter, 300);
+    return () => clearTimeout(timer);
+  }, [refreshRotateCenter]);
 
   /** 图片加载完成：获取自然尺寸，按最大 crop 维度 cap 到合理 CSS px 值 */
   const handleImageLoad = useCallback(
@@ -365,7 +410,8 @@ export function useEditorCropLogic() {
 
   const handleRotateAction = (action: (typeof ROTATE_ACTIONS)[number]) => {
     setTransform((prev) => {
-      if (action.rotation) return { ...prev, rotate: prev.rotate + action.rotation };
+      if (action.rotation)
+        return { ...prev, rotate: normalizeRotate(prev.rotate + action.rotation) };
       if (action.id === 'flipH') return { ...prev, flipH: !prev.flipH };
       return { ...prev, flipV: !prev.flipV };
     });
@@ -374,9 +420,19 @@ export function useEditorCropLogic() {
   // 刻度尺滑动控制
   const rulerDragRef = useRef({ startX: 0, startVal: 0, isDragging: false });
 
+  /**
+   * 刻度尺映射：让"刻度移动"与"手指位移"严格 1:1（刻度尺的物理直觉）。
+   * - 缩放是等比量，用对数映射：100px 行程 = 2 倍缩放，缩放范围 0.1~10 落在 ±332px 内，
+   *   不会像线性映射那样把"缩小半程"（1→0.1）挤在 54px 里（那时 1px 能变 11%）。
+   * - 旋转是线性量：1.25px/°，360° 恰好 = 450px = 9 个大格（大格间距 50px），
+   *   于是 ±180° 归一化换向时刻度整体平移 450px，图案与大格完全重合，视觉无缝。
+   */
+  const ZOOM_PX_PER_OCTAVE = 100;
+  const ROTATE_PX_PER_DEG = 1.25;
+
   const getRulerOffset = (s: number, r: number, tab: TabType) => {
-    if (tab === 'zoom') return -(s - 1) * 60;
-    return -r * 1.5;
+    if (tab === 'zoom') return -Math.log2(s) * ZOOM_PX_PER_OCTAVE;
+    return -r * ROTATE_PX_PER_DEG;
   };
 
   const rawOffset = getRulerOffset(scale, rotate, activeTab);
@@ -384,6 +440,8 @@ export function useEditorCropLogic() {
 
   const handleRulerTouchStart = useCallback(
     (e: any) => {
+      // 阻止冒泡到页面手势：否则拖刻度尺时图片会同时被单指平移（表现为"边旋转边移动"）
+      e.stopPropagation();
       const x = e.touches[0].clientX || e.touches[0].x;
       rulerDragRef.current = {
         startX: x,
@@ -396,21 +454,32 @@ export function useEditorCropLogic() {
 
   const handleRulerTouchMove = useCallback(
     (e: any) => {
+      e.stopPropagation();
       if (!rulerDragRef.current.isDragging) return;
+      const drag = rulerDragRef.current;
       const x = e.touches[0].clientX || e.touches[0].x;
-      const dx = x - rulerDragRef.current.startX;
+      const dx = x - drag.startX;
       if (activeTab === 'zoom') {
-        const newScale = Math.max(0.1, Math.min(10, rulerDragRef.current.startVal - dx * 0.05));
+        // 等比缩放：位移 → 倍数（与 ZOOM_PX_PER_OCTAVE 的刻度映射严格 1:1）
+        const raw = drag.startVal * Math.pow(2, -dx / ZOOM_PX_PER_OCTAVE);
+        const newScale = Math.max(0.1, Math.min(10, raw));
+        // 撞到缩放上下限时把锚点挪到边界，避免"手指往回走一大段数值却不动"的空拖
+        if (newScale !== raw) {
+          drag.startVal = newScale;
+          drag.startX = x;
+        }
         setTransform((prev) => ({ ...prev, scale: newScale }));
       } else {
-        const newRotate = Math.max(-360, Math.min(360, rulerDragRef.current.startVal - dx * 2));
+        // 只改角度、不动位置（中心点固定）；归一化换向处刻度图案重合，无跳变
+        const newRotate = normalizeRotate(drag.startVal - dx / ROTATE_PX_PER_DEG);
         setTransform((prev) => ({ ...prev, rotate: newRotate }));
       }
     },
     [activeTab],
   );
 
-  const handleRulerTouchEnd = useCallback(() => {
+  const handleRulerTouchEnd = useCallback((e: any) => {
+    e.stopPropagation();
     rulerDragRef.current.isDragging = false;
   }, []);
 
