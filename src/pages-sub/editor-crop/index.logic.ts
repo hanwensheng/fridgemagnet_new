@@ -67,6 +67,18 @@ export function useEditorCropLogic() {
   const [canvasVisible, setCanvasVisible] = useState(false);
   const [originalImageUrl, setOriginalImageUrl] = useState<string>('');
 
+  /**
+   * 最新 transform 的 ref。
+   * 旋转轴心要在"按下那一刻"读当前平移量，而读取方（手势 hook 的 touchstart）是
+   * 依赖函数引用更新的 —— 直接用闭包里的 transform 会让正确性依赖"函数每帧都换新"
+   * 这一隐式契约（一旦有人给它加 useCallback([]) 就会读到初始值）。
+   * 这里用 ref 显式承载最新值，读取方就可以是稳定引用。
+   */
+  const transformRef = useRef(transform);
+  useEffect(() => {
+    transformRef.current = transform;
+  }, [transform]);
+
   /** 旋转按钮手势轴心（裁剪区中心，页面坐标），由选择器查询得到 */
   const rotateCenterRef = useRef<{ x: number; y: number } | null>(null);
 
@@ -94,6 +106,25 @@ export function useEditorCropLogic() {
 
   const handleGestureEnd = useCallback((_state: TransformState) => {}, []);
 
+  const handleScaleBtnStart = useCallback(() => setActiveTab('zoom'), []);
+
+  /** 按下旋转按钮：切到旋转 tab，并重新测量轴心（引用稳定，避免手势 handler 每帧重建） */
+  const handleRotateBtnStart = useCallback(() => {
+    setActiveTab('rotate');
+    refreshRotateCenter();
+  }, [refreshRotateCenter]);
+
+  /**
+   * 旋转轴心 = 图片中心 = 裁剪区中心 + 平移量（与 frameGroupStyle 坐标系一致）。
+   * 读的是 transformRef，所以本函数可以保持稳定引用，不依赖"每帧换新"。
+   */
+  const getRotateCenter = useCallback(() => {
+    const center = rotateCenterRef.current;
+    if (!center) return null;
+    const { translateX, translateY } = transformRef.current;
+    return { x: center.x + translateX, y: center.y + translateY };
+  }, []);
+
   const { handlers, showVGuide, showHGuide } = useGestureHandler(
     {
       scale: transform.scale,
@@ -104,20 +135,9 @@ export function useEditorCropLogic() {
     {
       onUpdate: handleGestureUpdate,
       onEnd: handleGestureEnd,
-      onScaleBtnStart: () => setActiveTab('zoom'),
-      onRotateBtnStart: () => {
-        setActiveTab('rotate');
-        refreshRotateCenter();
-      },
-      // 图片中心 = 裁剪区中心 + 平移量（与 frameGroupStyle 的坐标系一致）
-      getRotateCenter: () => {
-        const center = rotateCenterRef.current;
-        if (!center) return null;
-        return {
-          x: center.x + transform.translateX,
-          y: center.y + transform.translateY,
-        };
-      },
+      onScaleBtnStart: handleScaleBtnStart,
+      onRotateBtnStart: handleRotateBtnStart,
+      getRotateCenter,
     },
   );
 

@@ -27,7 +27,15 @@ const angleToCenter = (cx: number, cy: number, center: { x: number; y: number })
  * 支持：单指拖拽、双指缩放+旋转、缩放按钮拖拽、旋转按钮拖拽、磁吸对齐
  */
 export function useGestureHandler(state: TransformState, options: GestureOptions) {
-  const { enableSnap = true, snapThreshold = 8, onUpdate, onEnd } = options;
+  const {
+    enableSnap = true,
+    snapThreshold = 8,
+    onUpdate,
+    onEnd,
+    onScaleBtnStart,
+    onRotateBtnStart,
+    getRotateCenter,
+  } = options;
   const [showVGuide, setShowVGuide] = useState(false);
   const [showHGuide, setShowHGuide] = useState(false);
 
@@ -177,12 +185,12 @@ export function useGestureHandler(state: TransformState, options: GestureOptions
   const onScaleBtnTouchStart = useCallback(
     (e: any) => {
       e.stopPropagation();
-      options.onScaleBtnStart?.();
+      onScaleBtnStart?.();
       touchRef.current.startX = e.touches[0].clientX || e.touches[0].x;
       touchRef.current.startY = e.touches[0].clientY || e.touches[0].y;
       touchRef.current.lastScale = state.scale;
     },
-    [state.scale, options.onScaleBtnStart],
+    [state.scale, onScaleBtnStart],
   );
 
   const onScaleBtnTouchMove = useCallback(
@@ -210,18 +218,18 @@ export function useGestureHandler(state: TransformState, options: GestureOptions
   const onRotateBtnTouchStart = useCallback(
     (e: any) => {
       e.stopPropagation();
-      options.onRotateBtnStart?.();
+      onRotateBtnStart?.();
       const cx = e.touches[0].clientX || e.touches[0].x;
       const cy = e.touches[0].clientY || e.touches[0].y;
       touchRef.current.startX = cx;
       touchRef.current.startY = cy;
       touchRef.current.lastRotate = state.rotate;
       // 以图片中心为轴心：手指绕轴心划圈即可无限旋转（不再受屏幕宽度限制）
-      const center = options.getRotateCenter?.() ?? null;
+      const center = getRotateCenter?.() ?? null;
       touchRef.current.rotateCenter = center;
       touchRef.current.startAngle = center ? angleToCenter(cx, cy, center) : 0;
     },
-    [state.rotate, options.onRotateBtnStart, options.getRotateCenter],
+    [state.rotate, onRotateBtnStart, getRotateCenter],
   );
 
   const onRotateBtnTouchMove = useCallback(
