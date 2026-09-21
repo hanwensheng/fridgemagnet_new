@@ -71,7 +71,7 @@ function getLocalImage(width: string, height: string): string {
  * 底部促销文案（写死，不再依赖 getPrice 接口）
  * 规则：满 40 元包邮；订单 ≥2 件时第 2 件起 8 折（最低价那件保持原价）
  */
-const PRICE_TIP = '满40元包邮，第2件起享8折优惠';
+const PRICE_TIP = '满40元包邮；订单≥2件商品第2件起享受8折优惠';
 
 export default function SpecSelectPopup({ visible, onClose, onConfirm }: SpecSelectPopupProps) {
   const [items, setItems] = useState<SpecItemState[]>([]);
