@@ -5,7 +5,7 @@ import WxIcon from '@/assets/svgs/icon_wx.svg';
 import LocationIcon from '@/assets/svgs/icon_location.svg';
 import CloseIcon from '@/assets/svgs/icon_close.svg';
 import CopyIcon from '@/assets/svgs/icon_address_copy.svg';
-import { useAddAddressLogic } from './index.logic';
+import { useAddAddressLogic, MAX_NAME_LENGTH, MAX_DETAIL_LENGTH } from './index.logic';
 
 function FormRow({
   label,
@@ -95,6 +95,7 @@ export default function AddAddressPage() {
             className='flex-1 text-sm text-black'
             placeholder='请输入收货人姓名'
             placeholderClass='text-black/30'
+            maxlength={MAX_NAME_LENGTH}
             value={form.name}
             onInput={(e) => handleNameChange(e.detail.value)}
           />
@@ -143,6 +144,7 @@ export default function AddAddressPage() {
             className='flex-1 text-sm text-black'
             placeholder='社区、门牌号等'
             placeholderClass='text-black/30'
+            maxlength={MAX_DETAIL_LENGTH}
             value={form.detail}
             onInput={(e) => handleDetailChange(e.detail.value)}
           />

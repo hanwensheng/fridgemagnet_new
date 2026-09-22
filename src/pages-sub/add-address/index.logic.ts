@@ -4,6 +4,11 @@ import { buildRegionTree } from '@/api/modules/region-tree';
 import { addressApi } from '@/api/modules/address';
 import type { CascaderValue } from '@nutui/nutui-react-taro';
 
+/** 收货人姓名最大字数 */
+export const MAX_NAME_LENGTH = 20;
+/** 详细地址最大字数 */
+export const MAX_DETAIL_LENGTH = 50;
+
 export interface AddressForm {
   name: string;
   phone: string;
@@ -72,7 +77,7 @@ export function useAddAddressLogic() {
   }, []);
 
   const handleNameChange = useCallback((value: string) => {
-    setForm((prev) => ({ ...prev, name: value }));
+    setForm((prev) => ({ ...prev, name: value.slice(0, MAX_NAME_LENGTH) }));
   }, []);
 
   const handlePhoneChange = useCallback((value: string) => {
@@ -94,7 +99,7 @@ export function useAddAddressLogic() {
   }, []);
 
   const handleDetailChange = useCallback((value: string) => {
-    setForm((prev) => ({ ...prev, detail: value }));
+    setForm((prev) => ({ ...prev, detail: value.slice(0, MAX_DETAIL_LENGTH) }));
   }, []);
 
   const handleDefaultToggle = useCallback(() => {
@@ -114,7 +119,7 @@ export function useAddAddressLogic() {
         Taro.hideLoading();
         if (!parsed) {
           Taro.showToast({ title: '未识别到地址信息', icon: 'none' });
-          setForm((prev) => ({ ...prev, detail: data }));
+          setForm((prev) => ({ ...prev, detail: data.slice(0, MAX_DETAIL_LENGTH) }));
           return;
         }
         const regionValue =
@@ -123,19 +128,19 @@ export function useAddAddressLogic() {
             : [];
         setForm((prev) => ({
           ...prev,
-          name: parsed.name || prev.name,
+          name: (parsed.name || prev.name).slice(0, MAX_NAME_LENGTH),
           phone: String(parsed.phone || prev.phone)
             .replace(/\D/g, '')
             .slice(0, 11),
           region: regionValue.length > 0 ? regionValue.join(' ') : prev.region,
           regionValue: regionValue.length > 0 ? regionValue : prev.regionValue,
-          detail: parsed.detail || data,
+          detail: (parsed.detail || data).slice(0, MAX_DETAIL_LENGTH),
         }));
         Taro.showToast({ title: '已识别并填充', icon: 'success' });
       } catch {
         Taro.hideLoading();
         // 识别失败兜底：粘贴到详细地址
-        setForm((prev) => ({ ...prev, detail: data }));
+        setForm((prev) => ({ ...prev, detail: data.slice(0, MAX_DETAIL_LENGTH) }));
         Taro.showToast({ title: '未识别到地址信息', icon: 'none' });
       }
     } catch {
@@ -149,11 +154,11 @@ export function useAddAddressLogic() {
         const regionValue = [res.provinceName, res.cityName, res.countyName];
         setForm((prev) => ({
           ...prev,
-          name: res.userName,
+          name: (res.userName || '').slice(0, MAX_NAME_LENGTH),
           phone: res.telNumber.replace(/\D/g, '').slice(0, 11),
           region: regionValue.join(' '),
           regionValue,
-          detail: res.detailInfo,
+          detail: (res.detailInfo || '').slice(0, MAX_DETAIL_LENGTH),
         }));
       },
       fail(err) {
