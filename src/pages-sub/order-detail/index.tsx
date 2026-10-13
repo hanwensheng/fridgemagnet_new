@@ -34,6 +34,7 @@ export default function OrderDetail() {
     handleRefund,
     refundCountdown,
     handleDelete,
+    handleConfirmReceipt,
     handleEditAddress,
     handleViewLogistics,
     handlePay,
@@ -98,6 +99,12 @@ export default function OrderDetail() {
               onClick={handleViewLogistics}
             >
               <Text className='order-detail-btn-text order-detail-btn-text--default'>查看物流</Text>
+            </View>
+            <View
+              className='order-detail-btn order-detail-btn--confirm'
+              onClick={handleConfirmReceipt}
+            >
+              <Text className='order-detail-btn-text'>确认收货</Text>
             </View>
           </View>
         </View>

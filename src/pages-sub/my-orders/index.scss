@@ -325,6 +325,14 @@
     background: #fff;
     border: 1px solid rgba(0, 0, 0, 0.1);
   }
+
+  /* 确认收货：黑底白字，padding 沿用基础的左右对称 0 10px；
+     同色 1px 边框是为了跟白底按钮盒子尺寸完全一致（border 参与计算，宽高各补 2px）
+     （--primary 的 0 8px 0 10px 是给「立即支付 + 倒计时」拼 105px 宽度调的） */
+  &--confirm {
+    background: #1c1c1e;
+    border: 1px solid #1c1c1e;
+  }
 }
 
 .order-action-text {

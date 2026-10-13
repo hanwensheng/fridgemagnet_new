@@ -284,6 +284,25 @@ export function useOrderDetailLogic() {
     }
   }, [order]);
 
+  /** 确认收货：成功后订单转已完成，回列表并刷新（与取消/退款/删除同一套路） */
+  const handleConfirmReceipt = useCallback(async () => {
+    if (!order) return;
+    const res = await Taro.showModal({
+      title: '提示',
+      content:
+        '为了保证您的售后权益，建议收到商品确认无误后再点击确认收货，请问您确定要确认收货吗？',
+    });
+    if (!res.confirm) return;
+    try {
+      await orderApi.confirmReceiptOnline(order.pkId);
+      Taro.showToast({ title: '已确认收货', icon: 'success' });
+      Taro.eventCenter.trigger('orders:refresh');
+      Taro.navigateBack().catch(() => {});
+    } catch {
+      // 接口内部已展示错误
+    }
+  }, [order]);
+
   const handleDelete = useCallback(async () => {
     if (!order) return;
     const res = await Taro.showModal({ title: '提示', content: '确定删除该订单吗？' });
@@ -379,6 +398,7 @@ export function useOrderDetailLogic() {
     handleRefund,
     refundCountdown,
     handleDelete,
+    handleConfirmReceipt,
     handleEditAddress,
     handleViewLogistics,
     handlePay,

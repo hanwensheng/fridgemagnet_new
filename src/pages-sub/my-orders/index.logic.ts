@@ -138,6 +138,23 @@ export function useMyOrdersLogic() {
     }
   };
 
+  /** 确认收货 */
+  const handleConfirmReceipt = async (pkId: number) => {
+    const res = await Taro.showModal({
+      title: '提示',
+      content:
+        '为了保证您的售后权益，建议收到商品确认无误后再点击确认收货，请问您确定要确认收货吗？',
+    });
+    if (!res.confirm) return;
+    try {
+      await orderApi.confirmReceiptOnline(pkId);
+      Taro.showToast({ title: '已确认收货', icon: 'success' });
+      fetchOrders();
+    } catch {
+      // 接口内部已展示错误
+    }
+  };
+
   const handleDelete = async (pkId: number) => {
     const res = await Taro.showModal({ title: '提示', content: '确定删除该订单吗？' });
     if (!res.confirm) return;
@@ -287,6 +304,7 @@ export function useMyOrdersLogic() {
     handleCancel,
     handleRefund,
     handleDelete,
+    handleConfirmReceipt,
     handleViewLogistics,
     handlePayOrder,
     getOrderImage,

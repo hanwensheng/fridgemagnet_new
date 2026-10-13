@@ -23,6 +23,7 @@ export default function MyOrders() {
     handleCancel,
     handleRefund,
     handleDelete,
+    handleConfirmReceipt,
     handleViewLogistics,
     handlePayOrder,
     getOrderImage,
@@ -124,6 +125,15 @@ export default function MyOrders() {
               }}
             >
               <Text className='order-action-text order-action-text--default'>查看物流</Text>
+            </View>
+            <View
+              className='order-action-btn order-action-btn--confirm'
+              onClick={(e) => {
+                e.stopPropagation();
+                handleConfirmReceipt(order.pkId);
+              }}
+            >
+              <Text className='order-action-text'>确认收货</Text>
             </View>
           </View>
         );
