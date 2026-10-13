@@ -88,9 +88,11 @@ export default function OrderConfirm() {
                   <Text className='order-item-name'>{item.name}</Text>
                   <Text className='order-item-spec'>{item.spec}</Text>
                 </View>
-                <Text className='order-item-count'>共 {item.quantity} 件</Text>
+                <View className='order-item-bottom'>
+                  <Text className='order-item-count'>共 {item.quantity} 件</Text>
+                  <Text className='order-item-price'>¥{item.price.toFixed(2)}</Text>
+                </View>
               </View>
-              <Text className='order-item-price'>¥{item.price.toFixed(2)}</Text>
             </View>
           </View>
         ))}
