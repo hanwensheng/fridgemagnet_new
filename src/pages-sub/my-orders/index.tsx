@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro, { ENV_TYPE } from '@tarojs/taro';
 import BasePage from '@/components/base-page';
+import ProductThumb from '@/components/product-thumb';
 import IconSingle from '@/assets/svgs/icon_single.svg';
 import IconGroup from '@/assets/svgs/icon_group.svg';
 import IconCar from '@/assets/svgs/icon_car_black.svg';
@@ -196,6 +197,11 @@ export default function MyOrders() {
               const statusText = STATUS_TEXT_MAP[status] || '未知';
               const isHighlight = HIGHLIGHT_STATUSES.has(status);
               const mainImage = getOrderImage(order);
+              const firstImg = order.imgList?.[0];
+              const singleSpec =
+                firstImg?.width && firstImg?.height
+                  ? formatSizeLabel(firstImg.width, firstImg.height)
+                  : '';
 
               return (
                 <View
@@ -227,10 +233,13 @@ export default function MyOrders() {
                           <View className='order-images-scroll-inner'>
                             {(order.imgList || []).map((img, idx) => (
                               <View key={img.pkId || idx} className='order-image-wrap'>
-                                <Image
-                                  className='order-image'
-                                  src={img.imgLink}
-                                  mode='aspectFill'
+                                <ProductThumb
+                                  spec={
+                                    img.width && img.height
+                                      ? formatSizeLabel(img.width, img.height)
+                                      : ''
+                                  }
+                                  image={img.imgLink}
                                 />
                                 <View className='order-image-badge'>
                                   <Text className='order-image-badge-text'>x1</Text>
@@ -245,15 +254,11 @@ export default function MyOrders() {
                       </View>
                     ) : (
                       <View className='order-single-item'>
-                        <Image className='order-single-image' src={mainImage} mode='aspectFill' />
+                        <ProductThumb spec={singleSpec} image={mainImage} />
                         <View className='order-single-info'>
                           <View className='order-single-title-wrap'>
                             <Text className='order-single-name'>{order.orderTitle || ''}</Text>
-                            {order.imgList?.[0]?.width && order.imgList?.[0]?.height && (
-                              <Text className='order-single-spec'>
-                                {formatSizeLabel(order.imgList[0].width, order.imgList[0].height)}
-                              </Text>
-                            )}
+                            {singleSpec && <Text className='order-single-spec'>{singleSpec}</Text>}
                           </View>
                           <View className='order-single-count-row'>
                             <Text className='order-single-count'>共 {order.goodsNum} 件</Text>

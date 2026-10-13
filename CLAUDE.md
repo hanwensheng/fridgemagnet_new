@@ -82,6 +82,7 @@ fridgemagnet_new/
 │   │   ├── custom-tab-bar/     # H5 端自定义 TabBar
 │   │   ├── spec-select-popup/  # 规格选择弹层
 │   │   ├── coupon-detail-popup/# 优惠券详情弹层
+│   │   ├── product-thumb/      # 商品缩略图（80x80 色块 + 花边预览）
 │   │   └── pay-success-popup/  # 支付成功弹层
 │   ├── api/                    # API 层
 │   │   ├── request.ts          # 核心请求函数 + 图片上传

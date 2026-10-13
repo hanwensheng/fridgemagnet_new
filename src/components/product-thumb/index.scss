@@ -1,0 +1,72 @@
+/* 商品缩略图：80x80 色块，内层「花边 + 商品图」整体等比缩放居中。
+   内边距 4px → 内容区 72px；花边最大边 289px（见 pages-sub/editor/index.scss 预览尺寸），
+   故缩放系数 = 72 / 289 */
+.product-thumb {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  background: #f4f4f5;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.product-thumb--plain {
+  display: block;
+}
+
+.product-thumb-preview {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.24913);
+}
+
+.product-thumb-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* 商品图内嵌位置：花边四周留 18px（3*4.5 单独设计，见下） */
+.product-thumb-inner {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 1;
+}
+
+.product-thumb-img {
+  width: 100%;
+  height: 100%;
+  /* 与 editor 页一致（该值在缩放前坐标系里，会随整体一起变小） */
+  border-radius: 4px;
+}
+
+/* 各规格花边原始尺寸，与 editor 页预览保持一致，改那边记得同步 */
+.product-thumb-preview--85x4 {
+  width: 289px;
+  height: 155px;
+}
+.product-thumb-preview--75x55 {
+  width: 235px;
+  height: 289px;
+}
+.product-thumb-preview--34x45 {
+  width: 188px;
+  height: 289px;
+}
+.product-thumb-preview--155x1162 {
+  width: 289px;
+  height: 226px;
+}
+
+/* 3*4.5 的商品图上下不居中（上 44px、下 17px） */
+.product-thumb-preview--34x45 .product-thumb-inner {
+  top: 44px;
+  bottom: 17px;
+}

@@ -3,6 +3,7 @@ import BasePage from '@/components/base-page';
 import PaySuccessPopup from '@/components/pay-success-popup';
 import CouponDetailPopup from '@/components/coupon-detail-popup';
 import OrderTotalBar from '@/components/order-total-bar';
+import ProductThumb from '@/components/product-thumb';
 import IconRight from '@/assets/svgs/icon_right2.svg';
 import IconAddAddress from '@/assets/svgs/icon_add_addres.svg';
 import IconSingle from '@/assets/svgs/icon_single.svg';
@@ -82,7 +83,7 @@ export default function OrderConfirm() {
               </View>
             </View>
             <View className='order-item-body'>
-              <Image className='order-item-image' src={item.image} mode='aspectFill' />
+              <ProductThumb spec={item.spec} image={item.previewImage || ''} />
               <View className='order-item-info'>
                 <View className='order-item-detail'>
                   <Text className='order-item-name'>{item.name}</Text>

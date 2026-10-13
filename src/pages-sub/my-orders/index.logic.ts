@@ -155,10 +155,13 @@ export function useMyOrdersLogic() {
     Taro.navigateTo({ url: '/pages-sub/logistics-detail/index' });
   };
 
+  /**
+   * 单品订单主图：优先用户上传的设计图（缩略图要套花边框，必须是设计图），
+   * 老订单没有 imgList 时才回退 orderImg。
+   */
   const getOrderImage = (order: MerchantOrder) => {
-    if (order.orderImg) return order.orderImg;
     if (order.imgList && order.imgList.length > 0) return order.imgList[0].imgLink;
-    return '';
+    return order.orderImg || '';
   };
 
   const isGroupOrder = (order: MerchantOrder) => order.goodsNum > 1;

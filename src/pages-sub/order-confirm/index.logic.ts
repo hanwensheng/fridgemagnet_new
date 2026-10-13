@@ -19,6 +19,8 @@ export interface OrderItem {
   discountAmount: number;
   discountTag?: string;
   image: string;
+  /** 带花边的预览图（uploadMap），确认页缩略图用；其他页面构造 OrderItem 时可省略 */
+  previewImage?: string;
 }
 
 interface OrderData {
@@ -110,6 +112,7 @@ function buildOrderItems(data: OrderData, freshPrices: FreshPriceMap | null): Or
       discountAmount,
       discountTag: discounted ? '8折' : undefined,
       image: data.uploadFileMap[spec.index] || ProductImg,
+      previewImage: data.uploadMap[spec.index] || '',
     };
   });
 

@@ -2,6 +2,7 @@ import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import BasePage from '@/components/base-page';
 import CouponDetailPopup from '@/components/coupon-detail-popup';
+import ProductThumb from '@/components/product-thumb';
 import IconSingle from '@/assets/svgs/icon_single.svg';
 import IconGroup from '@/assets/svgs/icon_group.svg';
 import IconCar from '@/assets/svgs/icon_car_black.svg';
@@ -9,6 +10,7 @@ import IconRight from '@/assets/svgs/icon_right2.svg';
 import IconRedRight from '@/assets/svgs/icon_red_right.svg';
 import IconLightning from '@/assets/svgs/icon_lightning.svg';
 import { OrderStatus } from '@/api/modules/order';
+import { formatSizeLabel } from '@/utils/format';
 import { useOrderDetailLogic } from './index.logic';
 import './index.scss';
 
@@ -185,7 +187,10 @@ export default function OrderDetail() {
                 <View className='order-detail-images-scroll-inner'>
                   {(order.imgList || []).map((img, idx) => (
                     <View key={img.pkId || idx} className='order-detail-image-wrap'>
-                      <Image className='order-detail-image' src={img.imgLink} mode='aspectFill' />
+                      <ProductThumb
+                        spec={img.width && img.height ? formatSizeLabel(img.width, img.height) : ''}
+                        image={img.imgLink}
+                      />
                       <View className='order-detail-image-badge'>
                         <Text className='order-detail-image-badge-text'>x1</Text>
                       </View>
@@ -199,10 +204,9 @@ export default function OrderDetail() {
             </View>
           ) : (
             <View className='order-detail-goods-body'>
-              <Image
-                className='order-detail-goods-image'
-                src={order.orderImg || order.imgList?.[0]?.imgLink || ''}
-                mode='aspectFill'
+              <ProductThumb
+                spec={specText}
+                image={order.imgList?.[0]?.imgLink || order.orderImg || ''}
               />
               <View className='order-detail-goods-info'>
                 <View className='order-detail-goods-title-wrap'>

@@ -3,6 +3,7 @@ import { View, Text, Image, ScrollView } from '@tarojs/components';
 import { Popup } from '@nutui/nutui-react-taro';
 import IconClose from '@/assets/svgs/icon_popup_close.svg';
 import OrderTotalBar from '@/components/order-total-bar';
+import ProductThumb from '@/components/product-thumb';
 import type { OrderItem } from '@/pages-sub/order-confirm/index.logic';
 
 import './index.scss';
@@ -50,7 +51,7 @@ export default function CouponDetailPopup({
       round
       closeable={false}
       className='coupon-detail-popup'
-      style={{ backgroundColor: '#f6f6f6' }}
+      style={{ backgroundColor: '#fff' }}
       zIndex={1000}
     >
       <View className='coupon-detail-content'>
@@ -62,7 +63,7 @@ export default function CouponDetailPopup({
           {sortedItems.map((item, index) => (
             // 同一规格可能被下单多次（id 相同），用下标兜底保证 key 唯一
             <View key={`${item.id}-${index}`} className='coupon-detail-item'>
-              <Image className='coupon-detail-image' src={item.image} mode='aspectFill' />
+              <ProductThumb spec={item.spec} image={item.previewImage || item.image} />
               <View className='coupon-detail-info'>
                 {item.discountTag ? (
                   <View className='coupon-detail-tag-row'>
@@ -100,7 +101,10 @@ export default function CouponDetailPopup({
           // 与确认订单页底栏共用同一份实现，合计金额直接透传，保证两处一致
           <OrderTotalBar
             className='coupon-detail-footer'
-            style={{ marginBottom: 'max(env(safe-area-inset-bottom), 34px)' }}
+            style={{
+              backgroundColor: '#fff',
+              marginBottom: 'max(env(safe-area-inset-bottom), 34px)',
+            }}
             totalAmount={totalAmount}
             totalDiscount={totalDiscount}
             totalCount={totalCount}
