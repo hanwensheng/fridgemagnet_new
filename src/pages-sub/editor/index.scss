@@ -4,6 +4,8 @@
   padding: 20px;
   box-sizing: border-box;
   flex: 1;
+  /* 免责声明按底部定位，需要它做定位父级（见 .copyright-hint） */
+  position: relative;
 }
 
 .nav-back-btn {
@@ -292,12 +294,15 @@
   white-space: nowrap;
 }
 
-/* 图片版权免责声明：hint-bubble 下方 37px，整行居中，点击弹告知弹窗 */
+/* 图片版权免责声明：按底部定位（底部栏上方 24px），整行居中，点击弹告知弹窗 */
 .copyright-hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 37px;
 }
 
 .copyright-hint-icon {
