@@ -1,0 +1,77 @@
+/* 告知型确认弹窗（尺寸/颜色沿用 keaiji_miniprogram 的 confirm-dialog） */
+
+.confirm-dialog-mask {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  /* 高于页面固定层：BasePage 底部栏 100、NutUI 弹层 1000 */
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.confirm-dialog {
+  /* 项目没有全局 border-box reset，带 padding 的卡片必须自己写 */
+  box-sizing: border-box;
+  display: flex;
+  width: 300px;
+  padding: 20px;
+  flex-direction: column;
+  align-items: flex-start;
+  border-radius: 8px;
+  background: #fff;
+}
+
+/* 标题行：warn 图标 + 标题 */
+.confirm-dialog-head {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.confirm-dialog-warn {
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.confirm-dialog-title {
+  margin-left: 10px;
+  font-size: 18px;
+  line-height: 20px;
+  color: #1e1e1e;
+}
+
+.confirm-dialog-text {
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(30, 30, 30, 0.5);
+  margin: 12px 0 20px;
+}
+
+/* 按钮靠右下：卡片是 align-items: flex-start，这里用 align-self 贴右下 */
+.confirm-dialog-actions {
+  align-self: flex-end;
+}
+
+/* 按钮：高 38 + 左右 padding 20，宽度跟着文案走（圆角取高度一半，正好胶囊） */
+.confirm-dialog-btn {
+  box-sizing: border-box;
+  display: flex;
+  flex-shrink: 0;
+  height: 38px;
+  padding: 0 20px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 19px;
+  background: #262628;
+}
+
+.confirm-dialog-btn-text {
+  font-size: 14px;
+  color: #fff;
+}

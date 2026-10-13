@@ -292,6 +292,29 @@
   white-space: nowrap;
 }
 
+/* 图片版权免责声明：hint-bubble 下方 37px，整行居中，点击弹告知弹窗 */
+.copyright-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 37px;
+}
+
+.copyright-hint-icon {
+  width: 12px;
+  height: 12px;
+  flex: none;
+}
+
+.copyright-hint-text {
+  margin-left: 4px;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 12px;
+  color: #945317;
+  text-decoration: underline;
+}
+
 .menu-area {
   position: absolute;
   left: 20px;

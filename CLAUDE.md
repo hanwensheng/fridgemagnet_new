@@ -83,6 +83,7 @@ fridgemagnet_new/
 │   │   ├── spec-select-popup/  # 规格选择弹层
 │   │   ├── coupon-detail-popup/# 优惠券详情弹层
 │   │   ├── product-thumb/      # 商品缩略图（80x80 色块 + 花边预览）
+│   │   ├── confirm-dialog/     # 告知型确认弹窗（图标 + 标题 + 一句话 + 单按钮）
 │   │   └── pay-success-popup/  # 支付成功弹层
 │   ├── api/                    # API 层
 │   │   ├── request.ts          # 核心请求函数 + 图片上传

@@ -3,7 +3,9 @@ import Taro from '@tarojs/taro';
 import { useMemo } from 'react';
 import BasePage from '@/components/base-page';
 import SpecSelectPopup from '@/components/spec-select-popup';
+import ConfirmDialog from '@/components/confirm-dialog';
 import IconCheck from '@/assets/svgs/icon_check.svg';
+import IconWarning from '@/assets/svgs/icon_warning.svg';
 import IconUpload from '@/assets/svgs/icon_upload.svg';
 import IconMenu from '@/assets/svgs/icon_menu.svg';
 import IconSave from '@/assets/svgs/icon_save.svg';
@@ -30,6 +32,9 @@ export default function Editor() {
     allUploaded,
     currentHasImage,
     exitPopupVisible,
+    disclaimerVisible,
+    openDisclaimer,
+    closeDisclaimer,
     handleChooseImage,
     handleMenuClick,
     handleSpecAdd,
@@ -244,6 +249,12 @@ export default function Editor() {
             <Text className='hint-text'>{activeItem.intro}</Text>
           </View>
         )}
+
+        {/* 图片版权免责声明 — 点击弹出告知弹窗 */}
+        <View className='copyright-hint' onClick={openDisclaimer}>
+          <Image className='copyright-hint-icon' src={IconWarning} />
+          <Text className='copyright-hint-text'>图片版权免责声明</Text>
+        </View>
       </View>
 
       <SpecSelectPopup
@@ -251,6 +262,14 @@ export default function Editor() {
         visible={specPopupVisible}
         onClose={handleSpecPopupClose}
         onConfirm={handleSpecAdd}
+      />
+
+      <ConfirmDialog
+        visible={disclaimerVisible}
+        title='图片版权免责声明'
+        content='您上传的图片需拥有版权/肖像授权，不得上传侵权图片、IP素材、他人肖像，因图片侵权产生的全部责任由上传人承担。'
+        confirmText='我知道了'
+        onConfirm={closeDisclaimer}
       />
 
       {exitPopupVisible && (

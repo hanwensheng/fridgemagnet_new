@@ -229,6 +229,8 @@ export function useEditorLogic() {
   );
   const [menuVisible, setMenuVisible] = useState(false);
   const [exitPopupVisible, setExitPopupVisible] = useState(false);
+  /** 图片版权免责声明弹窗 */
+  const [disclaimerVisible, setDisclaimerVisible] = useState(false);
   const [specList, setSpecList] = useState<SpecItem[]>(initialList);
   const [nextIndex, setNextIndex] = useState<number>(() => {
     if (draftData) {
@@ -574,6 +576,9 @@ export function useEditorLogic() {
     setMenuVisible(false);
   };
 
+  const openDisclaimer = () => setDisclaimerVisible(true);
+  const closeDisclaimer = () => setDisclaimerVisible(false);
+
   return {
     activeIndex,
     setActiveIndex,
@@ -592,6 +597,9 @@ export function useEditorLogic() {
     currentHasImage,
     hasDraftData,
     exitPopupVisible,
+    disclaimerVisible,
+    openDisclaimer,
+    closeDisclaimer,
     handleChooseImage,
     handleMenuClick,
     handleSpecAdd,
