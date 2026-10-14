@@ -310,6 +310,20 @@ npm run build:weapp   # 产物在 dist/weapp/
 
 **注意**：H5 构建会清空 `dist/`。如需同时保留两端产物，先 `build:h5` 再 `build:weapp`。
 
+#### ⚠️ 调试期不要跑 `build:*`（会把接口打成线上）
+
+`src/api/request.ts` 的 `BASE_URL` 是**构建期常量**，靠 `process.env.NODE_ENV` 切换。而 Taro CLI 里
+`isProduction = process.env.NODE_ENV === 'production' || !isWatch` —— **只要不带 `--watch` 就一律 production**
+（`NODE_ENV=development` / `--env development` 都无效），webpack 会把 `process.env.NODE_ENV` 内联成
+`"production"`，三元被折叠成线上地址写死进 `dist/weapp/common.js`。它和 `npm run dev:weapp` 写的是**同一个**
+`dist/weapp`，谁后写谁生效 → 微信开发者工具会突然从测试环境变成线上接口。
+
+- **调试期只跑 `npm run dev:weapp`**；验证编译请用 `npx eslint <files>` + `npx tsc --noEmit`，不要用 `build:*` 去"验证编译"（历史事故：2026-09-21、2026-10-13 各一次，都是 agent 为验证编译跑了 `build:weapp`）。
+- 确需构建：先确认用户的 watcher 已停，或改跑 `--watch` 并在编译完成后自行结束进程。
+- 一旦污染，恢复办法：重启 `dev:weapp`，或随便改一个被监听的文件触发重建（只 `touch` 不一定触发）。
+- 核对命令：`grep -o 'api.zhongjiatong.vip\|8.141.81.252' dist/weapp/common.js`。
+- `src/api/request.ts` 顶部已写该规则，且非 production 的包启动时会打印 `[api] 当前接口环境: <BASE_URL>`，可直接在控制台确认。
+
 ### 8.3 新增页面
 
 参见第 5.3 节。
