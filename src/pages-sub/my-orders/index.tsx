@@ -8,7 +8,7 @@ import IconGroup from '@/assets/svgs/icon_group.svg';
 import IconCar from '@/assets/svgs/icon_car_black.svg';
 import { OrderStatus } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
-import { formatSizeLabel } from '@/utils/format';
+import { formatDeliveryPromise, formatSizeLabel } from '@/utils/format';
 import { useMyOrdersLogic, TABS, STATUS_TEXT_MAP, HIGHLIGHT_STATUSES } from './index.logic';
 import './index.scss';
 
@@ -308,7 +308,9 @@ export default function MyOrders() {
                     <View className='order-shipping-info'>
                       <Image className='order-shipping-icon' src={IconCar} />
                       <Text className='order-shipping-label'>运输中</Text>
-                      <Text className='order-shipping-text'>{order.deliveryPromiseTime}</Text>
+                      <Text className='order-shipping-text'>
+                        {formatDeliveryPromise(order.deliveryPromiseTime)}
+                      </Text>
                     </View>
                   )}
 
