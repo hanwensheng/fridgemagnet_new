@@ -14,6 +14,9 @@ import { formatSizeLabel } from '@/utils/format';
 import { useOrderDetailLogic } from './index.logic';
 import './index.scss';
 
+/** 待收货的「确认收货」按钮：功能先隐藏，恢复时改为 true（逻辑 handleConfirmReceipt 与样式均保留） */
+const SHOW_CONFIRM_RECEIPT = false;
+
 export default function OrderDetail() {
   const {
     order,
@@ -100,12 +103,15 @@ export default function OrderDetail() {
             >
               <Text className='order-detail-btn-text order-detail-btn-text--default'>查看物流</Text>
             </View>
-            <View
-              className='order-detail-btn order-detail-btn--confirm'
-              onClick={handleConfirmReceipt}
-            >
-              <Text className='order-detail-btn-text'>确认收货</Text>
-            </View>
+            {/* 确认收货按钮先隐藏：逻辑与样式均保留，需要恢复时把 SHOW_CONFIRM_RECEIPT 改为 true */}
+            {SHOW_CONFIRM_RECEIPT && (
+              <View
+                className='order-detail-btn order-detail-btn--confirm'
+                onClick={handleConfirmReceipt}
+              >
+                <Text className='order-detail-btn-text'>确认收货</Text>
+              </View>
+            )}
           </View>
         </View>
       );

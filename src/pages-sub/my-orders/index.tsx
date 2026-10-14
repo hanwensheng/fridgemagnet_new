@@ -12,6 +12,9 @@ import { formatDeliveryPromise, formatSizeLabel } from '@/utils/format';
 import { useMyOrdersLogic, TABS, STATUS_TEXT_MAP, HIGHLIGHT_STATUSES } from './index.logic';
 import './index.scss';
 
+/** 待收货卡片的「确认收货」按钮：功能先隐藏，恢复时改为 true（逻辑 handleConfirmReceipt 与样式均保留） */
+const SHOW_CONFIRM_RECEIPT = false;
+
 export default function MyOrders() {
   const {
     isFromCancelPay,
@@ -126,15 +129,18 @@ export default function MyOrders() {
             >
               <Text className='order-action-text order-action-text--default'>查看物流</Text>
             </View>
-            <View
-              className='order-action-btn order-action-btn--confirm'
-              onClick={(e) => {
-                e.stopPropagation();
-                handleConfirmReceipt(order.pkId);
-              }}
-            >
-              <Text className='order-action-text'>确认收货</Text>
-            </View>
+            {/* 确认收货按钮先隐藏：逻辑与样式均保留，需要恢复时把 SHOW_CONFIRM_RECEIPT 改为 true */}
+            {SHOW_CONFIRM_RECEIPT && (
+              <View
+                className='order-action-btn order-action-btn--confirm'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleConfirmReceipt(order.pkId);
+                }}
+              >
+                <Text className='order-action-text'>确认收货</Text>
+              </View>
+            )}
           </View>
         );
       case OrderStatus.COMPLETED:
