@@ -142,7 +142,7 @@ export default function MyPromotion() {
         visible={hintVisible}
         title='佣金到账规则'
         content={'1、用户确认收货后，佣金即到账；\n2、用户未确认收货前为「待入账」状态'}
-        confirmText='知道了'
+        confirmText='我知道了'
         showIcon={false}
         onConfirm={closeHint}
       />
