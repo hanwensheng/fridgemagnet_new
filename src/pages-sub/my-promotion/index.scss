@@ -35,24 +35,30 @@
 }
 
 .stats-item {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .stats-label {
-  font-size: 13px;
-  color: rgb(0 0 0 / 50%);
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.5);
   line-height: 18px;
-  margin-bottom: 10px;
+  margin-bottom: 16px;
+  white-space: nowrap;
 }
 
 .stats-value {
-  font-size: 28px;
+  font-size: 20px;
   color: #000;
-  line-height: 40px;
+  line-height: 20px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .stats-symbol {
@@ -61,11 +67,17 @@
   margin-right: 2px;
 }
 
-.stats-divider {
-  width: 1px;
-  height: 60px;
-  background: #ebebf0;
-  margin: 0 40px;
+/* 佣金明细标题行：标题 + 到账规则提示图标 */
+.detail-title-row {
+  display: flex;
+  align-items: center;
+}
+
+.detail-title-hint {
+  width: 12px;
+  height: 12px;
+  margin-left: 8px;
+  flex: none;
 }
 
 /* 佣金明细 */
@@ -108,12 +120,23 @@
   margin-top: 2px;
 }
 
+.detail-amount-wrap {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 .detail-amount {
   font-size: 16px;
   color: #f2330d;
   line-height: 22px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+.detail-pending {
+  font-size: 12px;
+  color: #f2330d;
 }
 
 .detail-body {

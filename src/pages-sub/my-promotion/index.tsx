@@ -2,12 +2,24 @@ import { useMemo, useState } from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import Taro, { ENV_TYPE, useReady } from '@tarojs/taro';
 import BasePage from '@/components/base-page';
+import ConfirmDialog from '@/components/confirm-dialog';
 import EmptyIcon from '@/assets/svgs/icon_default.svg';
+import IconHint from '@/assets/svgs/icon_black_hint.svg';
 import { useMyPromotionLogic } from './index.logic';
 import './index.scss';
 
 export default function MyPromotion() {
-  const { stats, list, loading, hasMore, loadingMore, formatAmount } = useMyPromotionLogic();
+  const {
+    stats,
+    list,
+    loading,
+    hasMore,
+    loadingMore,
+    formatAmount,
+    hintVisible,
+    openHint,
+    closeHint,
+  } = useMyPromotionLogic();
 
   /** 计算导航栏高度，用于固定定位 */
   const navBarHeight = useMemo(() => {
@@ -50,20 +62,29 @@ export default function MyPromotion() {
       <View className='my-promotion-page'>
         <View className='promotion-header' style={{ top: `${navBarHeight}px` } as any}>
           <View className='stats-card'>
-            <View className='stats-item w-[152px]'>
-              <Text className='stats-label'>累计佣金(元)</Text>
+            <View className='stats-item'>
+              <Text className='stats-label'>累计已到账(元)</Text>
               <Text className='stats-value'>
                 <Text className='stats-symbol'>¥</Text>
-                {formatAmount(stats.totalCommission)}
+                {formatAmount(stats.creditedCommission)}
               </Text>
             </View>
-            <View className='stats-divider' />
-            <View className='stats-item text-right'>
+            <View className='stats-item'>
+              <Text className='stats-label'>待入账(元)</Text>
+              <Text className='stats-value'>
+                <Text className='stats-symbol'>¥</Text>
+                {formatAmount(stats.pendingCommission)}
+              </Text>
+            </View>
+            <View className='stats-item'>
               <Text className='stats-label'>累计分佣次数</Text>
               <Text className='stats-value'>{stats.commissionCount}</Text>
             </View>
           </View>
-          <Text className='detail-title'>佣金明细</Text>
+          <View className='detail-title-row'>
+            <Text className='detail-title'>佣金明细</Text>
+            <Image className='detail-title-hint' src={IconHint} onClick={openHint} />
+          </View>
         </View>
 
         {/* 固定头部占位，避免列表被遮挡 */}
@@ -84,7 +105,10 @@ export default function MyPromotion() {
               <View className='detail-card' key={item.id}>
                 <View className='detail-header'>
                   <Text className='detail-order'>订单：{item.orderNo}</Text>
-                  <Text className='detail-amount'>+¥{formatAmount(item.amount)}</Text>
+                  <View className='detail-amount-wrap'>
+                    <Text className='detail-amount'>+¥{formatAmount(item.amount)}</Text>
+                    {item.pending && <Text className='detail-pending'>(待入账)</Text>}
+                  </View>
                 </View>
                 <View className='detail-body'>
                   <Text className='detail-source'>来源：{item.source}</Text>
@@ -113,6 +137,15 @@ export default function MyPromotion() {
           </View>
         )}
       </View>
+
+      <ConfirmDialog
+        visible={hintVisible}
+        title='佣金到账规则'
+        content={'1、用户确认收货后，佣金即到账；\n2、用户未确认收货前为「待入账」状态'}
+        confirmText='知道了'
+        showIcon={false}
+        onConfirm={closeHint}
+      />
     </BasePage>
   );
 }

@@ -18,10 +18,15 @@ export interface CommissionItem {
   time: string;
   amount: number;
   tags: CommissionTag[];
+  /** 是否待入账（shareType === '0'） */
+  pending: boolean;
 }
 
 export interface PromotionStats {
-  totalCommission: number;
+  /** 累计已到账佣金 */
+  creditedCommission: number;
+  /** 待入账佣金 */
+  pendingCommission: number;
   commissionCount: number;
 }
 
@@ -53,18 +58,22 @@ function toCommissionItem(item: ShareDetailItem, index: number): CommissionItem 
     time: item.gmtCreate,
     amount: Number(item.shareAmount) || 0,
     tags: mapTypeToTags(item.type),
+    pending: String(item.shareType) === '0',
   };
 }
 
 export function useMyPromotionLogic() {
   const [stats, setStats] = useState<PromotionStats>({
-    totalCommission: 0,
+    creditedCommission: 0,
+    pendingCommission: 0,
     commissionCount: 0,
   });
   const [list, setList] = useState<CommissionItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  /** 佣金到账规则提示弹窗 */
+  const [hintVisible, setHintVisible] = useState(false);
 
   /** 用 ref 保存最新状态，避免 useReachBottom 回调闭包过期 */
   const hasMoreRef = useRef(hasMore);
@@ -84,11 +93,12 @@ export function useMyPromotionLogic() {
     try {
       const res = await orderApi.findShareTotal();
       setStats({
-        totalCommission: Number(res?.shareAmount ?? 0),
+        creditedCommission: Number(res?.creditedShareAmount ?? 0),
+        pendingCommission: Number(res?.pendingShareAmount ?? 0),
         commissionCount: Number(res?.shareCount ?? 0),
       });
     } catch {
-      setStats({ totalCommission: 0, commissionCount: 0 });
+      setStats({ creditedCommission: 0, pendingCommission: 0, commissionCount: 0 });
     }
   }, []);
 
@@ -139,6 +149,9 @@ export function useMyPromotionLogic() {
 
   const formatAmount = (amount: number) => amount.toFixed(2);
 
+  const openHint = useCallback(() => setHintVisible(true), []);
+  const closeHint = useCallback(() => setHintVisible(false), []);
+
   return {
     stats,
     list,
@@ -146,5 +159,8 @@ export function useMyPromotionLogic() {
     hasMore,
     loadingMore,
     formatAmount,
+    hintVisible,
+    openHint,
+    closeHint,
   };
 }

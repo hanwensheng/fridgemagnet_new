@@ -170,6 +170,8 @@ export interface ShareDetailItem {
   shareAmount: number;
   /** 1=商户佣金 2=推广员佣金 3=两者都有 */
   type: string;
+  /** 0=待入账 */
+  shareType: string;
 }
 
 export const orderApi = {
@@ -336,11 +338,13 @@ export const orderApi = {
 
   /** 查询累计佣金统计 */
   findShareTotal() {
-    return request<{ shareAmount: string; shareCount: string }>({
-      url: '/v1/bizMerchantOrderShare/findShareTotal',
-      method: 'POST',
-      showLoading: false,
-    });
+    return request<{ creditedShareAmount: string; pendingShareAmount: string; shareCount: string }>(
+      {
+        url: '/v1/bizMerchantOrderShare/findShareTotal',
+        method: 'POST',
+        showLoading: false,
+      },
+    );
   },
 
   /** 查询佣金明细 */

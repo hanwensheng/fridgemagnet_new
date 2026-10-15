@@ -10,6 +10,8 @@ interface ConfirmDialogProps {
   content: string;
   /** 按钮文案，默认「确认」 */
   confirmText?: string;
+  /** 是否展示标题前的 warn 图标，默认展示 */
+  showIcon?: boolean;
   /** 唯一出口：点按钮关闭 */
   onConfirm: () => void;
 }
@@ -24,6 +26,7 @@ export default function ConfirmDialog({
   title,
   content,
   confirmText = '确认',
+  showIcon = true,
   onConfirm,
 }: ConfirmDialogProps) {
   if (!visible) return null;
@@ -32,8 +35,12 @@ export default function ConfirmDialog({
     <View className='confirm-dialog-mask' catchMove>
       <View className='confirm-dialog'>
         <View className='confirm-dialog-head'>
-          <Image className='confirm-dialog-warn' src={IconWarn} />
-          <Text className='confirm-dialog-title'>{title}</Text>
+          {showIcon && <Image className='confirm-dialog-warn' src={IconWarn} />}
+          <Text
+            className={`confirm-dialog-title${showIcon ? '' : ' confirm-dialog-title--no-icon'}`}
+          >
+            {title}
+          </Text>
         </View>
 
         <Text className='confirm-dialog-text'>{content}</Text>

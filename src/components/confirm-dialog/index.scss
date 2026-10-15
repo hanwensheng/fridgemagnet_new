@@ -46,6 +46,11 @@
   color: #1e1e1e;
 }
 
+/* 无图标时标题不缩进 */
+.confirm-dialog-title--no-icon {
+  margin-left: 0;
+}
+
 .confirm-dialog-text {
   font-size: 14px;
   line-height: 20px;
