@@ -14,18 +14,14 @@ const TABS = [
 
 const ICON_SIZE = 20;
 
-/** 页面栈顶对应的 tab 下标；-1 表示栈顶不是 TabBar 页 */
-function getRouteTabIndex() {
-  const route = Taro.getCurrentPages().slice(-1)[0]?.route;
-  return TABS.findIndex((t) => t.pagePath === `/${route}`);
+interface CustomTabBarProps {
+  /** 小程序端：微信框架自动注入当前选中 Tab 索引 */
+  selected?: number;
 }
 
-export default function CustomTabBar() {
-  /**
-   * 选中态：两端都由各 TabBar 页 `useTabBar` 在 useDidShow 时广播的 `tabbar:change` 驱动。
-   * 首屏按页面栈取一次初值（不能写死 0：直接落在「我的」时也得对）。
-   */
-  const [selected, setSelected] = useState(() => Math.max(getRouteTabIndex(), 0));
+export default function CustomTabBar(props: CustomTabBarProps) {
+  // H5 端：由各页面 useTabBar 的 tabbar:change 事件驱动选中态
+  const [selected, setSelected] = useState(0);
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
@@ -34,20 +30,6 @@ export default function CustomTabBar() {
     return () => {
       Taro.eventCenter.off('tabbar:change', handler);
     };
-  }, []);
-
-  /**
-   * 小程序端：挂载后再按页面栈校正一次选中态。
-   *
-   * 框架 `switchTab`（如「未登录」拦截弹窗点确定跳「我的」）时，tabbar 可能早于目标页 onShow 挂载，
-   * 那一次 `tabbar:change` 广播就漏掉了 —— 表现是页面已经跳到「我的」、图标还停在「首页」，
-   * 且因为 `switchTab` 里 `index === selected` 会直接 return，两个 tab 都点不动（卡死）。
-   * H5 端不校正：那边 getCurrentPages 的时机不可靠（路由以 hash 为准）。
-   */
-  useEffect(() => {
-    if (process.env.TARO_ENV !== 'weapp') return;
-    const index = getRouteTabIndex();
-    if (index >= 0) setSelected(index);
   }, []);
 
   // H5 端：根据当前路由自动控制 tabbar 显隐，仅 tab 页面显示
@@ -79,12 +61,23 @@ export default function CustomTabBar() {
     };
   }, []);
 
+  // 小程序端：优先使用微信框架注入的 selected，否则用 getCurrentPages 兜底
+  // H5 端：selected 来自 state（tabbar:change 事件驱动）
+  const currentIndex =
+    process.env.TARO_ENV === 'weapp'
+      ? (props.selected ??
+        Math.max(
+          TABS.findIndex((t) => t.pagePath === `/${Taro.getCurrentPages().slice(-1)[0]?.route}`),
+          0,
+        ))
+      : selected;
+
   const switchTab = useCallback(
     (index: number) => {
-      if (index === selected) return;
+      if (index === currentIndex) return;
       Taro.switchTab({ url: TABS[index].pagePath });
     },
-    [selected],
+    [currentIndex],
   );
 
   if (hidden) return null;
@@ -107,7 +100,7 @@ export default function CustomTabBar() {
             <Image
               className='custom-tab-bar__icon'
               style={{ width: `${ICON_SIZE}px`, height: `${ICON_SIZE}px` }}
-              src={selected === index ? tab.activeIcon : tab.icon}
+              src={currentIndex === index ? tab.activeIcon : tab.icon}
               mode='aspectFit'
             />
           </View>

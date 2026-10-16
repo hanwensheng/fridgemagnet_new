@@ -142,12 +142,34 @@ export default function Index() {
       .catch(() => {});
   }, []);
 
+  /**
+   * 控制 TabBar 显隐（打开"制作"抽屉时要把底部 TabBar 收起来）
+   *
+   * 小程序端：直接操作原生 tabBar 实例，与 useTabBar 走同一条路径（不经 Taro/React 渲染层）。
+   * 注意 Taro 在 onHide 里会先把 Current.page 置空再触发 componentDidHide，所以 onHide
+   * 里调用本函数拿不到实例（H5 不受影响，那边是事件广播）；显隐的权威校准点是 useDidShow。
+   *
+   * H5 端：没有原生实例，仍用事件广播驱动 React 版 TabBar。
+   */
+  const setTabBarHidden = useCallback((hidden: boolean) => {
+    if (process.env.TARO_ENV === 'weapp') {
+      const page = Taro.getCurrentInstance().page as unknown as
+        { getTabBar?: () => { setData?: (data: { hidden: boolean }) => void } | null } | undefined;
+      page?.getTabBar?.()?.setData?.({ hidden });
+      return;
+    }
+    Taro.eventCenter.trigger(hidden ? 'tabbar:hide' : 'tabbar:show');
+  }, []);
+
+  const showTabBar = useCallback(() => setTabBarHidden(false), [setTabBarHidden]);
+
+  const hideTabBar = useCallback(() => setTabBarHidden(true), [setTabBarHidden]);
+
   useDidShow(() => {
     checkDrafts();
-    // 从后台恢复时，如果抽屉仍打开，重新隐藏 TabBar
-    if (popupVisibleRef.current) {
-      hideTabBar();
-    }
+    // 回到前台/本页显示时按抽屉状态重新校准 TabBar 显隐
+    // （小程序端 TabBar 实例是按页持有的，且 onHide 时拿不到实例，只能在这里校准）
+    setTabBarHidden(popupVisibleRef.current);
   });
 
   // 监听其它页面发起的"打开首页抽屉"事件
@@ -160,19 +182,11 @@ export default function Index() {
     return () => {
       Taro.eventCenter.off('home:open-drawer', handler);
     };
-  }, []);
+  }, [hideTabBar]);
 
   // 调试：在开发者工具控制台看实际高度值
   // console.log('statusBarHeight:', statusBarHeight);
   // console.log('navBarHeight:', navBarHeight);
-
-  const showTabBar = () => {
-    Taro.eventCenter.trigger('tabbar:show');
-  };
-
-  const hideTabBar = () => {
-    Taro.eventCenter.trigger('tabbar:hide');
-  };
 
   const handleMakeClick = () => {
     hideTabBar();
@@ -189,8 +203,7 @@ export default function Index() {
     return () => {
       showTabBar();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [showTabBar]);
 
   useDidHide(() => {
     showTabBar();
