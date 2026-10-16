@@ -37,7 +37,7 @@ export default function ConfirmDialog({
         <View className='confirm-dialog-head'>
           {showIcon && <Image className='confirm-dialog-warn' src={IconWarn} />}
           <Text
-            className={`confirm-dialog-title${showIcon ? '' : ' confirm-dialog-title--no-icon'}`}
+            className={`confirm-dialog-title${showIcon ? '' : ' confirm-dialog-title-no-icon'}`}
           >
             {title}
           </Text>
