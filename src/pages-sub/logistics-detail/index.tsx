@@ -41,7 +41,7 @@ export default function LogisticsDetail() {
   };
 
   return (
-    <BasePage navTitle='查看物流' onNavLeftClick={() => Taro.navigateBack().catch(() => {})}>
+    <BasePage navTitle='查看物流'>
       <ScrollView className='logistics-page' scrollY>
         {/* 物流 + 地址卡片 */}
         <View className='logistics-card'>

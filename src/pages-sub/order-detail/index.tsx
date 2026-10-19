@@ -1,5 +1,4 @@
 import { View, Text, Image, ScrollView } from '@tarojs/components';
-import Taro from '@tarojs/taro';
 import BasePage from '@/components/base-page';
 import CouponDetailPopup from '@/components/coupon-detail-popup';
 import ProductThumb from '@/components/product-thumb';
@@ -137,11 +136,7 @@ export default function OrderDetail() {
   })();
 
   return (
-    <BasePage
-      navTitle={navTitle}
-      onNavLeftClick={() => Taro.navigateBack().catch(() => {})}
-      bottomBarComponent={bottomBar || undefined}
-    >
+    <BasePage navTitle={navTitle} bottomBarComponent={bottomBar || undefined}>
       <ScrollView className='order-detail-page' scrollY>
         {/* 地址卡片 */}
         <View className='order-detail-address-card'>
