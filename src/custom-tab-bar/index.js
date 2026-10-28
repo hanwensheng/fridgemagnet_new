@@ -37,6 +37,8 @@ Component({
     // 本次实例就是点击切页带来的（新页首次创建）：直接用点击时的目标，首帧即正确
     if (tappedIndex >= 0) {
       this.setData({ selected: tappedIndex });
+      // 用完即清：否则实例被重建（reLaunch / 内存回收后重进）时会拿上一次点击的旧值画错一帧
+      tappedIndex = -1;
     }
     // 兜底：attached 的 setData 可能晚于首帧，且此刻页面栈可能还停在上一个 tab 页
     wx.nextTick(function () {
