@@ -145,20 +145,14 @@ export default function Index() {
   /**
    * 控制 TabBar 显隐（打开"制作"抽屉时要把底部 TabBar 收起来）
    *
-   * 小程序端：直接操作原生 tabBar 实例，与 useTabBar 走同一条路径（不经 Taro/React 渲染层）。
+   * 直接操作原生 tabBar 实例，与 useTabBar 走同一条路径（不经 Taro/React 渲染层）。
    * 注意 Taro 在 onHide 里会先把 Current.page 置空再触发 componentDidHide，所以 onHide
-   * 里调用本函数拿不到实例（H5 不受影响，那边是事件广播）；显隐的权威校准点是 useDidShow。
-   *
-   * H5 端：没有原生实例，仍用事件广播驱动 React 版 TabBar。
+   * 里调用本函数拿不到实例；显隐的权威校准点是 useDidShow。
    */
   const setTabBarHidden = useCallback((hidden: boolean) => {
-    if (process.env.TARO_ENV === 'weapp') {
-      const page = Taro.getCurrentInstance().page as unknown as
-        { getTabBar?: () => { setData?: (data: { hidden: boolean }) => void } | null } | undefined;
-      page?.getTabBar?.()?.setData?.({ hidden });
-      return;
-    }
-    Taro.eventCenter.trigger(hidden ? 'tabbar:hide' : 'tabbar:show');
+    const page = Taro.getCurrentInstance().page as unknown as
+      { getTabBar?: () => { setData?: (data: { hidden: boolean }) => void } | null } | undefined;
+    page?.getTabBar?.()?.setData?.({ hidden });
   }, []);
 
   const showTabBar = useCallback(() => setTabBarHidden(false), [setTabBarHidden]);
