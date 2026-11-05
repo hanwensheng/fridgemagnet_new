@@ -15,6 +15,7 @@ import PreviewBg85 from '@/assets/images/icon_preview_bg_8.5_4.png';
 import PreviewBg75 from '@/assets/images/icon_preview_bg_7_5.5.png';
 import PreviewBg34 from '@/assets/images/icon_preview_bg_3_4.5.png';
 import PreviewBg155 from '@/assets/images/icon_preview_bg_15.5_11.62.png';
+import { findSizeMapped } from '@/utils/format';
 import type { SelectedSpec } from '@/components/spec-select-popup';
 import {
   getCropResult,
@@ -33,6 +34,14 @@ export interface SizeOption {
   displayHeight: number;
 }
 
+/**
+ * 本地视觉档位（tab 图 + 花边框 + 上传区尺寸）。
+ *
+ * label 只用于展示，**不要拿它当精确匹配 key**：后端尺寸还会再微调
+ * （2026-11 巨大号已从 155×116.2mm 改成 154×115mm，文本变成 `15.4*11.5cm`），
+ * 而素材沿用旧尺寸、不重出。匹配统一走 `findSizeOption` 的容差逻辑，
+ * 所以后端改尺寸时这里不用跟着改。
+ */
 export const SIZE_OPTIONS: SizeOption[] = [
   {
     id: '7x5.5',
@@ -68,19 +77,17 @@ export const SIZE_OPTIONS: SizeOption[] = [
   },
 ];
 
-/** 尺寸名 -> SIZE_OPTIONS 映射，用于匹配 tab 图片 */
+const SIZE_LABEL_MAP = SIZE_OPTIONS.reduce<Record<string, SizeOption>>((acc, opt) => {
+  acc[opt.label] = opt;
+  return acc;
+}, {});
+
+/**
+ * 尺寸名 -> SIZE_OPTIONS 映射，用于匹配 tab 图片。
+ * 走尺寸容差匹配：后端微调规格尺寸（15.5*11.62cm -> 15.4*11.5cm）或宽高互换时仍能命中同一档。
+ */
 export function findSizeOption(name: string): SizeOption | undefined {
-  const direct = SIZE_OPTIONS.find((opt) => opt.label === name);
-  if (direct) return direct;
-  // 后端返回的宽高可能互换（如 55x70 vs 70x55），尝试反转后匹配
-  try {
-    const match = name.match(/^([\d.]+)\*([\d.]+)cm$/);
-    if (match) {
-      const reversed = `${parseFloat(match[2])}*${parseFloat(match[1])}cm`;
-      return SIZE_OPTIONS.find((opt) => opt.label === reversed);
-    }
-  } catch {}
-  return undefined;
+  return findSizeMapped(SIZE_LABEL_MAP, name);
 }
 
 /** 规格名 -> 预览花边背景图 */
@@ -107,7 +114,11 @@ export function getPreviewClass(name: string): string {
   return PREVIEW_CLASS_MAP[name] || PREVIEW_CLASS_MAP[findSizeOption(name)?.label || ''] || '85x4';
 }
 
-/** 上传区尺寸（设计稿 px），用于传递给裁剪页 */
+/**
+ * 上传区尺寸（设计稿 px），用于传递给裁剪页。
+ * 数值按**旧素材**（15.5*11.62cm）的比例定，不随后端规格文本微调；
+ * 只有比例变化明显（>1%）需要重出花边框图时才动这里，并同步 index.scss。
+ */
 const UPLOAD_AREA_SIZE: Record<string, { w: number; h: number }> = {
   '85x4': { w: 299, h: 141 },
   '75x55': { w: 235, h: 299 },
@@ -118,6 +129,7 @@ const UPLOAD_AREA_SIZE: Record<string, { w: number; h: number }> = {
 /**
  * 预览图输出尺寸，用于 Canvas 渲染花边框贴合用的预览图。
  * 各规格均按工作区等比（差距 < 0.3%，不裁切不留白）。
+ * 同样按旧素材比例固定，与 `.preview-img--*` 的 px 必须一致；规格文本微调不影响这里。
  */
 const PREVIEW_IMG_SIZE: Record<string, { w: number; h: number }> = {
   '85x4': { w: 253, h: 119 }, // 299/141 ≈ 253/119

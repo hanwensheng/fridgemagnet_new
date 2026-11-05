@@ -16,7 +16,7 @@ import IconWarn from '@/assets/svgs/icon_warning.svg';
 import { productApi } from '@/api/modules/product';
 import { useAppStore } from '@/store';
 import { userApi } from '@/api/modules/user';
-import { formatSizeLabel } from '@/utils/format';
+import { findSizeMapped, formatSizeLabel } from '@/utils/format';
 import { calcDiscountedPrices } from '@/utils/discount';
 
 import './index.scss';
@@ -48,23 +48,21 @@ interface SpecSelectPopupProps {
   onConfirm?: (selectedItems: SelectedSpec[]) => void;
 }
 
-/** 尺寸 -> 本地预览图映射（宽x高，mm） */
+/**
+ * 规格文本 -> 本地预览图映射。
+ * key 是旧尺寸文案，后端微调尺寸（155×116.2mm → 154×115mm）时靠容差匹配命中，
+ * 图片沿用旧素材不重出，所以不用跟着新文案改 key。
+ */
 const LOCAL_IMAGE_MAP: Record<string, string> = {
-  '85x40': Img85,
-  '55x70': Img75,
-  '30x45': Img45,
-  '155x116.2': Img155, // 15.5*11.62cm 巨大号
+  '8.5*4cm': Img85,
+  '7*5.5cm': Img75,
+  '3*4.5cm': Img45,
+  '15.5*11.62cm': Img155, // 15.5*11.62cm 巨大号
 };
 
-/** 尺寸 key：保留 2 位小数，避免后台返回 116.2000001 这类浮点噪声导致匹配不上 */
-function buildSizeKey(width: string, height: string): string {
-  const round = (value: string) => Number(parseFloat(value).toFixed(2));
-  return `${round(width)}x${round(height)}`;
-}
-
-/** 后台未配置 goodsImg 时的本地兜底图 */
+/** 后台未配置 goodsImg 时的本地兜底图（尺寸微调后仍按近似匹配到对应档位） */
 function getLocalImage(width: string, height: string): string {
-  return LOCAL_IMAGE_MAP[buildSizeKey(width, height)] || Img85;
+  return findSizeMapped(LOCAL_IMAGE_MAP, formatSizeLabel(width, height)) || Img85;
 }
 
 /**

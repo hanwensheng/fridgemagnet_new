@@ -192,7 +192,11 @@
 }
 
 /* 各规格尺寸（px 会被 Taro 自动转为 rpx，随屏缩放）
-   花边框边距：85x4 / 75x55 / 155x1162 为统一 18px；34x45 为单独设计（见 .upload-preview.preview-img--34x45） */
+   花边框边距：85x4 / 75x55 / 155x1162 为统一 18px；34x45 为单独设计（见 .upload-preview.preview-img--34x45）
+
+   注意：--155x1162 的 px 按旧素材（15.5*11.62cm）定，后台尺寸微调（155×116.2mm → 154×115mm）
+   时**故意不改**——花边框图沿用旧尺寸不重出，改比例反而会错位。只有重出素材才动这里，
+   并同步 index.logic.ts 的 UPLOAD_AREA_SIZE / PREVIEW_IMG_SIZE 与 product-thumb/index.scss。 */
 .preview-wrap--85x4 {
   width: 289px;
   height: 155px;

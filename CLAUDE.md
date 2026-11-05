@@ -553,6 +553,7 @@ patches/@tarojs+webpack5-prebundle+4.2.0.patch
 - 不要在 H5 配置中注册 `weapp-tailwindcss` 插件。
 - 不要重新开启 `prebundle` 而不验证补丁是否仍然适用。
 - 不要在 `mini.webpackChain` 中移除 `usedExports(false)`，否则 NutUI 部分组件会运行时报错。
+- 不要用规格文本（`15.5*11.62cm`）做精确 key 匹配，尺寸还会再改；统一用 `findSizeMapped` 按容差匹配（见 13.2 规格尺寸容差匹配）。
 
 ## 12. 决策记录（ADR）
 
@@ -617,6 +618,18 @@ editor（制作页）
 - 工作区尺寸 = 实物等比例（前端保证输出比例正确，避免后台缩放变形）
 - 预览区尺寸 = CSS 写死，与花边 SVG 内框像素值一致
 - 上传用 `uploadFileMap`（工作区尺寸），预览用 `uploadMap`（预览区尺寸）
+
+#### 规格尺寸容差匹配（重要）
+
+规格文本（如 `15.5*11.62cm`）由后端毫米尺寸经 `formatSizeLabel` 生成，**不要拿它当精确 key**。
+后端会微调尺寸：2026-11 已把巨大号从 155×116.2mm 改成 154×115mm，文本随之变成 `15.4*11.5cm`，
+精确匹配会让该档整块 UI 静默回落到默认的 `8.5*4cm`（tab 图、花边框背景、上传区尺寸全错）。
+
+- 统一用 `findSizeMapped`（`src/utils/format.ts`）按数值容差匹配：容差 `SIZE_MATCH_TOLERANCE_CM = 1`（cm，宽高可互换），命中「差值最小的一档」，所以不会串档。
+- 涉及的表：`editor/index.logic.ts` 的 `SIZE_OPTIONS` / `PREVIEW_BG_MAP` / `PREVIEW_CLASS_MAP`，`spec-select-popup/index.tsx` 的 `LOCAL_IMAGE_MAP`。
+- **视觉资产沿用旧尺寸、不重出**（`tab_15.5_11.62.png`、`icon_preview_bg_15.5_11.62.png`、`15.5_11.62cm.png`），`index.scss` 里的 px 与 `UPLOAD_AREA_SIZE` / `PREVIEW_IMG_SIZE` 也保持旧比例。
+- 由此得出：**尺寸以后还可能再改，改尺寸时只改后端，前端不动**；只有比例变化明显（约 >1%）、需要重出花边框素材时，才动上面这些常量与 SCSS（editor 与 product-thumb 两处要同步）。
+- 新增档位时，相邻档的尺寸差要明显大于 2 × 容差。
 
 ### 13.3 双路 Canvas 输出
 
