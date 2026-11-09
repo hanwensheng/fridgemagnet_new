@@ -41,12 +41,20 @@
   margin-bottom: 165px;
 }
 
-.pay-success-image {
+/* 商品图：ProductThumb 内部按 80×80 设计，这里等比缩到设计稿的 50×50 */
+.pay-success-image-wrap {
   width: 50px;
   height: 50px;
-  border-radius: 8px;
-  background: #f6f6f6;
   flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+
+  .product-thumb {
+    transform: scale(0.625);
+    transform-origin: top left;
+    /* 圆角交给外层裁剪，避免缩放后变成 5px */
+    border-radius: 0;
+  }
 }
 
 .pay-success-info {

@@ -139,7 +139,8 @@ export default function OrderConfirm() {
         visible={payPopupVisible}
         onClose={closePayPopup}
         address={address}
-        productImage={orderItems[0]?.image || ''}
+        productImage={orderItems[0]?.previewImage || orderItems[0]?.image || ''}
+        productSpec={orderItems[0]?.spec || ''}
       />
       <CouponDetailPopup
         visible={couponPopupVisible}

@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import BasePage from '@/components/base-page';
+import ProductThumb from '@/components/product-thumb';
+import { formatSizeLabel } from '@/utils/format';
 import IconSingle from '@/assets/svgs/icon_single.svg';
 import IconGroup from '@/assets/svgs/icon_group.svg';
 import IconLocation from '@/assets/svgs/icon_location.svg';
@@ -131,7 +133,10 @@ export default function LogisticsDetail() {
                 <View className='logistics-images-scroll-inner'>
                   {data.imgList.map((img, idx) => (
                     <View key={img.pkId || idx} className='logistics-image-wrap'>
-                      <Image className='logistics-image' src={img.imgLink} mode='aspectFill' />
+                      <ProductThumb
+                        spec={img.width && img.height ? formatSizeLabel(img.width, img.height) : ''}
+                        image={img.imgLink}
+                      />
                       <View className='logistics-image-badge'>
                         <Text className='logistics-image-badge-text'>x1</Text>
                       </View>
@@ -145,7 +150,7 @@ export default function LogisticsDetail() {
             </View>
           ) : (
             <View className='logistics-goods-body'>
-              <Image className='logistics-goods-image' src={data.goodsImage} mode='aspectFill' />
+              <ProductThumb image={data.goodsImage} spec={data.goodsSpec} />
               <View className='logistics-goods-info'>
                 <Text className='logistics-goods-name'>{data.goodsName}</Text>
                 {data.goodsSpec && <Text className='logistics-goods-spec'>{data.goodsSpec}</Text>}

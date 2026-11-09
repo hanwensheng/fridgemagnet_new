@@ -3,6 +3,7 @@ import Taro from '@tarojs/taro';
 import { Popup } from '@nutui/nutui-react-taro';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import IconLocation from '@/assets/svgs/icon_car.svg';
+import ProductThumb from '@/components/product-thumb';
 import type { AddressItem } from '@/api/modules/address';
 
 import './index.scss';
@@ -12,6 +13,8 @@ interface PaySuccessPopupProps {
   onClose: () => void;
   address: AddressItem | null;
   productImage: string;
+  /** 规格文本（如 8.5*4cm），用于匹配花边框；缺失时退化为普通图 */
+  productSpec?: string;
 }
 
 const COUNTDOWN_SECONDS = 5;
@@ -21,6 +24,7 @@ export default function PaySuccessPopup({
   onClose,
   address,
   productImage,
+  productSpec = '',
 }: PaySuccessPopupProps) {
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
   const onCloseRef = useRef(onClose);
@@ -86,7 +90,9 @@ export default function PaySuccessPopup({
         </View>
 
         <View className='pay-success-card'>
-          <Image className='pay-success-image' src={productImage} mode='aspectFill' />
+          <View className='pay-success-image-wrap'>
+            <ProductThumb image={productImage} spec={productSpec} />
+          </View>
           <View className='pay-success-info'>
             <Text className='pay-success-delivery'>承诺2个工作日内发货</Text>
             {addressText && (

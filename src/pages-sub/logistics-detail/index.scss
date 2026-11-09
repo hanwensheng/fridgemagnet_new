@@ -283,14 +283,6 @@
   gap: 10px;
 }
 
-.logistics-goods-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 8px;
-  background: #f6f6f6;
-  flex-shrink: 0;
-}
-
 .logistics-goods-info {
   flex: 1;
   display: flex;
@@ -348,11 +340,6 @@
   border-radius: 8px;
   overflow: hidden;
   background: #f6f6f6;
-}
-
-.logistics-image {
-  width: 100%;
-  height: 100%;
 }
 
 .logistics-image-badge {
