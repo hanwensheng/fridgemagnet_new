@@ -81,6 +81,34 @@ export function findSizeMapped<T>(
 }
 
 /**
+ * 解析后端时间字符串为时间戳（毫秒），解析不了返回 `NaN`。
+ *
+ * 后端给的是 `2026-11-06 16:59:54` 这种带空格的格式，**不要直接 new Date(字符串)**：
+ * 该格式不在 ECMAScript 保证可解析的范围内，部分 iOS(JSCore) 会得到 Invalid Date
+ * （微信开发者工具也会报 iOS 兼容提示，`NaN` 会让倒计时变成 `NaN:NaN`）。
+ * 这里手工拆字段后用 `new Date(y, m - 1, d, h, mi, s)` 构造，等价本地时区解析，跨端一致。
+ *
+ * 兼容 `2026-11-06 16:59:54` / `2026/11/06 16:59:54` / `2026-11-06T16:59:54` / 仅日期。
+ * 注意：按**本地时区**解析（后端返回的就是不带时区的本地时间）；如果将来后端改成带
+ * `+08:00` 这类时区后缀的 ISO 串，这里需要额外处理偏移，不能直接沿用。
+ */
+export function parseDateTime(value?: string): number {
+  const matched = (value || '')
+    .trim()
+    .match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+  if (!matched) return NaN;
+  const [, year, month, day, hour, minute, second] = matched;
+  return new Date(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    Number(hour || 0),
+    Number(minute || 0),
+    Number(second || 0),
+  ).getTime();
+}
+
+/**
  * 预计送达时间文案：后端给 `2026-10-16 12:00:00` → 「预计送达时间10月16日12:00前」
  *
  * 手工正则解析，**不要用 `new Date('2026-10-16 12:00:00')`**：iOS(JSCore) 不认这种带空格的格式，

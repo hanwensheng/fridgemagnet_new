@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import Taro from '@tarojs/taro';
 import { orderApi, OrderStatus } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
+import { parseDateTime } from '@/utils/format';
 import { setLogisticsOrder } from '@/pages-sub/logistics-detail/index.logic';
 
 /** 支付倒计时（分钟） */
@@ -194,7 +195,9 @@ export function useMyOrdersLogic() {
     (order: MerchantOrder) => {
       if (!order.gmtCreate) return { remaining: 0, isExpired: true, text: '' };
       const maxSeconds = PAY_DEADLINE_MINUTES * 60;
-      let deadline = new Date(order.gmtCreate).getTime() + maxSeconds * 1000;
+      const createdAt = parseDateTime(order.gmtCreate);
+      if (Number.isNaN(createdAt)) return { remaining: 0, isExpired: true, text: '' };
+      let deadline = createdAt + maxSeconds * 1000;
       if (deadline > now + maxSeconds * 1000) {
         deadline = now + maxSeconds * 1000;
       }
@@ -222,7 +225,9 @@ export function useMyOrdersLogic() {
       if (!order.payTime) return { remaining: 0, isExpired: true, text: '' };
       const maxSeconds = REFUND_DEADLINE_MINUTES * 60;
       if (!refundDeadlineRef.current[order.pkId]) {
-        let deadline = new Date(order.payTime).getTime() + maxSeconds * 1000;
+        const paidAt = parseDateTime(order.payTime);
+        if (Number.isNaN(paidAt)) return { remaining: 0, isExpired: true, text: '' };
+        let deadline = paidAt + maxSeconds * 1000;
         if (deadline > Date.now() + maxSeconds * 1000) {
           deadline = Date.now() + maxSeconds * 1000;
         }

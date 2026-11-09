@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import Taro, { useRouter } from '@tarojs/taro';
 import { orderApi, OrderStatus, TraceItem } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
-import { formatSizeLabel } from '@/utils/format';
+import { formatSizeLabel, parseDateTime } from '@/utils/format';
 import { calcDiscountedPrices } from '@/utils/discount';
 import type { OrderItem } from '@/pages-sub/order-confirm/index.logic';
 import { setLogisticsOrder } from '@/pages-sub/logistics-detail/index.logic';
@@ -197,7 +197,9 @@ export function useOrderDetailLogic() {
     const status = Number(order.orderStatus);
     if (status !== OrderStatus.NOT_PAY) return { text: '', isExpired: true };
     const maxSeconds = PAY_DEADLINE_MINUTES * 60;
-    let deadline = new Date(order.gmtCreate).getTime() + maxSeconds * 1000;
+    const createdAt = parseDateTime(order.gmtCreate);
+    if (Number.isNaN(createdAt)) return { text: '', isExpired: true };
+    let deadline = createdAt + maxSeconds * 1000;
     if (deadline > now + maxSeconds * 1000) {
       deadline = now + maxSeconds * 1000;
     }
@@ -218,7 +220,9 @@ export function useOrderDetailLogic() {
     const status = Number(order.orderStatus);
     if (status !== OrderStatus.TO_BE_SHIPPED) return;
     const maxSeconds = REFUND_DEADLINE_MINUTES * 60;
-    let deadline = new Date(order.payTime).getTime() + maxSeconds * 1000;
+    const paidAt = parseDateTime(order.payTime);
+    if (Number.isNaN(paidAt)) return;
+    let deadline = paidAt + maxSeconds * 1000;
     if (deadline > Date.now() + maxSeconds * 1000) {
       deadline = Date.now() + maxSeconds * 1000;
     }
@@ -366,7 +370,9 @@ export function useOrderDetailLogic() {
     if (!order?.payTime) return '';
     const status = Number(order.orderStatus);
     if (status !== OrderStatus.TO_BE_SHIPPED) return '';
-    const payHour = new Date(order.payTime).getHours();
+    const paidAt = parseDateTime(order.payTime);
+    if (Number.isNaN(paidAt)) return '';
+    const payHour = new Date(paidAt).getHours();
     return payHour < 16 ? '预计今天发货' : '预计明天发货';
   }, [order]);
 
