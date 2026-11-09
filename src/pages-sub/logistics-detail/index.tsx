@@ -152,7 +152,7 @@ export default function LogisticsDetail() {
             <View className='logistics-goods-body'>
               <ProductThumb image={data.goodsImage} spec={data.goodsSpec} />
               <View className='logistics-goods-info'>
-                <Text className='logistics-goods-name'>{data.goodsName}</Text>
+                {data.goodsName && <Text className='logistics-goods-name'>{data.goodsName}</Text>}
                 {data.goodsSpec && <Text className='logistics-goods-spec'>{data.goodsSpec}</Text>}
                 <Text className='logistics-goods-count'>共 {data.goodsNum} 件</Text>
               </View>

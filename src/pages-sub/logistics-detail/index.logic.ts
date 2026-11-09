@@ -75,8 +75,10 @@ function buildDisplayData(order: MerchantOrder, traceList: TraceItem[]): Logisti
     recipientPhone: order.recipientPhone || '',
     isGroup: Number(order.goodsNum) > 1,
     imgList: order.imgList || [],
-    goodsImage: order.orderImg || order.imgList?.[0]?.imgLink || '',
-    goodsName: '冰箱贴一副',
+    // 与订单详情一致：优先用户设计图（imgList[0]），orderImg 仅兜底
+    goodsImage: order.imgList?.[0]?.imgLink || order.orderImg || '',
+    // 与订单详情一致：标题取订单的 orderTitle（后端下单时写入），不再写死文案
+    goodsName: order.orderTitle || '',
     goodsSpec:
       order.imgList?.[0]?.width && order.imgList?.[0]?.height
         ? formatSizeLabel(order.imgList[0].width, order.imgList[0].height)
