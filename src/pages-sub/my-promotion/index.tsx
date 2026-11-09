@@ -3,6 +3,7 @@ import { View, Text, Image } from '@tarojs/components';
 import Taro, { ENV_TYPE, useReady } from '@tarojs/taro';
 import BasePage from '@/components/base-page';
 import ConfirmDialog from '@/components/confirm-dialog';
+import { getWindowInfo } from '@/utils/system-info';
 import EmptyIcon from '@/assets/svgs/icon_default.svg';
 import IconHint from '@/assets/svgs/icon_black_hint.svg';
 import { useMyPromotionLogic } from './index.logic';
@@ -23,7 +24,7 @@ export default function MyPromotion() {
 
   /** 计算导航栏高度，用于固定定位 */
   const navBarHeight = useMemo(() => {
-    const systemInfo = Taro.getSystemInfoSync();
+    const systemInfo = getWindowInfo();
     const statusBarH = systemInfo.statusBarHeight || 0;
     const isWeapp = Taro.getEnv() === ENV_TYPE.WEAPP;
 

@@ -1,6 +1,7 @@
 import { View } from '@tarojs/components';
 import Taro, { useReady, ENV_TYPE } from '@tarojs/taro';
 import { ReactNode, useMemo, useState, useCallback, useEffect } from 'react';
+import { getWindowInfo } from '@/utils/system-info';
 import BaseNavBar from '../base-nav-bar';
 
 import './index.scss';
@@ -16,7 +17,7 @@ import './index.scss';
  * - 支持底部固定栏安全区适配
  *
  * 注意事项：
- * - 底部安全区使用 Taro.getSystemInfoSync().safeArea 手动计算
+ * - 底部安全区使用 getWindowInfo().safeArea 手动计算（见 @/utils/system-info）
  * - 当使用 fixed 底部栏时，建议设置 bottomBarHeight 属性
  * - safeAreaBackgroundColor 用于设置安全区占位区域的背景色
  *
@@ -116,7 +117,7 @@ export default function BasePage({
   onNavLeftClick,
   onNavRightClick,
 }: BasePageProps) {
-  const systemInfo = Taro.getSystemInfoSync();
+  const systemInfo = getWindowInfo();
   const isWeapp = Taro.getEnv() === ENV_TYPE.WEAPP;
   const statusBarHeight = systemInfo.statusBarHeight || 0;
 
@@ -265,7 +266,7 @@ export default function BasePage({
    * 注意：
    * - Android 设备通常 safeArea.bottom 为 0
    * - iOS 设备（iPhone X 及以上）safeArea.bottom > 0
-   * - 使用 Taro.getSystemInfoSync() 获取的系统信息更可靠
+   * - 使用 getWindowInfo() 获取的系统信息更可靠
    */
   const safeAreaBottom = useMemo(() => {
     if (!isWeapp || !systemInfo.safeArea) {

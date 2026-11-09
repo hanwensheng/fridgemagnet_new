@@ -4,6 +4,7 @@ import { useAppStore } from '@/store';
 import { userApi } from '@/api/modules/user';
 import { productApi } from '@/api/modules/product';
 import type { BizMerchantInfo } from '@/api/modules/product';
+import { getWindowInfo } from '@/utils/system-info';
 import splashImg1Fallback from '@/assets/images/splash_img1.png';
 import splashImg2Fallback from '@/assets/images/splash_img2.png';
 import splashImg3Fallback from '@/assets/images/splash_img3.png';
@@ -33,7 +34,7 @@ export const useMerchantPromoterLogic = () => {
 
   /** 计算状态栏 + 导航栏高度 */
   const navBarHeight = useMemo(() => {
-    const systemInfo = Taro.getSystemInfoSync();
+    const systemInfo = getWindowInfo();
     const statusBarH = systemInfo.statusBarHeight || 0;
     const isWeapp = Taro.getEnv() === ENV_TYPE.WEAPP;
 
@@ -235,7 +236,7 @@ export const useMerchantPromoterLogic = () => {
 
       const canvas = res[0].node;
       const ctx = canvas.getContext('2d');
-      const dpr = Taro.getSystemInfoSync().pixelRatio;
+      const dpr = getWindowInfo().pixelRatio;
 
       // 画布尺寸：设计稿 375×812，导出 2x 倍率，dpr 自适应
       const designWidth = 375;

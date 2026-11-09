@@ -4,6 +4,7 @@ import IconLeftRotate from '@/assets/svgs/icon_left_rotate.svg';
 import IconRightRotate from '@/assets/svgs/icon_right_rotate.svg';
 import IconLevelRotate from '@/assets/svgs/icon_level_rotate.svg';
 import IconVerticalRotate from '@/assets/svgs/icon_vertical_rotate.svg';
+import { getWindowInfo } from '@/utils/system-info';
 import { useGestureHandler } from './useGestureHandler';
 import { getCropState, setCropResult, setCropState, removeCropState } from '../editor/crop-state';
 
@@ -334,7 +335,7 @@ export function useEditorCropLogic() {
                 }
                 const canvas = res[0].node;
                 const ctx = canvas.getContext('2d');
-                const dpr = Taro.getSystemInfoSync().pixelRatio;
+                const dpr = getWindowInfo().pixelRatio;
 
                 canvas.width = canvasW * dpr;
                 canvas.height = canvasH * dpr;

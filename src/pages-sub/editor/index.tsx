@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import BasePage from '@/components/base-page';
 import SpecSelectPopup from '@/components/spec-select-popup';
 import ConfirmDialog from '@/components/confirm-dialog';
+import { getWindowInfo } from '@/utils/system-info';
 import IconCheck from '@/assets/svgs/icon_check.svg';
 import IconWarning from '@/assets/svgs/icon_warning.svg';
 import IconUpload from '@/assets/svgs/icon_upload.svg';
@@ -53,7 +54,7 @@ export default function Editor() {
   } = useEditorLogic();
 
   const navBarHeight = useMemo(() => {
-    const systemInfo = Taro.getSystemInfoSync();
+    const systemInfo = getWindowInfo();
     const statusBarHeight = systemInfo.statusBarHeight || 0;
     let menuButtonInfo: { top: number; height: number };
     try {

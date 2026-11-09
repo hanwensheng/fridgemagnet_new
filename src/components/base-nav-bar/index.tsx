@@ -3,6 +3,7 @@ import Taro, { ENV_TYPE } from '@tarojs/taro';
 import { ReactNode, useMemo } from 'react';
 import defaultBackIcon from '@/assets/svgs/icon_back.svg';
 import { goBackOrTab } from '@/utils/navigation';
+import { getWindowInfo } from '@/utils/system-info';
 import './index.scss';
 
 /**
@@ -88,7 +89,7 @@ export default function BaseNavBar({
   titleIcon,
   showBorder = true,
 }: BaseNavBarProps) {
-  const systemInfo = Taro.getSystemInfoSync();
+  const systemInfo = getWindowInfo();
   const statusBarHeight = systemInfo.statusBarHeight || 0;
 
   /**

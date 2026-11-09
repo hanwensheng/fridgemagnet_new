@@ -1,9 +1,9 @@
 import { View, Image } from '@tarojs/components';
 import BasePage from '@/components/base-page';
 import { useState, useEffect, useMemo } from 'react';
-import Taro from '@tarojs/taro';
 import { productApi } from '@/api';
 import type { BizGoodsShowImg, BizGoodsShowModel } from '@/api';
+import { getWindowInfo } from '@/utils/system-info';
 import Icon360 from '@/assets/svgs/icon_360.svg';
 import './index.scss';
 
@@ -19,7 +19,7 @@ export default function ProductDetailsPage() {
   const [size, setSize] = useState({ width: 0, height: 0, renderWidth: 0, renderHeight: 0 });
 
   useEffect(() => {
-    const info = Taro.getSystemInfoSync();
+    const info = getWindowInfo();
     const dpr = info.pixelRatio;
     const width = info.windowWidth - 25;
     const height = 240;

@@ -3,6 +3,7 @@ import Taro from '@tarojs/taro';
 import { useEffect, useRef, useState } from 'react';
 import BasePage from '@/components/base-page';
 import { useAppStore } from '@/store';
+import { getWindowInfo } from '@/utils/system-info';
 
 import LogoIcon from '@/assets/svgs/icon_logo.svg';
 import SplashBg from '@/assets/images/splash_bg.png';
@@ -27,7 +28,7 @@ function getTextTop(): number {
 /** 计算最终 logo 的 transform 值（纯 transform 动画，不走重排） */
 function getFinalLogoTransform(textTop: number): string {
   try {
-    const { windowWidth, windowHeight } = Taro.getSystemInfoSync();
+    const { windowWidth, windowHeight } = getWindowInfo();
     const scale = 18 / 37;
     // 元素自然中心在 (50vw + 18.5, 50vh + 18.5)
     // logo 中心对齐文字视觉中心：文字 top=textTop，lineHeight=18，视觉中心=textTop+9

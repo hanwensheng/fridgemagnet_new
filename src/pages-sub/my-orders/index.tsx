@@ -9,6 +9,7 @@ import IconCar from '@/assets/svgs/icon_car_black.svg';
 import { OrderStatus } from '@/api/modules/order';
 import type { MerchantOrder } from '@/api/modules/order';
 import { formatDeliveryPromise, formatSizeLabel } from '@/utils/format';
+import { getWindowInfo } from '@/utils/system-info';
 import { useMyOrdersLogic, TABS, STATUS_TEXT_MAP, HIGHLIGHT_STATUSES } from './index.logic';
 import './index.scss';
 
@@ -38,7 +39,7 @@ export default function MyOrders() {
 
   /** 计算导航栏高度，用于 tab 固定定位 */
   const navBarHeight = useMemo(() => {
-    const systemInfo = Taro.getSystemInfoSync();
+    const systemInfo = getWindowInfo();
     const statusBarH = systemInfo.statusBarHeight || 0;
     const isWeapp = Taro.getEnv() === ENV_TYPE.WEAPP;
 

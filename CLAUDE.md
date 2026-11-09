@@ -554,6 +554,7 @@ patches/@tarojs+webpack5-prebundle+4.2.0.patch
 - 不要重新开启 `prebundle` 而不验证补丁是否仍然适用。
 - 不要在 `mini.webpackChain` 中移除 `usedExports(false)`，否则 NutUI 部分组件会运行时报错。
 - 不要用规格文本（`15.5*11.62cm`）做精确 key 匹配，尺寸还会再改；统一用 `findSizeMapped` 按容差匹配（见 13.2 规格尺寸容差匹配）。
+- 不要直接调用 `Taro.getSystemInfoSync()`（微信已标记 deprecated，render 期调用会在控制台刷屏）；统一用 `@/utils/system-info` 的 `getWindowInfo()`，它走新 API 且小程序端做了模块级缓存。
 
 ## 12. 决策记录（ADR）
 

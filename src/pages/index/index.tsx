@@ -10,6 +10,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import BasePage from '@/components/base-page';
 import SpecSelectPopup, { SelectedSpec } from '@/components/spec-select-popup';
 import { useTabBar } from '@/hooks/useTabBar';
+import { getWindowInfo } from '@/utils/system-info';
 import { productApi, BizPopularDesign } from '@/api';
 import logoIcon from '@/assets/svgs/icon_logo_black.svg';
 import HomeBg from '@/assets/images/home_bg.png';
@@ -81,7 +82,7 @@ export default function Index() {
   const popupVisibleRef = useRef(false);
   popupVisibleRef.current = popupVisible;
 
-  const systemInfo = Taro.getSystemInfoSync();
+  const systemInfo = getWindowInfo();
   const statusBarHeight = systemInfo.statusBarHeight || 0;
 
   // 与 BaseNavBar 完全相同的导航栏高度计算
