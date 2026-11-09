@@ -50,7 +50,7 @@ interface SpecSelectPopupProps {
 
 /**
  * 规格文本 -> 本地预览图映射。
- * key 是旧尺寸文案，后端微调尺寸（155×116.2mm → 154×115mm）时靠容差匹配命中，
+ * key 是旧尺寸文案，后端微调尺寸（155×116.2mm → 153.5×115mm）时靠容差匹配命中，
  * 图片沿用旧素材不重出，所以不用跟着新文案改 key。
  */
 const LOCAL_IMAGE_MAP: Record<string, string> = {

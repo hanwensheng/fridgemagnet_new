@@ -37,8 +37,8 @@ export interface SizeOption {
 /**
  * 本地视觉档位（tab 图 + 花边框 + 上传区尺寸）。
  *
- * label 只用于展示，**不要拿它当精确匹配 key**：后端尺寸还会再微调
- * （2026-11 巨大号已从 155×116.2mm 改成 154×115mm，文本变成 `15.4*11.5cm`），
+ * label 只用于展示，**不要拿它当精确匹配 key**：后端尺寸会反复微调
+ * （巨大号 155×116.2mm → 154×115mm → 153.5×115mm，变更链见 CLAUDE.md 13.2），
  * 而素材沿用旧尺寸、不重出。匹配统一走 `findSizeOption` 的容差逻辑，
  * 所以后端改尺寸时这里不用跟着改。
  */
@@ -84,7 +84,7 @@ const SIZE_LABEL_MAP = SIZE_OPTIONS.reduce<Record<string, SizeOption>>((acc, opt
 
 /**
  * 尺寸名 -> SIZE_OPTIONS 映射，用于匹配 tab 图片。
- * 走尺寸容差匹配：后端微调规格尺寸（15.5*11.62cm -> 15.4*11.5cm）或宽高互换时仍能命中同一档。
+ * 走尺寸容差匹配：后端微调规格尺寸（15.5*11.62cm -> 15.35*11.5cm）或宽高互换时仍能命中同一档。
  */
 export function findSizeOption(name: string): SizeOption | undefined {
   return findSizeMapped(SIZE_LABEL_MAP, name);

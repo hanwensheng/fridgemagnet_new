@@ -610,8 +610,8 @@ editor（制作页）
 
 | 尺寸 | 来源 | 示例（85×40mm） | 用途 |
 |------|------|----------------|------|
-| 工作区 `cropW×cropH` | `UPLOAD_AREA_SIZE` | 299×202 | 裁剪页编辑画布、Canvas 上传图输出 |
-| 预览区 `previewW×previewH` | `PREVIEW_IMG_SIZE` | 250×155 | Canvas 预览图输出，与花边 SVG 内框一致 |
+| 工作区 `cropW×cropH` | `UPLOAD_AREA_SIZE` | 299×141 | 裁剪页编辑画布、Canvas 上传图输出 |
+| 预览区 `previewW×previewH` | `PREVIEW_IMG_SIZE` | 253×119 | Canvas 预览图输出，与花边框内框一致 |
 | 实物印刷 | 产品规格 | 85×40mm | 后台强制缩放，本前端不处理 |
 
 **原则**：
@@ -622,8 +622,9 @@ editor（制作页）
 #### 规格尺寸容差匹配（重要）
 
 规格文本（如 `15.5*11.62cm`）由后端毫米尺寸经 `formatSizeLabel` 生成，**不要拿它当精确 key**。
-后端会微调尺寸：2026-11 已把巨大号从 155×116.2mm 改成 154×115mm，文本随之变成 `15.4*11.5cm`，
-精确匹配会让该档整块 UI 静默回落到默认的 `8.5*4cm`（tab 图、花边框背景、上传区尺寸全错）。
+后端会反复微调尺寸：巨大号 155×116.2mm（`15.5*11.62cm`）→ 154×115mm（`15.4*11.5cm`，2026-11-05）
+→ 153.5×115mm（`15.35*11.5cm`，2026-11-06）。精确匹配会让该档整块 UI 静默回落到默认的
+`8.5*4cm`（tab 图、花边框背景、上传区尺寸全错）。后续再改尺寸直接往下追加，前端不动。
 
 - 统一用 `findSizeMapped`（`src/utils/format.ts`）按数值容差匹配：容差 `SIZE_MATCH_TOLERANCE_CM = 1`（cm，宽高可互换），命中「差值最小的一档」，所以不会串档。
 - 涉及的表：`editor/index.logic.ts` 的 `SIZE_OPTIONS` / `PREVIEW_BG_MAP` / `PREVIEW_CLASS_MAP`，`spec-select-popup/index.tsx` 的 `LOCAL_IMAGE_MAP`。
